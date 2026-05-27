@@ -122,19 +122,18 @@
     .info-grid dt { color: var(--muted); }
     .info-grid dd { margin: 0; }
 
-    .gallery {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem;
-    }
-    .gallery .ph {
-      aspect-ratio: 4 / 3;
+    .image-ph {
+      aspect-ratio: 16 / 9;
       background: repeating-linear-gradient(45deg, #e8d8af, #e8d8af 8px, #e0cea0 8px, #e0cea0 16px);
       border: 1px solid #d4be88;
-      border-radius: 4px;
+      border-radius: 6px;
       display: grid; place-items: center;
-      color: var(--muted); font-size: 0.85rem;
+      color: var(--muted); font-style: italic; font-size: 0.95rem;
+      margin: 1.5rem 0;
+      text-align: center;
+      padding: 1rem;
     }
     @media (max-width: 480px) {
-      .gallery { grid-template-columns: repeat(2, 1fr); }
       .info-grid { grid-template-columns: 5.5rem 1fr; }
     }
 
@@ -203,6 +202,7 @@
       <p><strong>Grasz od dawna?</strong> Tym lepiej. Jest z kim pograć i pogadać.</p>
       <p>Przychodzą nastolatki, studenci i dorośli. Dzieci mile widziane z opiekunem. Atmosfera luźna — można pograć w skupieniu i nie odzywać się przez godzinę, można też pogadać przy stoliku obok. Wejdź śmiało — ktoś z nas się odezwie i zaproponuje partię. Możesz zostać 20 minut, możesz dwie godziny.</p>
       <p class="placeholder">[ tu wejdzie info o frekwencji / od kiedy działa klub ]</p>
+      <div class="image-ph">[ zdjęcie: gracze z Zielonej Góry przy planszy ]</div>
     </section>
 
     <section id="czemu-go">
@@ -210,19 +210,6 @@
       <p>Czarne kamienie, białe kamienie, plansza. Dwóch graczy stawia po kolei i próbuje otoczyć więcej terytorium niż przeciwnik. Reszta wynika sama — z kilku prostych zasad rośnie gra, w którą można grać całe życie i wciąż znajdować w niej coś nowego.</p>
       <p><strong>Najstarsza gra strategiczna świata</strong> — grana nieprzerwanie od ponad 2500 lat. I tak głęboka, że na planszy 19×19 jest <strong>więcej możliwych pozycji niż atomów we wszechświecie</strong>.</p>
       <p>To ta gra, w której AlphaGo pokonał mistrza świata w 2016 — historię tego meczu opowiada świetny <a href="https://www.youtube.com/watch?v=WXuK6gekU1Y" target="_blank" rel="noopener">dokument na YouTube</a> (90 minut, za darmo). A jeśli wolisz anime, zerknij na <a href="https://www.youtube.com/watch?v=1uHr9k-opPY" target="_blank" rel="noopener">Hikaru no Go</a> — wystarczą dwa pierwsze odcinki, żeby poczuć smak emocji. Ale my po prostu lubimy w nią grać.</p>
-    </section>
-
-    <section id="galeria">
-      <h2>Galeria</h2>
-      <p class="muted">gdyby tylko były jakieś zdjęcia…</p>
-      <div class="gallery" aria-label="Galeria (placeholder)">
-        <div class="ph">zdjęcie</div>
-        <div class="ph">zdjęcie</div>
-        <div class="ph">zdjęcie</div>
-        <div class="ph">zdjęcie</div>
-        <div class="ph">zdjęcie</div>
-        <div class="ph">zdjęcie</div>
-      </div>
     </section>
 
     <section id="online">
@@ -247,7 +234,9 @@
       <p>Discord: <a href="https://discord.gg/EB5at7kM9v" target="_blank" rel="noopener">discord.gg/EB5at7kM9v</a></p>
     </section>
 
-    <p class="closer">Wpadnij raz, zobaczysz.</p>
+    <div class="image-ph">[ zdjęcie: gracze z ZG zapraszają ]</div>
+
+    <p class="closer">Do piątku, plansza czeka.</p>
 
     <footer>
       <p>Semedori · Klub Go Zielona Góra · <a href="mailto:klub@zg-go.pl">klub@zg-go.pl</a></p>

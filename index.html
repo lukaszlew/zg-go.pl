@@ -201,8 +201,6 @@
       <p><strong>Pierwszy raz w Go?</strong> Świetnie — nauczymy cię zasad w 15 minut i zagramy z tobą pierwszą partię. Często gramy na 9×9 i 13×13. Nie musisz nic ze sobą brać; gobany i kamienie mamy.</p>
       <p><strong>Grasz od dawna?</strong> Tym lepiej. Jest z kim pograć i pogadać.</p>
       <p>Przychodzą nastolatki, studenci i dorośli. Dzieci mile widziane z opiekunem. Atmosfera luźna — można pograć w skupieniu i nie odzywać się przez godzinę, można też pogadać przy stoliku obok. Wejdź śmiało — ktoś z nas się odezwie i zaproponuje partię. Możesz zostać 20 minut, możesz dwie godziny.</p>
-      <p class="placeholder">[ tu wejdzie info o frekwencji / od kiedy działa klub ]</p>
-      <div class="image-ph">[ zdjęcie: gracze z Zielonej Góry przy planszy ]</div>
     </section>
 
     <section id="czemu-go">
@@ -234,8 +232,6 @@
       <p>Discord: <a href="https://discord.gg/EB5at7kM9v" target="_blank" rel="noopener">discord.gg/EB5at7kM9v</a></p>
     </section>
 
-    <div class="image-ph">[ zdjęcie: gracze z ZG zapraszają ]</div>
-
     <p class="closer">Do piątku, plansza czeka.</p>
 
     <footer>
@@ -246,9 +242,15 @@
 
   <script>
     (function () {
-      const banners = ['img/bachus.jpeg', 'img/grapes.jpeg'];
       const img = document.getElementById('banner-img');
-      if (img) img.src = banners[Math.floor(Math.random() * banners.length)];
+      if (!img) return;
+      // Bachus pojawia się tylko w sezonie Winobrania w Zielonej Górze:
+      // od 2 tygodni przed startem (~23 sierpnia) do tygodnia po zakończeniu (~21 września).
+      // Winobranie zaczyna się zwykle w pierwszą/drugą sobotę września i trwa ok. 9 dni.
+      const now = new Date();
+      const md = (now.getMonth() + 1) * 100 + now.getDate(); // np. 8 września -> 908
+      const winobranie = md >= 823 && md <= 921;
+      img.src = winobranie ? 'img/bachus.jpeg' : 'img/grapes.jpeg';
     })();
   </script>
 </body>

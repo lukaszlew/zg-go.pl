@@ -43,21 +43,6 @@ a:hover { text-decoration: underline; }
   position: sticky;
   top: 1.5rem;
 }
-.brand {
-  display: block;
-  font-family: var(--serif);
-  font-size: 1.7rem; font-weight: 600;
-  color: var(--muted);
-  line-height: 1.05;
-  margin-bottom: 1.1rem;
-}
-.brand span {
-  display: block;
-  font-size: 0.95rem; font-weight: 400; font-style: italic;
-  color: var(--fg);
-  margin-top: 0.2rem;
-}
-.brand:hover { text-decoration: none; }
 .nav a {
   display: block;
   padding: 0.35rem 0;
@@ -79,7 +64,6 @@ a:hover { text-decoration: underline; }
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--rule);
   }
-  .brand { margin-bottom: 0.6rem; }
   .nav { display: flex; gap: 1.5rem; }
 }
 

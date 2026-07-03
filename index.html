@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Semedori — Klub Go w Zielonej Górze</title>
-  <meta name="description" content="Klub Go w Zielonej Górze. Piątki 17:00–19:00, Mediateka Góra Mediów. Wstęp wolny, bez zapisów. Dla początkujących i zaawansowanych.">
+  <meta name="description" content="Klub Go w Zielonej Górze. Środy 17:00–19:00, Mediateka Góra Mediów. Wstęp wolny, bez zapisów. Dla początkujących i zaawansowanych.">
   <link rel="canonical" href="https://zg-go.pl/">
   <meta property="og:title" content="Semedori — Klub Go w Zielonej Górze">
-  <meta property="og:description" content="Piątki 17:00–19:00 w Mediatece Góra Mediów. Wstęp wolny, nauczymy zasad w 15 minut.">
+  <meta property="og:description" content="Środy 17:00–19:00 w Mediatece Góra Mediów. Wstęp wolny, nauczymy zasad w 15 minut.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://zg-go.pl/">
   <meta property="og:locale" content="pl_PL">
@@ -16,151 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --bg: #f4e9cf;
-      --fg: #1a1a1a;
-      --muted: #6b6b6b;
-      --accent: #9c2a2a;
-      --rule: #d9c896;
-      --card: #ffffff;
-      --serif: 'EB Garamond', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-    }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-    .wrap { max-width: 912px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
-
-    .banner {
-      width: 100%;
-      max-width: 912px;
-      margin: 0 auto;
-      background: var(--rule);
-    }
-    .banner img {
-      width: 100%; height: auto;
-      display: block;
-    }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    header.hero {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      gap: 2rem; flex-wrap: wrap;
-      padding-bottom: 1.5rem; border-bottom: 1px solid var(--rule);
-      margin-bottom: 2rem;
-    }
-    .hero-tagline { text-align: right; }
-    @media (max-width: 640px) {
-      header.hero { justify-content: flex-start; }
-      .hero-tagline { text-align: left; }
-    }
-    .hero-text { min-width: 0; }
-    .hero h1 {
-      margin: 0;
-      font-family: var(--serif);
-      font-size: clamp(3.5rem, 11vw, 7rem);
-      letter-spacing: -0.01em;
-      font-weight: 600;
-      line-height: 1.0;
-      color: var(--muted);
-    }
-    .hero h1 .subtitle {
-      display: block;
-      font-size: clamp(1.7rem, 4.25vw, 2.7rem);
-      font-weight: 400;
-      font-style: italic;
-      color: var(--fg);
-      letter-spacing: 0;
-      margin-top: 0.5rem;
-    }
-    .hero-tagline {
-      margin: 0.45rem 0 0;
-      color: var(--fg);
-      font-size: 1.05rem;
-      line-height: 1.45;
-    }
-    .hero-tagline a { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
-    .hero-tagline span, .hero-tagline a { display: block; }
-    .hero-tagline .gap-after { margin-bottom: 0.7rem; display: block; }
-
-    section { margin: 2.25rem 0; }
-    section p { text-align: justify; hyphens: auto; }
-    section p.placeholder, section p.muted { text-align: left; }
-
-    .closer {
-      font-family: var(--serif);
-      font-size: clamp(1.4rem, 3.5vw, 1.9rem);
-      text-align: center;
-      margin: 3.5rem 0 2rem;
-      font-style: italic;
-      font-weight: 500;
-      color: var(--fg);
-    }
-    h2 {
-      font-family: var(--serif);
-      font-size: 1.55rem; font-weight: 600;
-      margin: 0 0 0.7rem; letter-spacing: 0;
-    }
-    h3 {
-      font-family: var(--serif);
-      font-size: 1.15rem; font-weight: 600;
-      margin: 1.1rem 0 0.3rem; letter-spacing: 0;
-    }
-    p { margin: 0.4rem 0; }
-    .muted { color: var(--muted); }
-    .placeholder {
-      color: var(--muted); font-style: italic; font-size: 0.9rem;
-      opacity: 0.7;
-    }
-
-    .info-grid {
-      display: grid; grid-template-columns: 7rem 1fr; gap: 0.4rem 1rem;
-      font-size: 1rem;
-    }
-    .info-grid dt { color: var(--muted); }
-    .info-grid dd { margin: 0; }
-
-    .image-ph {
-      aspect-ratio: 16 / 9;
-      background: repeating-linear-gradient(45deg, #e8d8af, #e8d8af 8px, #e0cea0 8px, #e0cea0 16px);
-      border: 1px solid #d4be88;
-      border-radius: 6px;
-      display: grid; place-items: center;
-      color: var(--muted); font-style: italic; font-size: 0.95rem;
-      margin: 1.5rem 0;
-      text-align: center;
-      padding: 1rem;
-    }
-    @media (max-width: 480px) {
-      .info-grid { grid-template-columns: 5.5rem 1fr; }
-    }
-
-    ul.links { list-style: none; padding-left: 0; margin: 0.4rem 0; }
-    ul.links li { padding-left: 1.2rem; margin: 0.25rem 0; position: relative; }
-    ul.links li::before {
-      content: ""; position: absolute; left: 0; top: 0.7em;
-      width: 8px; height: 8px; border-radius: 50%;
-      background: #111; box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
-    }
-
-    ol.steps { padding-left: 1.4rem; margin: 0.6rem 0; }
-    ol.steps li { margin: 0.45rem 0; }
-    ol.steps li::marker { color: var(--accent); font-weight: 700; }
-
-    footer {
-      margin-top: 3rem; padding-top: 1.25rem;
-      border-top: 1px solid var(--rule);
-      color: var(--muted); font-size: 0.9rem;
-    }
-    footer a { color: var(--muted); text-decoration: underline; text-decoration-color: var(--rule); }
-  </style>
+  <link rel="stylesheet" href="style.css">
 
   <script type="application/ld+json">
   {
@@ -188,68 +44,80 @@
   <div class="banner">
     <img id="banner-img" src="img/grapes.jpeg" alt="" loading="eager">
   </div>
-  <div class="wrap">
 
-    <header class="hero">
-      <h1>Semedori<span class="subtitle">Klub Go w Zielonej Górze</span></h1>
-      <p class="hero-tagline">
-        <span><strong>środy 17:00–19:00</strong></span>
-        <span class="gap-after">wstęp wolny</span>
-        <span>Mediateka Góra Mediów ("Norwid")</span>
-        <span>Al. Wojska Polskiego 9</span>
-        <span>1. piętro, drzwi "Mediateka"</span>
-        <a href="https://www.google.com/maps/search/?api=1&amp;query=Mediateka+G%C3%B3ra+Medi%C3%B3w+Al.+Wojska+Polskiego+9+Zielona+G%C3%B3ra" target="_blank" rel="noopener">mapa</a>
-      </p>
-    </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav class="nav">
+        <a href="index.html" class="active">Klub</a>
+        <a href="hikaru-no-go.html">Hikaru no Go</a>
+      </nav>
+    </aside>
 
-    <section id="dla-kogo">
-      <h2>Dla kogo</h2>
-      <p><strong>Pierwszy raz w Go?</strong> Świetnie — nauczymy cię zasad w 15 minut i zagramy z tobą pierwszą partię. Często gramy na 9×9 i 13×13. Nie musisz nic ze sobą brać; gobany i kamienie mamy.</p>
-      <p><strong>Grasz od dawna?</strong> Tym lepiej. Jest z kim pograć i pogadać.</p>
-      <p>Przychodzą nastolatki, studenci i dorośli. Dzieci mile widziane z opiekunem. Atmosfera luźna — można pograć w skupieniu i nie odzywać się przez godzinę, można też pogadać przy stoliku obok. Wejdź śmiało — ktoś z nas się odezwie i zaproponuje partię. Możesz zostać 20 minut, możesz dwie godziny.</p>
-    </section>
+    <main class="content">
 
-    <section id="czemu-go">
-      <h2>Czemu Go</h2>
-      <p>Czarne kamienie, białe kamienie, plansza. Dwóch graczy stawia po kolei i próbuje otoczyć więcej terytorium niż przeciwnik. Reszta wynika sama — z kilku prostych zasad rośnie gra, w którą można grać całe życie i wciąż znajdować w niej coś nowego.</p>
-      <p><strong>Najstarsza gra strategiczna świata</strong> — grana nieprzerwanie od ponad 2500 lat. Na planszy 19×19 jest <strong>więcej możliwych pozycji niż atomów we wszechświecie</strong>.</p>
-      <h3>AlphaGo</h3>
-      <p>To ta gra, w której AlphaGo pokonał mistrza świata w 2016 — historię tego meczu opowiada świetny <a href="https://www.youtube.com/watch?v=WXuK6gekU1Y" target="_blank" rel="noopener">dokument na YouTube</a> (90 minut, za darmo).</p>
+      <header class="hero">
+        <h1>Semedori<span class="subtitle">Klub Go w Zielonej Górze</span></h1>
+        <p class="hero-tagline">
+          <span><strong>środy 17:00–19:00</strong></span>
+          <span class="gap-after">wstęp wolny</span>
+          <span>Mediateka Góra Mediów ("Norwid")</span>
+          <span>Al. Wojska Polskiego 9</span>
+          <span>1. piętro, drzwi "Mediateka"</span>
+          <a href="https://www.google.com/maps/search/?api=1&amp;query=Mediateka+G%C3%B3ra+Medi%C3%B3w+Al.+Wojska+Polskiego+9+Zielona+G%C3%B3ra" target="_blank" rel="noopener">mapa</a>
+        </p>
+      </header>
 
-      <h3>Hikaru no Go</h3>
-      <p>A jeśli wolisz anime, zerknij na <a href="https://www.youtube.com/watch?v=1uHr9k-opPY" target="_blank" rel="noopener">Hikaru no Go</a> — wystarczą dwa pierwsze odcinki, żeby poczuć smak emocji.</p>
-    </section>
+      <section id="dla-kogo">
+        <h2>Dla kogo</h2>
+        <p><strong>Pierwszy raz w Go?</strong> Świetnie — nauczymy cię zasad w 15 minut i zagramy z tobą pierwszą partię. Często gramy na 9×9 i 13×13. Nie musisz nic ze sobą brać; gobany i kamienie mamy.</p>
+        <p><strong>Grasz od dawna?</strong> Tym lepiej. Jest z kim pograć i pogadać.</p>
+        <p>Przychodzą nastolatki, studenci i dorośli. Dzieci mile widziane z opiekunem. Atmosfera luźna — można pograć w skupieniu i nie odzywać się przez godzinę, można też pogadać przy stoliku obok. Wejdź śmiało — ktoś z nas się odezwie i zaproponuje partię. Możesz zostać 20 minut, możesz dwie godziny.</p>
+      </section>
 
-    <section id="linki">
-      <h2>Gdzie grać i się uczyć</h2>
-      <ul class="links">
-        <li><a href="https://kursgo.pl/" target="_blank" rel="noopener">kursgo.pl</a> — kurs gry w Go po polsku</li>
-        <li><a href="https://online-go.com/" target="_blank" rel="noopener">online-go.com</a> — graj w Go online (OGS)</li>
-      </ul>
-      <p>Jeśli chcesz osłuchać się z grą wcześniej — zaloguj się przez Google na <a href="https://online-go.com/" target="_blank" rel="noopener">online-go.com</a> (OGS) i zagraj z botem. Na start polecamy planszę 9×9 z handicapem 5.</p>
-    </section>
+      <section id="czemu-go">
+        <h2>Czemu Go</h2>
+        <p>Czarne kamienie, białe kamienie, plansza. Dwóch graczy stawia po kolei i próbuje otoczyć więcej terytorium niż przeciwnik. Reszta wynika sama — z kilku prostych zasad rośnie gra, w którą można grać całe życie i wciąż znajdować w niej coś nowego.</p>
+        <p><strong>Najstarsza gra strategiczna świata</strong> — grana nieprzerwanie od ponad 2500 lat. Na planszy 19×19 jest <strong>więcej możliwych pozycji niż atomów we wszechświecie</strong>.</p>
+        <h3>AlphaGo</h3>
+        <p>To ta gra, w której AlphaGo pokonał mistrza świata w 2016 — historię tego meczu opowiada świetny <a href="https://www.youtube.com/watch?v=WXuK6gekU1Y" target="_blank" rel="noopener">dokument na YouTube</a> (90 minut, za darmo).</p>
 
-    <section id="organizacje">
-      <h2>Organizacje i rankingi</h2>
-      <ul class="links">
-        <li><a href="https://go.art.pl/" target="_blank" rel="noopener">go.art.pl</a> — Polskie Stowarzyszenie Go</li>
-        <li><a href="https://www.europeangodatabase.eu/" target="_blank" rel="noopener">europeangodatabase.eu</a> — europejski ranking</li>
-      </ul>
-    </section>
+        <h3>Hikaru no Go</h3>
+        <p>A jeśli wolisz anime, zerknij na <a href="hikaru-no-go.html">Hikaru no Go</a> — wystarczą dwa pierwsze odcinki, żeby poczuć smak emocji.</p>
+      </section>
 
-    <section id="kontakt">
-      <h2>Kontakt</h2>
-      <p><strong>Discord: <a href="https://discord.gg/EB5at7kM9v" target="_blank" rel="noopener">discord.gg/EB5at7kM9v</a></strong></p>
-      <p>E-mail: <a href="mailto:klub@zg-go.pl">klub@zg-go.pl</a></p>
-    </section>
+      <section id="linki">
+        <h2>Gdzie grać i się uczyć</h2>
+        <ul class="links">
+          <li><a href="https://kursgo.pl/" target="_blank" rel="noopener">kursgo.pl</a> — kurs gry w Go po polsku</li>
+          <li><a href="https://online-go.com/" target="_blank" rel="noopener">online-go.com</a> — graj w Go online (OGS)</li>
+        </ul>
+        <p>Jeśli chcesz osłuchać się z grą wcześniej — zaloguj się przez Google na <a href="https://online-go.com/" target="_blank" rel="noopener">online-go.com</a> (OGS) i zagraj z botem. Na start polecamy planszę 9×9 z handicapem 5.</p>
+      </section>
 
-    <p class="closer">Do zobaczenia, plansza czeka.</p>
+      <section id="organizacje">
+        <h2>Organizacje i rankingi</h2>
+        <ul class="links">
+          <li><a href="https://go.art.pl/" target="_blank" rel="noopener">go.art.pl</a> — Polskie Stowarzyszenie Go</li>
+          <li><a href="https://www.europeangodatabase.eu/" target="_blank" rel="noopener">europeangodatabase.eu</a> — europejski ranking</li>
+        </ul>
+      </section>
 
-    <footer>
-      <p>Semedori · Klub Go Zielona Góra · <a href="mailto:klub@zg-go.pl">klub@zg-go.pl</a></p>
-    </footer>
+      <section id="kontakt">
+        <h2>Kontakt</h2>
+        <p><strong>Discord: <a href="https://discord.gg/EB5at7kM9v" target="_blank" rel="noopener">discord.gg/EB5at7kM9v</a></strong></p>
+        <p>E-mail: <a href="mailto:klub@zg-go.pl">klub@zg-go.pl</a></p>
+      </section>
 
+      <p class="closer">Do zobaczenia, plansza czeka.</p>
+
+    </main>
   </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>Semedori · Klub Go Zielona Góra · <a href="mailto:klub@zg-go.pl">klub@zg-go.pl</a></p>
+    </div>
+  </footer>
 
   <script>
     (function () {

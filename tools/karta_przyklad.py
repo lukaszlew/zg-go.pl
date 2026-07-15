@@ -24,7 +24,7 @@ CZAREK = KartaDane(
     wiersze=[Wiersz(
         data="15.07", plansza="9", moje_pkt="60",
         przeciwnik_nick="Bianka", przeciwnik_pkt="81", silniejszy_o="21",
-        dodatkowe_ruchy="1", komi="−2", wynik="+15", zmiana="+4", nowe_pkt="64",
+        dodatkowe_ruchy="1", komi="−2", wynik="+15", zmiana="+2×2", nowe_pkt="64",
     )],
 )
 

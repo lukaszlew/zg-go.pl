@@ -131,6 +131,10 @@ img.wycinek {
   margin: 0.8rem -1.1rem 0;
 }
 
+/* wyeksponowany link do karty gracza */
+.karta-link { font-size: 1.2rem; margin: 1.6rem 0; }
+.karta-link a { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+
 /* punkty sily: zawsze na niebiesko — slowo i liczby */
 .ps { color: var(--pkt-sily); }
 table.sila td + td { color: var(--pkt-sily); }

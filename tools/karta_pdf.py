@@ -26,7 +26,7 @@ MUTED = HexColor("#555555")
 GRID = HexColor("#9a9a9a")              # wewnetrzne linie siatki (jasniejsze od krawedzi)
 TITLE_GRAY = HexColor("#6b6b6b")        # --muted ze style.css (kolor tytulow strony)
 HEADER_BG = HexColor("#d9c896")         # --rule ze style.css
-PKT_SILY = HexColor("#0d9488")          # --pkt-sily ze style.css (morskie punkty sily, jasniejszy teal)
+PKT_SILY = HexColor("#2e7d32")          # --pkt-sily ze style.css (zielone punkty sily)
 
 FONT = "DejaVu"
 FONT_BOLD = "DejaVu-Bold"
@@ -48,12 +48,12 @@ SUB_FS = 5.2                            # naglowki podkolumn (wersaliki)
 COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("data", [("", 9 * mm)]),
     ("plansza", [("", 12.5 * mm)]),
-    ("moje\npkt siły", [("", 12 * mm)]),
-    ("przeciwnik", [("nick", 0.0), ("pkt siły", 10.5 * mm), ("silniejszy o", 15 * mm)]),
+    ("moje PS", [("", 12 * mm)]),
+    ("przeciwnik", [("nick", 0.0), ("PS", 8 * mm), ("silniejszy o", 15 * mm)]),
     ("kompensacja", [("handi\nCzarnego", 13 * mm), ("komi dla\nBiałego", 13.5 * mm)]),
     ("wynik", [("", 12 * mm)]),
-    ("zmiana\npkt siły", [("", 12 * mm)]),
-    ("nowe\npkt siły", [("", 12 * mm)]),
+    ("zmiana PS", [("", 13 * mm)]),
+    ("nowe PS", [("", 12.5 * mm)]),
 ]
 
 # przed tymi grupami biegnie gruba kreska — sekcje jak w przykladzie na stronie:
@@ -95,12 +95,12 @@ BLUE_LEAFS = {2, 4, 5, 9, 10}   # moje pkt, pkt sily przeciwnika, silniejszy o, 
 # sciaga na dole karty: (tytul kolumny, punkty)
 SCIAGA: list[tuple[str, list[str]]] = [
     ("kompensacja różnicy", [
-        "pełne 13 pkt siły → handi: dodatkowy ruch Czarnego",
+        "pełne 13 PS → handi: dodatkowy ruch Czarnego",
         "komi: Czarny daje Białemu 6 kamieni",
-        "resztę Biały spłaca kamieniami — 1 za każdy pkt siły",
+        "resztę Biały spłaca kamieniami — 1 za każdy PS",
         "otrzymane kamienie liczą się przy podliczaniu",
     ]),
-    ("zmiana pkt siły", [
+    ("zmiana PS", [
         "zwycięzca +1, przegrany −1",
         "wygrana o 13+ kamieni albo poddanie: ±2",
         "remis: bez zmiany",
@@ -144,9 +144,9 @@ FIELD_H = 11 * mm
 # (etykieta rubryki, szerokosc) — nick dostaje reszte szerokosci karty
 FIELDS: list[tuple[str, float]] = [
     ("NICK", 0.0),
-    ("PKT SIŁY 9×9", 21 * mm),
-    ("PKT SIŁY 13×13", 23 * mm),
-    ("PKT SIŁY 19×19", 23 * mm),
+    ("PS 9×9", 16 * mm),
+    ("PS 13×13", 17 * mm),
+    ("PS 19×19", 17 * mm),
 ]
 
 
@@ -166,10 +166,10 @@ def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
     x = x0
     for (label, _), w, value in zip(FIELDS, widths, values):
         c.line(x, top, x, bottom)
-        c.setFillColor(PKT_SILY if "PKT SIŁY" in label else MUTED)
+        c.setFillColor(PKT_SILY if "PS" in label.split() else MUTED)
         c.setFont(FONT, 5.5)
         c.drawString(x + 1.5 * mm, top - 3 * mm, label)
-        c.setFillColor(PKT_SILY if "PKT SIŁY" in label else INK)
+        c.setFillColor(PKT_SILY if "PS" in label.split() else INK)
         c.setFont(FONT_HAND, HAND_FS_FIELDS)
         c.drawString(x + 2 * mm, bottom + 2.5 * mm, value)
         x += w
@@ -193,7 +193,7 @@ def draw_header_text(c: Canvas, cx: float, y: float, text: str, fs: float, max_w
     text = text.upper()
     text_w = pdfmetrics.stringWidth(text, FONT_BOLD, fs)
     assert text_w <= max_w - 1 * mm, f"naglowek '{text}' za szeroki na kolumne {max_w / mm:.1f} mm"
-    c.setFillColor(PKT_SILY if "PKT SIŁY" in text else INK)
+    c.setFillColor(PKT_SILY if "PS" in text.split() else INK)
     c.setFont(FONT_BOLD, fs)
     c.drawCentredString(cx, y, text)
 
@@ -355,7 +355,7 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
         x = x0 + i * (col_w + gap)
         t = title.upper()
         c.setFont(FONT_BOLD, 6)
-        c.setFillColor(PKT_SILY if "PKT SIŁY" in t else INK)
+        c.setFillColor(PKT_SILY if "PS" in t.split() else INK)
         c.drawString(x, y0, t)
         c.setStrokeColor(HEADER_BG)
         c.setLineWidth(0.8)
@@ -374,7 +374,7 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
     y = min(bottoms) - 1.5 * mm
     c.setFont(FONT, 6)
     c.setFillColor(MUTED)
-    c.drawString(x0, y, "Pełne zasady: zg-go.pl/ranking.html")
+    c.drawString(x0, y, "PS = punkty siły · Pełne zasady: zg-go.pl/ranking.html")
     c.drawRightString(x0 + card_w, y, f"wersja karty {WERSJA}")
     return y
 

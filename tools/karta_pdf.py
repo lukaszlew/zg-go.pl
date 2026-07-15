@@ -95,14 +95,14 @@ BLUE_LEAFS = {2, 4, 5, 9, 10}   # moje pkt, pkt sily przeciwnika, silniejszy o, 
 # sciaga na dole karty: (tytul kolumny, punkty)
 SCIAGA: list[tuple[str, list[str]]] = [
     ("kompensacja różnicy", [
-        "pełne 13 PS → handi: dodatkowy ruch Czarnego",
+        "pełne 12 PS → handi: dodatkowy ruch Czarnego",
         "komi: Czarny daje Białemu 6 kamieni",
         "resztę Biały spłaca kamieniami — 1 za każdy PS",
         "otrzymane kamienie liczą się przy podliczaniu",
     ]),
     ("zmiana PS", [
         "zwycięzca +1, przegrany −1",
-        "wygrana o 13+ kamieni albo poddanie: ±2",
+        "wygrana o 12+ kamieni albo poddanie: ±2",
         "remis: bez zmiany",
         "3. wygrana z rzędu na planszy i kolejne: zwycięzca ×2",
     ]),

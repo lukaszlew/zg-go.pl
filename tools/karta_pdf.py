@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generuje karta.pdf: karta gracza klubu Semedori, 2 x A5 na poziomym A4.
+"""Generuje karta.pdf: karta gracza klubu Semedori, pionowe A4.
 
 Uruchomienie:  python3 tools/karta_pdf.py   (zapisuje karta.pdf w korzeniu repo)
 Wymaga: reportlab, czcionki DejaVu (pakiet fonts-dejavu).
@@ -8,50 +8,52 @@ Wymaga: reportlab, czcionki DejaVu (pakiet fonts-dejavu).
 from pathlib import Path
 
 from reportlab.lib.colors import HexColor
-from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib.utils import simpleSplit
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 
-PAGE_W, PAGE_H = landscape(A4)          # 297 x 210 mm
-MARGIN = 7 * mm                         # margines zewnetrzny strony
-GUTTER = 4 * mm                         # odstep kazdej karty od linii ciecia
-HALF_W = PAGE_W / 2
+PAGE_W, PAGE_H = A4                     # 210 x 297 mm, pion
+MARGIN = 10 * mm                        # margines zewnetrzny strony
 
 INK = HexColor("#1a1a1a")
 MUTED = HexColor("#555555")
 TITLE_GRAY = HexColor("#6b6b6b")        # --muted ze style.css (kolor tytulow strony)
 HEADER_BG = HexColor("#d9c896")         # --rule ze style.css
+PKT_SILY = HexColor("#1e5fa8")          # --pkt-sily ze style.css (niebieskie punkty sily)
 
 FONT = "DejaVu"
 FONT_BOLD = "DejaVu-Bold"
 FONT_SERIF = "DejaVu-Serif"
 
-ROWS = 16
+ROWS = 26
 ROW_H = 8 * mm
-HEAD_H = 9 * mm
+HEAD_H = 13 * mm
+NICK_MAX = 40 * mm                      # nick nie zabiera calej reszty szerokosci
+HEAD_FS = 6.0                           # naglowki kolumn (wersaliki)
+SUB_FS = 5.2                            # naglowki podkolumn (wersaliki)
 
 # (naglowek grupy, [(podkolumna, szerokosc)]) — pojedyncza podkolumna "" = kolumna
 # bez podzialu; szerokosc 0.0 = reszta szerokosci karty (nick przeciwnika)
 COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
-    ("data", [("", 8.5 * mm)]),
-    ("plansza\nzakreśl", [("", 11.5 * mm)]),
-    ("moje\npkt siły", [("", 11 * mm)]),
-    ("przeciwnik", [("nick", 0.0), ("pkt siły", 11 * mm), ("silniejszy o", 13.5 * mm)]),
-    ("dod. ruchy\nCzarnego", [("", 15 * mm)]),
-    ("komi dla\nBiałego", [("", 12.5 * mm)]),
-    ("± wynik", [("", 11.5 * mm)]),
-    ("zmiana\npkt siły", [("", 11 * mm)]),
-    ("nowe\npkt siły", [("", 11.5 * mm)]),
+    ("data", [("", 9 * mm)]),
+    ("plansza", [("", 12.5 * mm)]),
+    ("moje\npkt siły", [("", 12 * mm)]),
+    ("przeciwnik", [("nick", 0.0), ("pkt siły", 10.5 * mm), ("silniejszy o", 15 * mm)]),
+    ("dodatkowe\nruchy\nCzarnego", [("", 17.5 * mm)]),
+    ("komi dla\nBiałego", [("", 13.5 * mm)]),
+    ("wynik", [("", 12 * mm)]),
+    ("zmiana\npkt siły", [("", 12 * mm)]),
+    ("nowe\npkt siły", [("", 12 * mm)]),
 ]
 
 # przed tymi grupami biegnie gruba kreska: moje dane | przeciwnik i handicap | po grze
 THICK_BEFORE = {"przeciwnik", "zmiana\npkt siły"}
 
 # nadruk do zakreslania w kazdym wierszu kolumny
-PREPRINT = {"plansza\nzakreśl": "9·13·19"}
+PREPRINT = {"plansza": "9·13·19"}
 
 NOTKI = (
     "Zapis ze znakiem: silniejszy o — ujemne, gdy to ja jestem silniejszy · komi — dla Białego, "
@@ -114,7 +116,7 @@ def draw_fields(c: Canvas, x0: float, top: float, card_w: float) -> float:
     x = x0
     for (label, _), w in zip(FIELDS, widths):
         c.line(x, top, x, bottom)
-        c.setFillColor(MUTED)
+        c.setFillColor(PKT_SILY if "PKT SIŁY" in label else MUTED)
         c.setFont(FONT, 5.5)
         c.drawString(x + 1.5 * mm, top - 3 * mm, label)
         x += w
@@ -122,17 +124,29 @@ def draw_fields(c: Canvas, x0: float, top: float, card_w: float) -> float:
 
 
 def group_widths(card_w: float) -> list[list[float]]:
-    """Szerokosci podkolumn kazdej grupy; 0.0 (nick) dostaje reszte karty."""
+    """Szerokosci podkolumn; 0.0 (nick) dostaje reszte karty do NICK_MAX,
+    nadwyzka rozchodzi sie po rowno na pozostale kolumny (luz naglowkow)."""
     fixed = sum(w for _, subs in COLUMNS for _, w in subs)
-    nick_w = card_w - fixed
+    nick_w = min(card_w - fixed, NICK_MAX)
     assert nick_w > 20 * mm, f"za malo miejsca na nick przeciwnika: {nick_w / mm:.1f} mm"
-    return [[w if w > 0 else nick_w for _, w in subs] for _, subs in COLUMNS]
+    n_rest = sum(len(subs) for _, subs in COLUMNS) - 1
+    extra = (card_w - fixed - nick_w) / n_rest
+    assert extra >= 0, f"ujemny luz kolumn: {extra / mm:.2f} mm"
+    return [[w + extra if w > 0 else nick_w for _, w in subs] for _, subs in COLUMNS]
+
+
+def draw_header_text(c: Canvas, cx: float, y: float, text: str, fs: float, max_w: float) -> None:
+    """Jedna linia naglowka: wersaliki, niebieskie gdy dotyczy pkt sily."""
+    text = text.upper()
+    text_w = pdfmetrics.stringWidth(text, FONT_BOLD, fs)
+    assert text_w <= max_w - 1 * mm, f"naglowek '{text}' za szeroki na kolumne {max_w / mm:.1f} mm"
+    c.setFillColor(PKT_SILY if "PKT SIŁY" in text else INK)
+    c.setFont(FONT_BOLD, fs)
+    c.drawCentredString(cx, y, text)
 
 
 def draw_header_labels(c: Canvas, x0: float, top: float, widths: list[list[float]]) -> None:
-    line_h = 2.9 * mm
-    c.setFillColor(INK)
-    c.setFont(FONT_BOLD, 6.5)
+    line_h = 3.5 * mm
     x = x0
     for (label, subs), sub_ws in zip(COLUMNS, widths):
         group_w = sum(sub_ws)
@@ -140,21 +154,16 @@ def draw_header_labels(c: Canvas, x0: float, top: float, widths: list[list[float
         if len(subs) == 1:
             y = top - (HEAD_H - (len(lines) - 1) * line_h) / 2 - 0.8 * mm
             for line in lines:
-                line_w = pdfmetrics.stringWidth(line, FONT_BOLD, 6.5)
-                assert line_w <= group_w - 1 * mm, f"naglowek '{line}' za szeroki na kolumne"
-                c.drawCentredString(x + group_w / 2, y, line)
+                draw_header_text(c, x + group_w / 2, y, line, HEAD_FS, group_w)
                 y -= line_h
         else:
             assert "\n" not in label, "naglowek grupy z podkolumnami musi byc jednoliniowy"
-            c.drawCentredString(x + group_w / 2, top - HEAD_H / 4 - 0.8 * mm, label)
+            draw_header_text(c, x + group_w / 2, top - HEAD_H / 4 - 0.8 * mm, label, HEAD_FS, group_w)
             sx = x
-            c.setFont(FONT_BOLD, 5.5)
             for (sub_label, _), sub_w in zip(subs, sub_ws):
-                sub_text_w = pdfmetrics.stringWidth(sub_label, FONT_BOLD, 5.5)
-                assert sub_text_w <= sub_w - 1 * mm, f"podkolumna '{sub_label}' za waska"
-                c.drawCentredString(sx + sub_w / 2, top - 3 * HEAD_H / 4 - 0.8 * mm, sub_label)
+                draw_header_text(c, sx + sub_w / 2, top - 3 * HEAD_H / 4 - 0.8 * mm,
+                                 sub_label, SUB_FS, sub_w)
                 sx += sub_w
-            c.setFont(FONT_BOLD, 6.5)
         x += group_w
 
 
@@ -234,14 +243,7 @@ def main() -> None:
     c = Canvas(str(out), pagesize=(PAGE_W, PAGE_H))
     c.setTitle("Karta gracza — Klub Go Semedori")
 
-    card_w = HALF_W - MARGIN - GUTTER
-    draw_card(c, MARGIN, card_w)
-    draw_card(c, HALF_W + GUTTER, card_w)
-
-    c.setStrokeColor(MUTED)
-    c.setLineWidth(0.4)
-    c.setDash(3, 3)
-    c.line(HALF_W, MARGIN, HALF_W, PAGE_H - MARGIN)
+    draw_card(c, MARGIN, PAGE_W - 2 * MARGIN)
 
     c.showPage()
     c.save()

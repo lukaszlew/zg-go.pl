@@ -26,7 +26,7 @@ MUTED = HexColor("#555555")
 GRID = HexColor("#9a9a9a")              # wewnetrzne linie siatki (jasniejsze od krawedzi)
 TITLE_GRAY = HexColor("#6b6b6b")        # --muted ze style.css (kolor tytulow strony)
 HEADER_BG = HexColor("#d9c896")         # --rule ze style.css
-PKT_SILY = HexColor("#1e5fa8")          # --pkt-sily ze style.css (niebieskie punkty sily)
+PKT_SILY = HexColor("#0d9488")          # --pkt-sily ze style.css (morskie punkty sily, jasniejszy teal)
 
 FONT = "DejaVu"
 FONT_BOLD = "DejaVu-Bold"
@@ -50,7 +50,7 @@ COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("plansza", [("", 12.5 * mm)]),
     ("moje\npkt siły", [("", 12 * mm)]),
     ("przeciwnik", [("nick", 0.0), ("pkt siły", 10.5 * mm), ("silniejszy o", 15 * mm)]),
-    ("kompensacja", [("dodatkowe ruchy\nCzarnego", 24 * mm), ("komi dla\nBiałego", 13.5 * mm)]),
+    ("kompensacja", [("handi\nCzarnego", 13 * mm), ("komi dla\nBiałego", 13.5 * mm)]),
     ("wynik", [("", 12 * mm)]),
     ("zmiana\npkt siły", [("", 12 * mm)]),
     ("nowe\npkt siły", [("", 12 * mm)]),
@@ -98,7 +98,7 @@ NOTKI = (
 )
 
 ZASADY = (
-    "Za każde pełne 13 pkt siły różnicy: dodatkowy ruch dla Czarnego · Komi: Czarny daje "
+    "Za każde pełne 13 pkt siły różnicy: handi (dodatkowy ruch) dla Czarnego · Komi: Czarny daje "
     "Białemu 6 czarnych kamieni · Resztę różnicy Biały spłaca kamieniami · "
     "Zmiana: ±1 pkt siły, a przy wygranej o 13 kamieni lub więcej albo poddaniu ±2 · "
     "Remis: bez zmiany pkt siły · Trzecia wygrana z rzędu na danej planszy i kolejne: "

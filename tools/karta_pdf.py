@@ -50,8 +50,7 @@ COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("plansza", [("", 12.5 * mm)]),
     ("moje\npkt siły", [("", 12 * mm)]),
     ("przeciwnik", [("nick", 0.0), ("pkt siły", 10.5 * mm), ("silniejszy o", 15 * mm)]),
-    ("dodatkowe\nruchy\nCzarnego", [("", 17.5 * mm)]),
-    ("komi dla\nBiałego", [("", 13.5 * mm)]),
+    ("kompensacja", [("dodatkowe ruchy\nCzarnego", 24 * mm), ("komi dla\nBiałego", 13.5 * mm)]),
     ("wynik", [("", 12 * mm)]),
     ("zmiana\npkt siły", [("", 12 * mm)]),
     ("nowe\npkt siły", [("", 12 * mm)]),
@@ -102,8 +101,8 @@ ZASADY = (
     "Za każde pełne 13 pkt siły różnicy: dodatkowy ruch dla Czarnego · Komi: Czarny daje "
     "Białemu 6 czarnych kamieni · Resztę różnicy Biały spłaca kamieniami · "
     "Zmiana: ±1 pkt siły, a przy wygranej o 13 kamieni lub więcej albo poddaniu ±2 · "
-    "Remis: bez zmiany pkt siły · Trzecia wygrana z rzędu i kolejne: zmiana zwycięzcy ×2 · "
-    "Zasady: zg-go.pl/ranking.html"
+    "Remis: bez zmiany pkt siły · Trzecia wygrana z rzędu na danej planszy i kolejne: "
+    "zmiana zwycięzcy ×2 · Zasady: zg-go.pl/ranking.html"
 )
 
 
@@ -206,9 +205,13 @@ def draw_header_labels(c: Canvas, x0: float, top: float, widths: list[list[float
             assert "\n" not in label, "naglowek grupy z podkolumnami musi byc jednoliniowy"
             draw_header_text(c, x + group_w / 2, top - HEAD_H / 4 - 0.8 * mm, label, HEAD_FS, group_w)
             sx = x
+            sub_line_h = 2.9 * mm
             for (sub_label, _), sub_w in zip(subs, sub_ws):
-                draw_header_text(c, sx + sub_w / 2, top - 3 * HEAD_H / 4 - 0.8 * mm,
-                                 sub_label, SUB_FS, sub_w)
+                sub_lines = sub_label.split("\n")
+                y = top - HEAD_H / 2 - (HEAD_H / 2 - (len(sub_lines) - 1) * sub_line_h) / 2 - 0.8 * mm
+                for line in sub_lines:
+                    draw_header_text(c, sx + sub_w / 2, y, line, SUB_FS, sub_w)
+                    y -= sub_line_h
                 sx += sub_w
         x += group_w
 

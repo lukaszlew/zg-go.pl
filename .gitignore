@@ -1,0 +1,6 @@
+# generowane posrednie (odtwarzalne przez make); karta.pdf i wycinki SVG
+# sa serwowane przez strone, wiec zostaja w repo
+karta-przyklad.pdf
+karta-wycinek.pdf
+tools/__pycache__/
+docs/

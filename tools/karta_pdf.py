@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Generuje karta.pdf: karta gracza klubu Semedori, pionowe A4.
+"""Karta gracza klubu Semedori (pionowe A4) — biblioteka + generator karta.pdf.
 
-Uruchomienie:  python3 tools/karta_pdf.py   (zapisuje karta.pdf w korzeniu repo)
+Uruchomienie:  python3 tools/karta_pdf.py   (zapisuje pusta karte: karta.pdf w korzeniu repo)
+Jako biblioteka: generuj_karte(sciezka, [KartaDane(...), ...]) — karta na strone,
+z wypelnionym naglowkiem i wierszami gier (np. karty przykladowe).
 Wymaga: reportlab, czcionki DejaVu (pakiet fonts-dejavu).
 """
 
+from dataclasses import dataclass
 from pathlib import Path
 
 from reportlab.lib.colors import HexColor
@@ -27,6 +30,9 @@ PKT_SILY = HexColor("#1e5fa8")          # --pkt-sily ze style.css (niebieskie pu
 FONT = "DejaVu"
 FONT_BOLD = "DejaVu-Bold"
 FONT_SERIF = "DejaVu-Serif"
+FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladowych
+HAND_FS = 14                            # rozmiar wpisow w wierszach
+HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
 ROWS = 26
 ROW_H = 8 * mm
@@ -55,6 +61,35 @@ THICK_BEFORE = {"przeciwnik", "zmiana\npkt siły"}
 # nadruk do zakreslania w kazdym wierszu kolumny
 PREPRINT = {"plansza": "9·13·19"}
 
+@dataclass(frozen=True)
+class Wiersz:
+    """Jedna gra na karcie; wartosci jako napisy, dokladnie jak wpisalby je gracz."""
+    data: str
+    plansza: str            # "9" | "13" | "19" — zakreslana w nadruku
+    moje_pkt: str
+    przeciwnik_nick: str
+    przeciwnik_pkt: str
+    silniejszy_o: str
+    dodatkowe_ruchy: str
+    komi: str
+    wynik: str
+    zmiana: str
+    nowe_pkt: str
+
+
+@dataclass(frozen=True)
+class KartaDane:
+    """Wypelnienie naglowka karty + wiersze gier."""
+    nick: str
+    pkt_9: str
+    pkt_13: str
+    pkt_19: str
+    wiersze: list[Wiersz]
+
+
+# indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze pkt sily
+BLUE_LEAFS = {2, 4, 5, 9, 10}   # moje pkt, pkt sily przeciwnika, silniejszy o, zmiana, nowe
+
 NOTKI = (
     "Zapis ze znakiem: silniejszy o — ujemne, gdy to ja jestem silniejszy · komi — dla Białego, "
     "ujemne, gdy dostaje je Czarny · wynik — w kamieniach, + wygrana, − przegrana"
@@ -75,6 +110,9 @@ def register_fonts() -> None:
     pdfmetrics.registerFont(TTFont(FONT, str(dejavu / "DejaVuSans.ttf")))
     pdfmetrics.registerFont(TTFont(FONT_BOLD, str(dejavu / "DejaVuSans-Bold.ttf")))
     pdfmetrics.registerFont(TTFont(FONT_SERIF, str(dejavu / "DejaVuSerif.ttf")))
+    hand = Path(__file__).resolve().parent / "fonts" / "Caveat-Bold.ttf"
+    assert hand.is_file(), f"brak fontu odrecznego: {hand}"
+    pdfmetrics.registerFont(TTFont(FONT_HAND, str(hand)))
 
 
 def draw_title(c: Canvas, x0: float, top: float, card_w: float) -> float:
@@ -102,23 +140,28 @@ FIELDS: list[tuple[str, float]] = [
 ]
 
 
-def draw_fields(c: Canvas, x0: float, top: float, card_w: float) -> float:
-    """Rubryki Nick/Plansza/Sila/Data jako obramowany pasek; zwraca y pod nim."""
+def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
+                dane: KartaDane | None) -> float:
+    """Rubryki Nick / pkt sily na plansze jako obramowany pasek; zwraca y pod nim."""
     fixed = sum(w for _, w in FIELDS)
     nick_w = card_w - fixed
     assert nick_w > 30 * mm, f"za malo miejsca na rubryke nicku: {nick_w / mm:.1f} mm"
     widths = [w if w > 0 else nick_w for _, w in FIELDS]
+    values = ["", "", "", ""] if dane is None else [dane.nick, dane.pkt_9, dane.pkt_13, dane.pkt_19]
 
     bottom = top - FIELD_H
     c.setStrokeColor(INK)
     c.setLineWidth(0.6)
     c.rect(x0, bottom, card_w, FIELD_H, stroke=1, fill=0)
     x = x0
-    for (label, _), w in zip(FIELDS, widths):
+    for (label, _), w, value in zip(FIELDS, widths, values):
         c.line(x, top, x, bottom)
         c.setFillColor(PKT_SILY if "PKT SIŁY" in label else MUTED)
         c.setFont(FONT, 5.5)
         c.drawString(x + 1.5 * mm, top - 3 * mm, label)
+        c.setFillColor(PKT_SILY if "PKT SIŁY" in label else INK)
+        c.setFont(FONT_HAND, HAND_FS_FIELDS)
+        c.drawString(x + 2 * mm, bottom + 2.5 * mm, value)
         x += w
     return bottom - 3 * mm
 
@@ -167,11 +210,13 @@ def draw_header_labels(c: Canvas, x0: float, top: float, widths: list[list[float
         x += group_w
 
 
-def draw_grid(c: Canvas, x0: float, top: float, card_w: float, widths: list[list[float]]) -> None:
-    bottom = top - HEAD_H - ROWS * ROW_H
+def draw_grid(c: Canvas, x0: float, top: float, card_w: float, widths: list[list[float]],
+              n_rows: float) -> None:
+    """Siatka tabeli; ulamkowe n_rows -> ostatni wiersz uciety, bez dolnej krawedzi."""
+    bottom = top - HEAD_H - n_rows * ROW_H
     c.setStrokeColor(INK)
     c.setLineWidth(0.6)
-    for row in range(ROWS + 2):
+    for row in range(int(n_rows) + 2):
         y = top - min(row, 1) * HEAD_H - max(row - 1, 0) * ROW_H
         c.line(x0, y, x0 + card_w, y)
     x = x0
@@ -190,10 +235,64 @@ def draw_grid(c: Canvas, x0: float, top: float, card_w: float, widths: list[list
     c.line(x0 + card_w, top, x0 + card_w, bottom)
 
 
-def draw_table(c: Canvas, x0: float, top: float, card_w: float) -> float:
-    """Tabela gier (naglowek dwupoziomowy + wiersze); zwraca y pod tabela."""
+def leaf_geometry(x0: float, widths: list[list[float]]) -> list[tuple[float, float]]:
+    """(x, szerokosc) kazdej podkolumny, w kolejnosci od lewej."""
+    out: list[tuple[float, float]] = []
+    x = x0
+    for sub_ws in widths:
+        for w in sub_ws:
+            out.append((x, w))
+            x += w
+    return out
+
+
+def row_baseline(top: float, row: int) -> float:
+    return top - HEAD_H - row * ROW_H - ROW_H / 2 - 1
+
+
+def draw_plansza_kolko(c: Canvas, leaf: tuple[float, float], y: float, plansza: str) -> None:
+    """Zakresla wybrana plansze w nadruku 9·13·19."""
+    text = PREPRINT["plansza"]
+    assert plansza in text.split("·"), f"nieznana plansza: {plansza}"
+    lx, lw = leaf
+    start = lx + lw / 2 - pdfmetrics.stringWidth(text, FONT, 6.5) / 2
+    x1 = start + pdfmetrics.stringWidth(text[: text.index(plansza)], FONT, 6.5)
+    num_w = pdfmetrics.stringWidth(plansza, FONT, 6.5)
+    cx, cy = x1 + num_w / 2, y + 1.1 * mm
+    rx, ry = num_w / 2 + 1.4 * mm, 2.7 * mm
+    c.setStrokeColor(INK)
+    c.setLineWidth(1.5)
+    c.ellipse(cx - rx, cy - ry, cx + rx, cy + ry, stroke=1, fill=0)
+
+
+def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
+                 wiersze: list[Wiersz]) -> None:
+    """Wypelnione wiersze gier (karty przykladowe)."""
+    leaves = leaf_geometry(x0, widths)
+    assert len(leaves) == 11, len(leaves)
+    for row, w in enumerate(wiersze):
+        y = row_baseline(top, row)
+        values = [w.data, "", w.moje_pkt, w.przeciwnik_nick, w.przeciwnik_pkt, w.silniejszy_o,
+                  w.dodatkowe_ruchy, w.komi, w.wynik, w.zmiana, w.nowe_pkt]
+        for li, ((lx, lw), value) in enumerate(zip(leaves, values)):
+            if not value:
+                continue
+            c.setFillColor(PKT_SILY if li in BLUE_LEAFS else INK)
+            c.setFont(FONT_HAND, HAND_FS)
+            c.drawCentredString(lx + lw / 2, y, value)
+        draw_plansza_kolko(c, leaves[1], y, w.plansza)
+
+
+def draw_table(c: Canvas, x0: float, top: float, card_w: float,
+               wiersze: list[Wiersz], n_rows: float) -> float:
+    """Tabela gier (naglowek dwupoziomowy + wiersze); zwraca y pod tabela.
+
+    Ulamkowe n_rows (np. 1.5) rysuje wycinek: ostatni, niepelny wiersz zostaje
+    pusty (bez nadruku planszy) i bez dolnej krawedzi — tabela "biegnie dalej".
+    """
+    assert len(wiersze) <= int(n_rows), f"za duzo wierszy: {len(wiersze)} > {int(n_rows)}"
     widths = group_widths(card_w)
-    bottom = top - HEAD_H - ROWS * ROW_H
+    bottom = top - HEAD_H - n_rows * ROW_H
 
     c.setFillColor(HEADER_BG)
     c.rect(x0, top - HEAD_H, card_w, HEAD_H, stroke=0, fill=1)
@@ -207,11 +306,11 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float) -> float:
         col_w = sum(widths[idx[0]])
         assert pdfmetrics.stringWidth(text, FONT, 6.5) <= col_w - 1 * mm, f"nadruk '{text}' za szeroki"
         cx = x0 + sum(sum(ws) for ws in widths[: idx[0]]) + col_w / 2
-        for row in range(ROWS):
-            y_cell = top - HEAD_H - row * ROW_H - ROW_H / 2 - 1
-            c.drawCentredString(cx, y_cell, text)
+        for row in range(int(n_rows)):
+            c.drawCentredString(cx, row_baseline(top, row), text)
 
-    draw_grid(c, x0, top, card_w, widths)
+    draw_wiersze(c, x0, top, widths, wiersze)
+    draw_grid(c, x0, top, card_w, widths, n_rows)
     return bottom - 4 * mm
 
 
@@ -227,27 +326,54 @@ def draw_paragraph(c: Canvas, x0: float, top: float, card_w: float, text: str,
     return y
 
 
-def draw_card(c: Canvas, x0: float, card_w: float) -> None:
+def draw_card(c: Canvas, x0: float, card_w: float, dane: KartaDane | None) -> None:
     top = PAGE_H - MARGIN
     y = draw_title(c, x0, top, card_w)
-    y = draw_fields(c, x0, y, card_w)
-    y = draw_table(c, x0, y, card_w)
+    y = draw_fields(c, x0, y, card_w, dane)
+    y = draw_table(c, x0, y, card_w, [] if dane is None else dane.wiersze, ROWS)
     y = draw_paragraph(c, x0, y, card_w, NOTKI, INK)
     y = draw_paragraph(c, x0, y, card_w, ZASADY, MUTED)
     assert y > MARGIN, f"karta nie miesci sie na stronie: y={y / mm:.1f} mm"
 
 
-def main() -> None:
+CUT_MARGIN = 2 * mm
+
+
+def generuj_wycinek(out: Path, karty: list[KartaDane], n_rows: float) -> None:
+    """Zapisuje PDF-wycinek karty (naglowek + n_rows wierszy) do osadzenia na stronie.
+
+    Jedna karta na strone; strona ma dokladnie rozmiar wycinka.
+    """
+    assert karty, "co najmniej jedna karta"
     register_fonts()
-    out = Path(__file__).resolve().parent.parent / "karta.pdf"
-    c = Canvas(str(out), pagesize=(PAGE_W, PAGE_H))
-    c.setTitle("Karta gracza — Klub Go Semedori")
-
-    draw_card(c, MARGIN, PAGE_W - 2 * MARGIN)
-
-    c.showPage()
+    card_w = PAGE_W - 2 * MARGIN
+    page_w = card_w + 2 * CUT_MARGIN
+    page_h = 2 * CUT_MARGIN + FIELD_H + 3 * mm + HEAD_H + n_rows * ROW_H
+    c = Canvas(str(out), pagesize=(page_w, page_h))
+    c.setTitle("Karta gracza (przykład) — Klub Go Semedori")
+    for dane in karty:
+        y = draw_fields(c, CUT_MARGIN, page_h - CUT_MARGIN, card_w, dane)
+        draw_table(c, CUT_MARGIN, y, card_w, dane.wiersze, n_rows)
+        c.showPage()
     c.save()
     print(f"OK: {out} ({out.stat().st_size} B)")
+
+
+def generuj_karte(out: Path, karty: list[KartaDane | None]) -> None:
+    """Zapisuje PDF: jedna karta na strone; None = pusta karta do druku."""
+    assert karty, "co najmniej jedna karta"
+    register_fonts()
+    c = Canvas(str(out), pagesize=(PAGE_W, PAGE_H))
+    c.setTitle("Karta gracza — Klub Go Semedori")
+    for dane in karty:
+        draw_card(c, MARGIN, PAGE_W - 2 * MARGIN, dane)
+        c.showPage()
+    c.save()
+    print(f"OK: {out} ({out.stat().st_size} B)")
+
+
+def main() -> None:
+    generuj_karte(Path(__file__).resolve().parent.parent / "karta.pdf", [None])
 
 
 if __name__ == "__main__":

@@ -43,14 +43,18 @@ NICK_MAX = 40 * mm                      # nick nie zabiera calej reszty szerokos
 HEAD_FS = 6.0                           # naglowki kolumn (wersaliki)
 SUB_FS = 5.2                            # naglowki podkolumn (wersaliki)
 
+# INWARIANT: nazwy rubryk/kolumn (FIELDS, COLUMNS) i tresc SCIAGA musza byc zgodne
+# z terminologia przykladu i zasad na ranking.html — sprawdzaj przy kazdej edycji.
+#
 # (naglowek grupy, [(podkolumna, szerokosc)]) — pojedyncza podkolumna "" = kolumna
 # bez podzialu; szerokosc 0.0 = reszta szerokosci karty (nick przeciwnika)
 COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("data", [("", 9 * mm)]),
     ("plansza", [("", 12.5 * mm)]),
     ("moje PS", [("", 12 * mm)]),
-    ("przeciwnik", [("nick", 0.0), ("PS", 8 * mm), ("silniejszy o", 15 * mm)]),
-    ("kompensacja", [("handi\nCzarnego", 13 * mm), ("komi dla\nBiałego", 13.5 * mm)]),
+    ("przeciwnik", [("nick", 0.0), ("PS", 8 * mm)]),
+    ("kompensacja", [("biały − czarny − 6", 23 * mm), ("handi\nCzarnego", 13 * mm),
+                     ("kamienie\ndla Czarnego", 15.5 * mm)]),
     ("wynik", [("", 12 * mm)]),
     ("zmiana PS", [("", 13 * mm)]),
     ("nowe PS", [("", 12.5 * mm)]),
@@ -71,9 +75,9 @@ class Wiersz:
     moje_pkt: str
     przeciwnik_nick: str
     przeciwnik_pkt: str
-    silniejszy_o: str
-    dodatkowe_ruchy: str
-    komi: str
+    kompensacja: str
+    handi: str
+    kamienie: str
     wynik: str
     zmiana: str
     nowe_pkt: str
@@ -89,15 +93,16 @@ class KartaDane:
     wiersze: list[Wiersz]
 
 
-# indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze pkt sily
-BLUE_LEAFS = {2, 4, 5, 9, 10}   # moje pkt, pkt sily przeciwnika, silniejszy o, zmiana, nowe
+# indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze PS
+BLUE_LEAFS = {2, 4, 5, 9, 10}   # moje PS, PS przeciwnika, kompensacja, zmiana, nowe
 
 # sciaga na dole karty: (tytul kolumny, punkty)
 SCIAGA: list[tuple[str, list[str]]] = [
-    ("kompensacja różnicy", [
-        "pełne 12 PS → handi: dodatkowy ruch Czarnego",
-        "komi: Czarny daje Białemu 6 kamieni",
-        "resztę Biały spłaca kamieniami — 1 za każdy PS",
+    ("kompensacja", [
+        "kompensacja = PS Białego − PS Czarnego − 6",
+        "za każde pełne 12: handi — dodatkowy ruch Czarnego",
+        "resztę Biały daje Czarnemu w kamieniach",
+        "ujemna: to Czarny daje kamienie Białemu",
         "otrzymane kamienie liczą się przy podliczaniu",
     ]),
     ("zmiana PS", [
@@ -107,8 +112,7 @@ SCIAGA: list[tuple[str, list[str]]] = [
         "3. wygrana z rzędu na planszy i kolejne: zwycięzca ×2",
     ]),
     ("zapis ze znakiem", [
-        "SILNIEJSZY O: minus, gdy to ja jestem silniejszy",
-        "KOMI DLA BIAŁEGO: minus, gdy dostaje je Czarny",
+        "KOMPENSACJA: jednakowa na obu kartach",
         "WYNIK: w kamieniach, + wygrana, − przegrana",
     ]),
 ]
@@ -302,8 +306,8 @@ def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
     assert len(leaves) == 11, len(leaves)
     for row, w in enumerate(wiersze):
         y = row_baseline(top, row)
-        values = [w.data, "", w.moje_pkt, w.przeciwnik_nick, w.przeciwnik_pkt, w.silniejszy_o,
-                  w.dodatkowe_ruchy, w.komi, w.wynik, w.zmiana, w.nowe_pkt]
+        values = [w.data, "", w.moje_pkt, w.przeciwnik_nick, w.przeciwnik_pkt, w.kompensacja,
+                  w.handi, w.kamienie, w.wynik, w.zmiana, w.nowe_pkt]
         for li, ((lx, lw), value) in enumerate(zip(leaves, values)):
             if not value:
                 continue

@@ -84,7 +84,6 @@ a:hover { text-decoration: underline; }
     row-gap: 1.25rem;
   }
   .site-title, .hb-menu { grid-column: 1; }
-  .hb-menu { display: flex; gap: 1.5rem; }
 }
 
 section { margin: 2.25rem 0; }

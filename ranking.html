@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/svg+xml" href="img/logo.svg">
   <title>Ranking Semedori — Klub Go w Zielonej Górze</title>
-  <meta name="description" content="Zasady rozgrywek klubowych na planszach 9×9, 13×13 i 19×19: punkty siły, komi, kamienie i dodatkowe ruchy.">
+  <meta name="description" content="Zasady rozgrywek klubowych na planszach 9×9, 13×13 i 19×19: punkty siły, kompensacja, handi i kamienie.">
   <link rel="canonical" href="https://zg-go.pl/ranking.html">
   <meta property="og:title" content="Ranking Semedori — Klub Go w Zielonej Górze">
-  <meta property="og:description" content="Zasady rozgrywek klubowych na planszach 9×9, 13×13 i 19×19: punkty siły, komi, kamienie i dodatkowe ruchy.">
+  <meta property="og:description" content="Zasady rozgrywek klubowych na planszach 9×9, 13×13 i 19×19: punkty siły, kompensacja, handi i kamienie.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://zg-go.pl/ranking.html">
   <meta property="og:image" content="https://zg-go.pl/og-karty.png">
@@ -40,6 +40,10 @@
 
     <main class="content zdania">
 
+      <!-- INWARIANT: terminologia przykladu i zasad (zwlaszcza nazwy w «...») musi byc
+           zgodna z kolumnami karty gracza (tools/karta_pdf.py: FIELDS, COLUMNS, SCIAGA).
+           Sprawdzaj przy kazdej edycji tresci tu i tam. -->
+
       <p>Każdy gracz klubu ma <span class="ps">punkty siły</span> (w skrócie <span class="ps">PS</span>) — miarę tego, jak mocno aktualnie gra.
       Dzięki nim każda gra jest wyrównana: słabszy dostaje od silniejszego dodatkowe ruchy i/lub kamienie, więc obie strony mają równe szanse — niezależnie od różnicy poziomów.
       Po każdej grze <span class="ps">PS</span> się zmieniają — z czasem dopasowują się do prawdziwej siły gracza i pokazują jego postępy.</p>
@@ -62,15 +66,11 @@
         <img class="wycinek" src="karta-wycinek-bianka.svg" alt="Karta gracza Bianki z wpisaną przykładową grą">
         <p><strong>Przed grą.</strong>
         Bianka (<span class="ps">81 PS</span> na 9×9) gra z Czarkiem (<span class="ps">60</span>).
-        Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi.
-        Przeciwnik Czarka jest silniejszy o <span class="ps">81 − 60 = 21</span> — u Czarka «silniejszy o: <span class="ps">21</span>», u Bianki «<span class="ps">−21</span>», bo to ona jest silniejsza.
-        Tę różnicę trzeba przed grą skompensować.</p>
+        Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi.</p>
         <p><strong>Kompensacja.</strong>
-        <span class="ps">12</span> z tych <span class="ps">21 PS</span> zamieniamy na dodatkowy ruch: «handi Czarnego: 1» — Czarek zagra dwa ruchy, zanim Bianka odpowie.
-        Do skompensowania zostaje <span class="ps">9 PS</span>.
-        Do tego komi: za przywilej pierwszego ruchu Czarek daje Biance 6 czarnych kamieni.
-        Pozostałe <span class="ps">9</span> Bianka spłaca kamieniami: oddaje otrzymane 6 i dopłaca 3 białe.
-        Netto oddała 3 kamienie — stąd «komi dla Białego: −3».</p>
+        «biały − czarny − 6»: <span class="ps">81 − 60 − 6 = 15</span> — jednakowa na obu kartach.
+        Pełne <span class="ps">12</span> zamieniamy na dodatkowy ruch: «handi Czarnego: 1» — Czarek zagra dwa ruchy, zanim Bianka odpowie.
+        Reszta to «kamienie dla Czarnego: 3» — Bianka daje Czarkowi 3 kamienie.</p>
         <p><strong>Po grze.</strong>
         Czarek wygrywa o 15 kamieni: «wynik: +15» u niego, «−15» u Bianki — wygrana o 12 lub więcej daje <span class="ps">±2</span> zamiast <span class="ps">±1</span>.
         To zarazem czwarta z rzędu wygrana Czarka na 9×9, więc «zmiana <span class="ps">PS</span>» zwycięzcy jest podwojona: <span class="ps">+2 × 2</span> dla Czarka, <span class="ps">−2</span> dla Bianki.
@@ -103,23 +103,24 @@
       </section>
 
       <section>
-        <h3>2. Kompensacja: handi i komi</h3>
+        <h3>2. Kompensacja</h3>
         <p>Silniejszy gra Białymi, słabszy zaczyna Czarnymi.
         Przy równych <span class="ps">PS</span> losujecie kolory — to jest nigiri.</p>
-        <p>Policzcie różnicę <span class="ps">PS</span> i skompensujcie ją przed grą — najpierw handi, potem kamieniami.</p>
+        <p>Policzcie: <strong>kompensacja</strong> = <span class="ps">PS</span> Białego − <span class="ps">PS</span> Czarnego − <span class="ps">6</span>.
+        Sześć odejmujemy za przywilej pierwszego ruchu Czarnego (komi).</p>
 
         <h4>2.1. Handi</h4>
-        <p>Za każde pełne <span class="ps">12 PS</span> różnicy Biały daje Czarnemu <strong>handi</strong> — dodatkowy ruch: Czarny zagrywa wtedy o tyle ruchów więcej, zanim Biały odpowie.</p>
+        <p>Za każde pełne <span class="ps">12</span> kompensacji Biały daje Czarnemu <strong>handi</strong> — dodatkowy ruch: Czarny zagrywa wtedy o tyle ruchów więcej, zanim Biały odpowie.</p>
 
-        <h4>2.2. Komi</h4>
-        <p>Czarny daje Białemu 6 czarnych kamieni — <strong>komi</strong> za przywilej pierwszego ruchu.</p>
-        <p>Resztę różnicy (to, co zostało po dodatkowych ruchach) Biały spłaca, oddając otrzymane czarne kamienie — po jednym za każdy <span class="ps">PS</span> — a kiedy się skończą, dopłaca białymi kamieniami.</p>
+        <h4>2.2. Kamienie</h4>
+        <p>Resztę kompensacji Biały daje Czarnemu w kamieniach — po jednym za każdy <span class="ps">PS</span>.</p>
+        <p>Ujemna kompensacja: to Czarny daje kamienie Białemu.</p>
         <p>Otrzymane kamienie trzyma się do końca gry — przy liczeniu każdy to punkt.</p>
       </section>
 
       <section>
         <h3>3. Zmiana PS</h3>
-        <p>Gracie.
+        <p>Gracie i zapisujecie wynik w kamieniach ze znakiem: + wygrana, − przegrana.
         Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>.</p>
         <p>Wygrana o 12 kamieni lub więcej — czyli o równowartość jednego handi — albo przez poddanie: <span class="ps">+2</span> i <span class="ps">−2 PS</span> zamiast <span class="ps">±1</span>.</p>
         <p>Remis: <span class="ps">PS</span> się nie zmieniają.</p>

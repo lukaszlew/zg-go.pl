@@ -59,7 +59,7 @@ NOTKI = (
 )
 
 ZASADY = (
-    "Cały ruch: 10 pkt na 9×9, 13 pkt na 13×13 i 19×19 · Komi: Czarny daje 6 czarnych jeńców · "
+    "Cały ruch: 13 pkt · Komi: Czarny daje 6 czarnych jeńców · "
     "Za każdy cały ruch w różnicy pkt siły: dodatkowy ruch dla Czarnego · Resztę różnicy Biały spłaca "
     "jeńcami · Remis wygrywa Biały · Zmiana: ±1, a przy wygranej o cały ruch lub poddaniu ±2 · "
     "Zasady: zg-go.pl/ranking.html"

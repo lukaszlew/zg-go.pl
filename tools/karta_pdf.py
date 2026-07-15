@@ -36,7 +36,7 @@ HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
 WERSJA = "15.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
-ROWS = 27
+ROWS = 26
 ROW_H = 8 * mm
 HEAD_H = 13 * mm
 NICK_MAX = 40 * mm                      # nick nie zabiera calej reszty szerokosci
@@ -92,18 +92,26 @@ class KartaDane:
 # indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze pkt sily
 BLUE_LEAFS = {2, 4, 5, 9, 10}   # moje pkt, pkt sily przeciwnika, silniejszy o, zmiana, nowe
 
-NOTKI = (
-    "Zapis ze znakiem: silniejszy o — ujemne, gdy to ja jestem silniejszy · komi — dla Białego, "
-    "ujemne, gdy dostaje je Czarny · wynik — w kamieniach, + wygrana, − przegrana"
-)
-
-ZASADY = (
-    "Za każde pełne 13 pkt siły różnicy: handi (dodatkowy ruch) dla Czarnego · Komi: Czarny daje "
-    "Białemu 6 czarnych kamieni · Resztę różnicy Biały spłaca kamieniami · "
-    "Zmiana: ±1 pkt siły, a przy wygranej o 13 kamieni lub więcej albo poddaniu ±2 · "
-    "Remis: bez zmiany pkt siły · Trzecia wygrana z rzędu na danej planszy i kolejne: "
-    "zmiana zwycięzcy ×2 · Zasady: zg-go.pl/ranking.html"
-)
+# sciaga na dole karty: (tytul kolumny, punkty)
+SCIAGA: list[tuple[str, list[str]]] = [
+    ("kompensacja różnicy", [
+        "pełne 13 pkt siły → handi: dodatkowy ruch Czarnego",
+        "komi: Czarny daje Białemu 6 kamieni",
+        "resztę Biały spłaca kamieniami — 1 za każdy pkt siły",
+        "otrzymane kamienie liczą się przy podliczaniu",
+    ]),
+    ("zmiana pkt siły", [
+        "zwycięzca +1, przegrany −1",
+        "wygrana o 13+ kamieni albo poddanie: ±2",
+        "remis: bez zmiany",
+        "3. wygrana z rzędu na planszy i kolejne: zwycięzca ×2",
+    ]),
+    ("zapis ze znakiem", [
+        "SILNIEJSZY O: minus, gdy to ja jestem silniejszy",
+        "KOMI DLA BIAŁEGO: minus, gdy dostaje je Czarny",
+        "WYNIK: w kamieniach, + wygrana, − przegrana",
+    ]),
+]
 
 
 def register_fonts() -> None:
@@ -336,15 +344,38 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
     return bottom - 4 * mm
 
 
-def draw_paragraph(c: Canvas, x0: float, top: float, card_w: float, text: str,
-                   color: HexColor) -> float:
-    c.setFont(FONT, 6.5)
-    c.setFillColor(color)
-    lines = simpleSplit(text, FONT, 6.5, card_w)
-    y = top - 3 * mm
-    for line in lines:
-        c.drawString(x0, y, line)
-        y -= 3.1 * mm
+def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
+    """Trzykolumnowa sciaga z mini-naglowkami i punktami; zwraca y pod nia."""
+    gap = 6 * mm
+    col_w = (card_w - (len(SCIAGA) - 1) * gap) / len(SCIAGA)
+    y0 = top - 4 * mm
+    line_h = 2.7 * mm
+    bottoms: list[float] = []
+    for i, (title, items) in enumerate(SCIAGA):
+        x = x0 + i * (col_w + gap)
+        t = title.upper()
+        c.setFont(FONT_BOLD, 6)
+        c.setFillColor(PKT_SILY if "PKT SIŁY" in t else INK)
+        c.drawString(x, y0, t)
+        c.setStrokeColor(HEADER_BG)
+        c.setLineWidth(0.8)
+        c.line(x, y0 - 1.6 * mm, x + col_w, y0 - 1.6 * mm)
+        y = y0 - 5 * mm
+        for item in items:
+            c.setFillColor(MUTED)
+            c.circle(x + 0.7 * mm, y + 0.7 * mm, 0.5 * mm, stroke=0, fill=1)
+            c.setFont(FONT, 6)
+            c.setFillColor(INK)
+            for line in simpleSplit(item, FONT, 6, col_w - 3 * mm):
+                c.drawString(x + 2.8 * mm, y, line)
+                y -= line_h
+            y -= 0.7 * mm
+        bottoms.append(y)
+    y = min(bottoms) - 1.5 * mm
+    c.setFont(FONT, 6)
+    c.setFillColor(MUTED)
+    c.drawString(x0, y, "Pełne zasady: zg-go.pl/ranking.html")
+    c.drawRightString(x0 + card_w, y, f"wersja karty {WERSJA}")
     return y
 
 
@@ -353,8 +384,7 @@ def draw_card(c: Canvas, x0: float, card_w: float, dane: KartaDane | None) -> No
     y = draw_title(c, x0, top, card_w)
     y = draw_fields(c, x0, y, card_w, dane)
     y = draw_table(c, x0, y, card_w, [] if dane is None else dane.wiersze, ROWS)
-    y = draw_paragraph(c, x0, y, card_w, NOTKI, INK)
-    y = draw_paragraph(c, x0, y, card_w, f"{ZASADY} · Wersja karty: {WERSJA}", MUTED)
+    y = draw_sciaga(c, x0, y, card_w)
     assert y > 5 * mm, f"karta nie miesci sie na stronie: y={y / mm:.1f} mm"
 
 

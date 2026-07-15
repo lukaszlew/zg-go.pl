@@ -181,6 +181,14 @@ table.sila th { background: var(--rule); font-weight: 600; }
 }
 .footer-inner a { color: var(--muted); text-decoration: underline; text-decoration-color: var(--rule); }
 
+/* druk: sama tresc, bez ozdob nawigacyjnych */
+@media print {
+  body { background: #fff; }
+  .banner, .hb-menu, .site-footer, .spis { display: none; }
+  .page, .footer-inner { width: 100%; }
+  a { color: inherit; }
+}
+
 figure { margin: 1.8rem 0; }
 figure img {
   width: 100%; height: auto; display: block;

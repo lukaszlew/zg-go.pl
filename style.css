@@ -176,12 +176,17 @@ figcaption {
   text-align: left;
 }
 
-.credit, .przyklad {
+.credit, .przyklad, .regula {
   background: rgba(156, 42, 42, 0.06);
   border: 1px solid var(--rule);
   border-radius: 6px;
   padding: 0.9rem 1.1rem;
 }
+.regula {
+  background: rgba(217, 200, 150, 0.35);
+  margin: 1rem 0 0;
+}
+.regula p { margin: 0.3rem 0; text-align: left; }
 .credit {
   font-size: 0.9rem;
   color: var(--muted);

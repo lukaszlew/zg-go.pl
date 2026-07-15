@@ -36,12 +36,12 @@ HEAD_H = 9 * mm
 # (naglowek grupy, [(podkolumna, szerokosc)]) — pojedyncza podkolumna "" = kolumna
 # bez podzialu; szerokosc 0.0 = reszta szerokosci karty (nick przeciwnika)
 COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
-    ("data", [("", 9 * mm)]),
-    ("plansza\nzakreśl", [("", 12 * mm)]),
+    ("data", [("", 8.5 * mm)]),
+    ("plansza\nzakreśl", [("", 11.5 * mm)]),
     ("moje\npkt siły", [("", 11 * mm)]),
     ("przeciwnik", [("nick", 0.0), ("pkt siły", 11 * mm), ("silniejszy o", 13.5 * mm)]),
     ("dod. ruchy\nCzarnego", [("", 15 * mm)]),
-    ("komi\ndla\nBiałego", [("", 11.5 * mm)]),
+    ("komi dla\nBiałego", [("", 12.5 * mm)]),
     ("± wynik", [("", 11.5 * mm)]),
     ("zmiana\npkt siły", [("", 11 * mm)]),
     ("nowe\npkt siły", [("", 11.5 * mm)]),
@@ -59,10 +59,10 @@ NOTKI = (
 )
 
 ZASADY = (
-    "Cały ruch: 13 pkt · Komi: Czarny daje 6 czarnych jeńców · "
-    "Za każdy cały ruch w różnicy pkt siły: dodatkowy ruch dla Czarnego · Resztę różnicy Biały spłaca "
-    "jeńcami · Remis wygrywa Biały · Zmiana: ±1, a przy wygranej o cały ruch lub poddaniu ±2 · "
-    "Zasady: zg-go.pl/ranking.html"
+    "Za każde pełne 13 pkt różnicy pkt siły: dodatkowy ruch dla Czarnego · Komi: Czarny daje "
+    "Białemu 6 czarnych jeńców · Resztę różnicy Biały spłaca jeńcami · Remis wygrywa Biały · "
+    "Zmiana: ±1 · Trzecia wygrana z rzędu: zmiana zwycięzcy ×2 · Reguła klubu ZG: wygrana o 13 pkt "
+    "lub więcej albo poddanie ±2, remis bez zmiany pkt siły · Zasady: zg-go.pl/ranking.html"
 )
 
 

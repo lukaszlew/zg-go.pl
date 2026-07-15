@@ -3,6 +3,7 @@
   --fg: #1a1a1a;
   --muted: #6b6b6b;
   --accent: #9c2a2a;
+  --pkt-sily: #1e5fa8;
   --rule: #d9c896;
   --card: #ffffff;
   --serif: 'EB Garamond', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
@@ -117,6 +118,10 @@ ul.links li::before {
   width: 8px; height: 8px; border-radius: 50%;
   background: #111; box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
 }
+
+/* punkty sily: zawsze na niebiesko — slowo i liczby */
+.ps { color: var(--pkt-sily); }
+table.sila td + td { color: var(--pkt-sily); }
 
 table.sila { border-collapse: collapse; margin: 0.6rem 0; }
 table.sila th, table.sila td {

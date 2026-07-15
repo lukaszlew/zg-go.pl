@@ -55,8 +55,9 @@ COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("nowe\npkt siły", [("", 12 * mm)]),
 ]
 
-# przed tymi grupami biegnie gruba kreska: moje dane | przeciwnik i handicap | po grze
-THICK_BEFORE = {"przeciwnik", "zmiana\npkt siły"}
+# przed tymi grupami biegnie gruba kreska — sekcje jak w przykladzie na stronie:
+# przed gra | przeciwnik i wyrownanie | po grze
+THICK_BEFORE = {"przeciwnik", "wynik"}
 
 # nadruk do zakreslania w kazdym wierszu kolumny
 PREPRINT = {"plansza": "9·13·19"}

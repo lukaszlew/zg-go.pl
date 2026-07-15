@@ -55,14 +55,14 @@ PREPRINT = {"plansza\nzakreśl": "9·13·19"}
 
 NOTKI = (
     "Zapis ze znakiem: silniejszy o — ujemne, gdy to ja jestem silniejszy · komi — dla Białego, "
-    "ujemne, gdy dostaje je Czarny · wynik — w punktach na planszy, + wygrana, − przegrana"
+    "ujemne, gdy dostaje je Czarny · wynik — w kamieniach, + wygrana, − przegrana"
 )
 
 ZASADY = (
     "Za każde pełne 13 pkt siły różnicy: dodatkowy ruch dla Czarnego · Komi: Czarny daje "
-    "Białemu 6 czarnych jeńców · Resztę różnicy Biały spłaca jeńcami · Remis wygrywa Biały · "
-    "Zmiana: ±1 pkt siły · Trzecia wygrana z rzędu: zmiana zwycięzcy ×2 · Reguła klubu ZG: wygrana "
-    "o 13 pkt na planszy lub więcej albo poddanie ±2, remis bez zmiany pkt siły · "
+    "Białemu 6 czarnych kamieni · Resztę różnicy Biały spłaca kamieniami · "
+    "Zmiana: ±1 pkt siły, a przy wygranej o 13 kamieni lub więcej albo poddaniu ±2 · "
+    "Remis: bez zmiany pkt siły · Trzecia wygrana z rzędu i kolejne: zmiana zwycięzcy ×2 · "
     "Zasady: zg-go.pl/ranking.html"
 )
 

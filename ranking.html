@@ -42,6 +42,7 @@
 
       <!-- INWARIANT: terminologia przykladu i zasad (zwlaszcza nazwy w «...») musi byc
            zgodna z kolumnami karty gracza (tools/karta_pdf.py: FIELDS, COLUMNS, SCIAGA).
+           Nazwy kolumn przywoluj w <span class="kol">...</span>.
            Sprawdzaj przy kazdej edycji tresci tu i tam. -->
 
       <p>Każdy gracz klubu ma <span class="ps">punkty siły</span> (w skrócie <span class="ps">PS</span>) — miarę tego, jak mocno aktualnie gra.
@@ -68,13 +69,13 @@
         Bianka (<span class="ps">81 PS</span> na 9×9) gra z Czarkiem (<span class="ps">60</span>).
         Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi.</p>
         <p><strong>Kompensacja.</strong>
-        «biały − czarny − 6»: <span class="ps">81 − 60 − 6 = 15</span> — jednakowa na obu kartach.
-        Pełne <span class="ps">12</span> zamieniamy na dodatkowy ruch: «handi Czarnego: 1» — Czarek zagra dwa ruchy, zanim Bianka odpowie.
-        Reszta to «kamienie dla Czarnego: 3» — Bianka daje Czarkowi 3 kamienie.</p>
+        <span class="kol">biały − czarny − 6</span>: <span class="ps">81 − 60 − 6 = 15</span> — jednakowa na obu kartach.
+        Pełne <span class="ps">12</span> zamieniamy na dodatkowy ruch: <span class="kol">handi Czarnego</span>: 1 — Czarek zagra dwa ruchy, zanim Bianka odpowie.
+        Reszta to <span class="kol">kamienie dla Czarnego</span>: 3 — Bianka daje Czarkowi 3 kamienie.</p>
         <p><strong>Po grze.</strong>
-        Czarek wygrywa o 15 kamieni: «wynik: +15» u niego, «−15» u Bianki — wygrana o 12 lub więcej daje <span class="ps">±2</span> zamiast <span class="ps">±1</span>.
-        To zarazem czwarta z rzędu wygrana Czarka na 9×9, więc «zmiana <span class="ps">PS</span>» zwycięzcy jest podwojona: <span class="ps">+2 × 2</span> dla Czarka, <span class="ps">−2</span> dla Bianki.
-        «Nowe <span class="ps">PS</span>»: Czarek <span class="ps">60 → 64</span>, Bianka <span class="ps">81 → 79</span>.</p>
+        Czarek wygrywa o 15 kamieni: <span class="kol">wynik</span>: +15 u niego, −15 u Bianki — wygrana o 12 lub więcej daje <span class="ps">±2</span> zamiast <span class="ps">±1</span>.
+        To zarazem czwarta z rzędu wygrana Czarka na 9×9, więc <span class="kol">zmiana <span class="ps">PS</span></span> zwycięzcy jest podwojona: <span class="ps">+2 × 2</span> dla Czarka, <span class="ps">−2</span> dla Bianki.
+        <span class="kol">Nowe <span class="ps">PS</span></span>: Czarek <span class="ps">60 → 64</span>, Bianka <span class="ps">81 → 79</span>.</p>
       </div>
       </section>
 
@@ -106,11 +107,11 @@
         <h3>2. Kompensacja</h3>
         <p>Silniejszy gra Białymi, słabszy zaczyna Czarnymi.
         Przy równych <span class="ps">PS</span> losujecie kolory — to jest nigiri.</p>
-        <p>Policzcie: <strong>kompensacja</strong> = <span class="ps">PS</span> Białego − <span class="ps">PS</span> Czarnego − <span class="ps">6</span>.
+        <p>Policzcie: <span class="kol">kompensacja</span> = <span class="ps">PS</span> Białego − <span class="ps">PS</span> Czarnego − <span class="ps">6</span>.
         Sześć odejmujemy za przywilej pierwszego ruchu Czarnego (komi).</p>
 
         <h4>2.1. Handi</h4>
-        <p>Za każde pełne <span class="ps">12</span> kompensacji Biały daje Czarnemu <strong>handi</strong> — dodatkowy ruch: Czarny zagrywa wtedy o tyle ruchów więcej, zanim Biały odpowie.</p>
+        <p>Za każde pełne <span class="ps">12</span> kompensacji Biały daje Czarnemu <span class="kol">handi</span> — dodatkowy ruch: Czarny zagrywa wtedy o tyle ruchów więcej, zanim Biały odpowie.</p>
 
         <h4>2.2. Kamienie</h4>
         <p>Resztę kompensacji Biały daje Czarnemu w kamieniach — po jednym za każdy <span class="ps">PS</span>.</p>

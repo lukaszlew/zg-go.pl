@@ -156,7 +156,15 @@ img.wycinek {
 .karta-link { font-size: 1.2rem; margin: 1.6rem 0; }
 .karta-link a { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
-/* punkty sily: zawsze na niebiesko — slowo i liczby */
+/* nazwy kolumn karty przywolane w tekscie — jak naglowki karty */
+.kol {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.82em;
+  letter-spacing: 0.03em;
+}
+
+/* punkty sily: zawsze na zielono — slowo i liczby */
 .ps { color: var(--pkt-sily); }
 table.sila td + td { color: var(--pkt-sily); }
 

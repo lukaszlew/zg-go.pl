@@ -44,8 +44,20 @@
       Dzięki nim każda gra jest wyrównana: słabszy dostaje od silniejszego dodatkowe ruchy i/lub kamienie, więc obie strony mają równe szanse — niezależnie od różnicy poziomów.
       Po każdej grze <span class="ps">punkty siły</span> się zmieniają — z czasem dopasowują się do prawdziwej siły gracza i pokazują jego postępy.</p>
 
+      <nav class="spis">
+        <p class="spis-label">Na tej stronie</p>
+        <ul class="links">
+          <li><a href="#przykladowa-gra">Przykładowa gra</a></li>
+          <li><a href="#karta">Karta gracza</a></li>
+          <li><a href="#zasady">Zasady rankingu</a></li>
+          <li><a href="#opiekun">Notatki dla opiekuna</a></li>
+        </ul>
+      </nav>
+
+      <section id="przykladowa-gra">
+      <h2>Przykładowa gra</h2>
       <div class="przyklad">
-        <p><strong>Przykładowa gra</strong> Czarka i Bianki — tak zapisali ją na swoich <a href="karta.pdf">kartach graczy</a> (<a href="#zasady">dokładne zasady</a> niżej):</p>
+        <p>Tak Czarek i Bianka zapisali swoją grę na <a href="karta.pdf">kartach graczy</a> (<a href="#zasady">dokładne zasady</a> niżej):</p>
         <img class="wycinek" src="karta-wycinek-czarek.svg" alt="Karta gracza Czarka z wpisaną przykładową grą">
         <img class="wycinek" src="karta-wycinek-bianka.svg" alt="Karta gracza Bianki z wpisaną przykładową grą">
         <p><strong>Przed grą.</strong>
@@ -64,16 +76,17 @@
         To zarazem czwarta z rzędu wygrana Czarka na 9×9, więc «zmiana <span class="ps">punktów siły</span>» zwycięzcy jest podwojona: <span class="ps">+2 × 2</span> dla Czarka, <span class="ps">−2</span> dla Bianki.
         «Nowe <span class="ps">punkty siły</span>»: Czarek <span class="ps">60 → 64</span>, Bianka <span class="ps">81 → 79</span>.</p>
       </div>
+      </section>
 
-      <p class="karta-link"><a href="karta.pdf">Karta gracza (PDF)</a> — dziennik gier i <span class="ps">punktów siły</span>; do wydruku na A4.</p>
+      <p class="karta-link" id="karta"><a href="karta.pdf">Karta gracza (PDF)</a> — dziennik gier i <span class="ps">punktów siły</span>; do wydruku na A4.</p>
 
       <section id="zasady">
-        <h2>Zasady</h2>
+        <h2>Zasady rankingu</h2>
         <p>W tej samej kolejności, w jakiej rozlicza się grę przy stole.</p>
       </section>
 
       <section>
-        <h2>1. Punkty siły</h2>
+        <h3>1. Punkty siły</h3>
         <p>Każdy ma <span class="ps">punkty siły</span> — osobne dla każdej planszy: 9×9, 13×13 i 19×19.
         To trzy niezależne rankingi.
         Więcej <span class="ps">punktów siły</span> = silniejszy gracz.</p>
@@ -90,26 +103,22 @@
       </section>
 
       <section>
-        <h2>2. Kolory</h2>
+        <h3>2. Kompensacja: handi i komi</h3>
         <p>Silniejszy gra Białymi, słabszy zaczyna Czarnymi.
         Przy równych <span class="ps">punktach siły</span> losujecie kolory — to jest nigiri.</p>
-      </section>
-
-      <section>
-        <h2>3. Kompensacja: handi i komi</h2>
         <p>Policzcie różnicę <span class="ps">punktów siły</span> i skompensujcie ją przed grą — najpierw handi, potem kamieniami.</p>
 
-        <h3>3.1. Handi</h3>
+        <h4>2.1. Handi</h4>
         <p>Za każde pełne <span class="ps">13 punktów siły</span> różnicy Biały daje Czarnemu <strong>handi</strong> — dodatkowy ruch: Czarny zagrywa wtedy o tyle ruchów więcej, zanim Biały odpowie.</p>
 
-        <h3>3.2. Komi</h3>
+        <h4>2.2. Komi</h4>
         <p>Czarny daje Białemu 6 czarnych kamieni — <strong>komi</strong> za przywilej pierwszego ruchu.</p>
         <p>Resztę różnicy (to, co zostało po dodatkowych ruchach) Biały spłaca, oddając otrzymane czarne kamienie — po jednym za każdy <span class="ps">punkt siły</span> — a kiedy się skończą, dopłaca białymi kamieniami.</p>
         <p>Otrzymane kamienie trzyma się do końca gry — przy liczeniu każdy to punkt.</p>
       </section>
 
       <section>
-        <h2>4. Zmiana punktów siły</h2>
+        <h3>3. Zmiana punktów siły</h3>
         <p>Gracie.
         Zwycięzca <span class="ps">+1 punkt siły</span>, przegrany <span class="ps">−1 punkt siły</span>.</p>
         <p>Wygrana o 13 kamieni lub więcej — czyli o równowartość jednego handi — albo przez poddanie: <span class="ps">+2</span> i <span class="ps">−2 punkty siły</span> zamiast <span class="ps">±1</span>.</p>
@@ -117,7 +126,7 @@
         <p>Trzecia wygrana z rzędu na danej planszy i każda kolejna: zmiana <span class="ps">punktów siły</span> zwycięzcy jest podwojona.</p>
       </section>
 
-      <section class="opiekun">
+      <section class="opiekun" id="opiekun">
         <h2>Notatki dla opiekuna</h2>
         <ul class="links">
           <li>Opiekun klubu może swobodnie korygować <span class="ps">punkty siły</span> każdego gracza — gdy widzi, że gracz wygrywa zbyt często, że jego <span class="ps">punkty siły</span> były źle ustalone, albo że robi postępy szybciej, niż ranking nadąża.</li>

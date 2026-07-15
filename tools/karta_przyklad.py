@@ -12,6 +12,8 @@ Zapisuje w korzeniu repo:
 import subprocess
 from pathlib import Path
 
+from PIL import Image
+
 from karta_pdf import KartaDane, Wiersz, generuj_karte, generuj_wycinek
 
 # Gra z przykladu: 9x9, Bianka 81 vs Czarek 60, roznica 21 = 13 + 8,
@@ -36,6 +38,32 @@ BIANKA = KartaDane(
 )
 
 
+def zloz_og_image(root: Path, wycinek: Path) -> None:
+    """Sklejka obu wycinkow na tle strony jako og:image (1200x630 PNG)."""
+    prefix = root / "og-tmp"
+    subprocess.run(["pdftocairo", "-png", "-r", "150", str(wycinek), str(prefix)], check=True)
+    pages = sorted(root.glob("og-tmp-*.png"))
+    assert len(pages) == 2, pages
+    w, h, margines = 1200, 630, 30
+    plansza = Image.new("RGB", (w, h), "#f4e9cf")
+    karty = []
+    for page in pages:
+        im = Image.open(page)
+        target_w = w - 2 * margines
+        karty.append(im.resize((target_w, round(im.height * target_w / im.width))))
+        page.unlink()
+    total_h = sum(im.height for im in karty)
+    assert total_h + 3 * margines <= h, f"wycinki za wysokie na og:image: {total_h}"
+    gap = (h - total_h) / 3
+    y = gap
+    for im in karty:
+        plansza.paste(im, (margines, round(y)))
+        y += im.height + gap
+    out = root / "og-karty.png"
+    plansza.save(out)
+    print(f"OK: {out} ({out.stat().st_size} B)")
+
+
 def main() -> None:
     root = Path(__file__).resolve().parent.parent
     generuj_karte(root / "karta-przyklad.pdf", [CZAREK, BIANKA])
@@ -49,6 +77,7 @@ def main() -> None:
             check=True,
         )
         print(f"OK: {svg} ({svg.stat().st_size} B)")
+    zloz_og_image(root, wycinek)
 
 
 if __name__ == "__main__":

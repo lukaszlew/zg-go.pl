@@ -23,6 +23,7 @@ MARGIN = 10 * mm                        # margines zewnetrzny strony
 
 INK = HexColor("#1a1a1a")
 MUTED = HexColor("#555555")
+GRID = HexColor("#9a9a9a")              # wewnetrzne linie siatki (jasniejsze od krawedzi)
 TITLE_GRAY = HexColor("#6b6b6b")        # --muted ze style.css (kolor tytulow strony)
 HEADER_BG = HexColor("#d9c896")         # --rule ze style.css
 PKT_SILY = HexColor("#1e5fa8")          # --pkt-sily ze style.css (niebieskie punkty sily)
@@ -34,7 +35,8 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-ROWS = 26
+WERSJA = "15.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
+ROWS = 27
 ROW_H = 8 * mm
 HEAD_H = 13 * mm
 NICK_MAX = 40 * mm                      # nick nie zabiera calej reszty szerokosci
@@ -213,19 +215,33 @@ def draw_header_labels(c: Canvas, x0: float, top: float, widths: list[list[float
 
 def draw_grid(c: Canvas, x0: float, top: float, card_w: float, widths: list[list[float]],
               n_rows: float) -> None:
-    """Siatka tabeli; ulamkowe n_rows -> ostatni wiersz uciety, bez dolnej krawedzi."""
+    """Siatka tabeli; ulamkowe n_rows -> ostatni wiersz uciety, bez dolnej krawedzi.
+
+    Czarne sa tylko krawedzie: obrys, spod naglowka i grube granice sekcji;
+    wewnetrzne linie wierszy i podkolumn sa jasnoszare.
+    """
     bottom = top - HEAD_H - n_rows * ROW_H
-    c.setStrokeColor(INK)
-    c.setLineWidth(0.6)
-    for row in range(int(n_rows) + 2):
+    last = int(n_rows) + 1
+    for row in range(last + 1):
         y = top - min(row, 1) * HEAD_H - max(row - 1, 0) * ROW_H
+        edge = row <= 1 or (row == last and n_rows == int(n_rows))
+        c.setStrokeColor(INK if edge else GRID)
+        c.setLineWidth(0.6 if edge else 0.4)
         c.line(x0, y, x0 + card_w, y)
     x = x0
-    for (label, _), sub_ws in zip(COLUMNS, widths):
+    for i, ((label, _), sub_ws) in enumerate(zip(COLUMNS, widths)):
         if label in THICK_BEFORE:                     # granica sekcji karty
+            c.setStrokeColor(INK)
             c.setLineWidth(1.8)
+        elif i == 0:                                  # lewa krawedz tabeli
+            c.setStrokeColor(INK)
+            c.setLineWidth(0.6)
+        else:
+            c.setStrokeColor(GRID)
+            c.setLineWidth(0.5)
         c.line(x, top, x, bottom)                     # granica grupy: pelna wysokosc
-        c.setLineWidth(0.6)
+        c.setStrokeColor(GRID)
+        c.setLineWidth(0.4)
         sx = x
         for sub_w in sub_ws[:-1]:
             sx += sub_w
@@ -233,7 +249,9 @@ def draw_grid(c: Canvas, x0: float, top: float, card_w: float, widths: list[list
         if len(sub_ws) > 1:                           # kreska miedzy etykieta grupy a podkolumnami
             c.line(x, top - HEAD_H / 2, x + sum(sub_ws), top - HEAD_H / 2)
         x += sum(sub_ws)
-    c.line(x0 + card_w, top, x0 + card_w, bottom)
+    c.setStrokeColor(INK)
+    c.setLineWidth(0.6)
+    c.line(x0 + card_w, top, x0 + card_w, bottom)     # prawa krawedz tabeli
 
 
 def leaf_geometry(x0: float, widths: list[list[float]]) -> list[tuple[float, float]]:
@@ -317,13 +335,13 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
 
 def draw_paragraph(c: Canvas, x0: float, top: float, card_w: float, text: str,
                    color: HexColor) -> float:
-    c.setFont(FONT, 6)
+    c.setFont(FONT, 6.5)
     c.setFillColor(color)
-    lines = simpleSplit(text, FONT, 6, card_w)
+    lines = simpleSplit(text, FONT, 6.5, card_w)
     y = top - 3 * mm
     for line in lines:
         c.drawString(x0, y, line)
-        y -= 2.9 * mm
+        y -= 3.1 * mm
     return y
 
 
@@ -333,8 +351,8 @@ def draw_card(c: Canvas, x0: float, card_w: float, dane: KartaDane | None) -> No
     y = draw_fields(c, x0, y, card_w, dane)
     y = draw_table(c, x0, y, card_w, [] if dane is None else dane.wiersze, ROWS)
     y = draw_paragraph(c, x0, y, card_w, NOTKI, INK)
-    y = draw_paragraph(c, x0, y, card_w, ZASADY, MUTED)
-    assert y > MARGIN, f"karta nie miesci sie na stronie: y={y / mm:.1f} mm"
+    y = draw_paragraph(c, x0, y, card_w, f"{ZASADY} · Wersja karty: {WERSJA}", MUTED)
+    assert y > 5 * mm, f"karta nie miesci sie na stronie: y={y / mm:.1f} mm"
 
 
 CUT_MARGIN = 2 * mm

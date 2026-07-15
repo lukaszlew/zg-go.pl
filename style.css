@@ -168,13 +168,20 @@ figcaption {
   text-align: left;
 }
 
-.credit {
+.credit, .przyklad {
   background: rgba(156, 42, 42, 0.06);
   border: 1px solid var(--rule);
   border-radius: 6px;
   padding: 0.9rem 1.1rem;
+}
+.credit {
   font-size: 0.9rem;
   color: var(--muted);
   margin: 2.5rem 0 0;
 }
+.przyklad {
+  font-size: 0.95rem;
+  margin: 1.2rem 0;
+}
+.przyklad p { margin: 0.3rem 0; text-align: left; }
 .credit a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }

@@ -17,14 +17,15 @@ from PIL import Image
 from karta_pdf import KartaDane, Wiersz, generuj_karte, generuj_wycinek
 
 # Gra z przykladu: 9x9, Bianka 81 vs Czarek 60,
-# kompensacja = 81 - 60 - 6 = 15 = 12 (1 handi) + 3 kamienie dla Czarnego,
+# roznica PS = 81 - 60 = 21 -> zakres 18-29: Czarny zaczyna 2 ruchami,
+# kamienie dla Czarnego = 21 - 18 = 3,
 # Czarek wygrywa o 15 kamieni (czwarta wygrana z rzedu -> +2x2), Bianka -2.
 CZAREK = KartaDane(
     nick="Czarek", pkt_9="60", pkt_13="", pkt_19="",
     wiersze=[Wiersz(
         data="15.07", plansza="9", moje_pkt="60",
-        przeciwnik_nick="Bianka", przeciwnik_pkt="81", kompensacja="15",
-        handi="1", kamienie="3", wynik="+15", zmiana="+2×2", nowe_pkt="64",
+        przeciwnik_nick="Bianka", przeciwnik_pkt="81", roznica_ps="21",
+        ruchy="2", kamienie="3", wynik="+15", zmiana="+2×2", nowe_pkt="64",
     )],
 )
 
@@ -32,8 +33,8 @@ BIANKA = KartaDane(
     nick="Bianka", pkt_9="81", pkt_13="", pkt_19="",
     wiersze=[Wiersz(
         data="15.07", plansza="9", moje_pkt="81",
-        przeciwnik_nick="Czarek", przeciwnik_pkt="60", kompensacja="15",
-        handi="1", kamienie="3", wynik="−15", zmiana="−2", nowe_pkt="79",
+        przeciwnik_nick="Czarek", przeciwnik_pkt="60", roznica_ps="21",
+        ruchy="2", kamienie="3", wynik="−15", zmiana="−2", nowe_pkt="79",
     )],
 )
 

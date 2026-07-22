@@ -35,8 +35,8 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "15.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
-ROWS = 26
+WERSJA = "22.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
+ROWS = 23                               # mini-tabela kompensacji w sciadze kosztuje 3 wiersze
 ROW_H = 8 * mm
 HEAD_H = 13 * mm
 NICK_MAX = 40 * mm                      # nick nie zabiera calej reszty szerokosci
@@ -53,7 +53,7 @@ COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("plansza", [("", 12.5 * mm)]),
     ("moje PS", [("", 12 * mm)]),
     ("przeciwnik", [("nick", 0.0), ("PS", 8 * mm)]),
-    ("kompensacja", [("biały − czarny − 6", 23 * mm), ("handi\nCzarnego", 13 * mm),
+    ("kompensacja", [("różnica PS", 15 * mm), ("ruchy\nCzarnego", 13 * mm),
                      ("kamienie\ndla Czarnego", 15.5 * mm)]),
     ("wynik", [("", 12 * mm)]),
     ("zmiana PS", [("", 13 * mm)]),
@@ -75,8 +75,8 @@ class Wiersz:
     moje_pkt: str
     przeciwnik_nick: str
     przeciwnik_pkt: str
-    kompensacja: str
-    handi: str
+    roznica_ps: str
+    ruchy: str              # ruchy Czarnego na start (1 = bez wyrownania)
     kamienie: str
     wynik: str
     zmiana: str
@@ -94,15 +94,15 @@ class KartaDane:
 
 
 # indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze PS
-BLUE_LEAFS = {2, 4, 5, 9, 10}   # moje PS, PS przeciwnika, kompensacja, zmiana, nowe
+BLUE_LEAFS = {2, 4, 5, 9, 10}   # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
 
-# sciaga na dole karty: (tytul kolumny, punkty)
+# sciaga na dole karty: (tytul kolumny, punkty); w kolumnie "kompensacja"
+# nad punktami rysowana jest mini-tabela KOMP_TABELA
 SCIAGA: list[tuple[str, list[str]]] = [
     ("kompensacja", [
-        "kompensacja = PS Białego − PS Czarnego − 6",
-        "za każde pełne 12: handi — dodatkowy ruch Czarnego",
-        "resztę Biały daje Czarnemu w kamieniach",
-        "ujemna: to Czarny daje kamienie Białemu",
+        "różnica 0–5: kolory losujecie; silniejszy Czarnymi: kamienie = −różnica − 6",
+        "kamienie ujemne: Czarny daje je Białemu",
+        "różnica powyżej 65: każde pełne 12 to kolejny ruch",
         "otrzymane kamienie liczą się przy podliczaniu",
     ]),
     ("zmiana PS", [
@@ -112,9 +112,20 @@ SCIAGA: list[tuple[str, list[str]]] = [
         "3. wygrana z rzędu na planszy i kolejne: zwycięzca ×2",
     ]),
     ("zapis ze znakiem", [
-        "KOMPENSACJA: jednakowa na obu kartach",
+        "RÓŻNICA PS: silniejszy − słabszy; jednakowa na obu kartach",
         "WYNIK: w kamieniach, + wygrana, − przegrana",
     ]),
+]
+
+# mini-tabela kompensacji: zakres roznicy PS -> ruchy Czarnego na start
+# i formula na kamienie dla Czarnego; zgodna z tabelami na ranking.html
+KOMP_TABELA_HEAD = ("różnica PS", "ruchy Czarnego", "kamienie dla Czarnego")
+KOMP_TABELA: list[tuple[str, str, str]] = [
+    ("0–17", "1", "różnica − 6"),
+    ("18–29", "2", "różnica − 18"),
+    ("30–41", "3", "różnica − 30"),
+    ("42–53", "4", "różnica − 42"),
+    ("54–65", "5", "różnica − 54"),
 ]
 
 
@@ -306,8 +317,8 @@ def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
     assert len(leaves) == 11, len(leaves)
     for row, w in enumerate(wiersze):
         y = row_baseline(top, row)
-        values = [w.data, "", w.moje_pkt, w.przeciwnik_nick, w.przeciwnik_pkt, w.kompensacja,
-                  w.handi, w.kamienie, w.wynik, w.zmiana, w.nowe_pkt]
+        values = [w.data, "", w.moje_pkt, w.przeciwnik_nick, w.przeciwnik_pkt, w.roznica_ps,
+                  w.ruchy, w.kamienie, w.wynik, w.zmiana, w.nowe_pkt]
         for li, ((lx, lw), value) in enumerate(zip(leaves, values)):
             if not value:
                 continue
@@ -348,6 +359,39 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
     return bottom - 4 * mm
 
 
+def draw_komp_tabela(c: Canvas, x: float, top: float, col_w: float) -> float:
+    """Mini-tabela kompensacji w kolumnie sciagi; zwraca y dolnej krawedzi."""
+    ws = [0.22 * col_w, 0.32 * col_w, 0.46 * col_w]
+    assert abs(sum(ws) - col_w) < 0.01 * mm, f"szerokosci podkolumn != {col_w / mm:.1f} mm"
+    head_h, row_h = 3.8 * mm, 3.4 * mm
+    bottom = top - head_h - len(KOMP_TABELA) * row_h
+    c.setFillColor(HEADER_BG)
+    c.rect(x, top - head_h, col_w, head_h, stroke=0, fill=1)
+    hx = x
+    for head, w in zip(KOMP_TABELA_HEAD, ws):
+        draw_header_text(c, hx + w / 2, top - head_h + 1.2 * mm, head, 4.8, w)
+        hx += w
+    for r, row in enumerate(KOMP_TABELA):
+        y = top - head_h - (r + 1) * row_h + 1.0 * mm
+        vx = x
+        for i, (value, w) in enumerate(zip(row, ws)):
+            c.setFillColor(PKT_SILY if i == 0 else INK)
+            c.setFont(FONT, 6)
+            c.drawCentredString(vx + w / 2, y, value)
+            vx += w
+    c.setStrokeColor(GRID)
+    c.setLineWidth(0.4)
+    for r in range(len(KOMP_TABELA)):
+        ly = top - head_h - r * row_h
+        c.line(x, ly, x + col_w, ly)
+    vx = x
+    for w in ws[:-1]:
+        vx += w
+        c.line(vx, top, vx, bottom)
+    c.rect(x, bottom, col_w, top - bottom, stroke=1, fill=0)
+    return bottom
+
+
 def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
     """Trzykolumnowa sciaga z mini-naglowkami i punktami; zwraca y pod nia."""
     gap = 6 * mm
@@ -365,6 +409,8 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
         c.setLineWidth(0.8)
         c.line(x, y0 - 1.6 * mm, x + col_w, y0 - 1.6 * mm)
         y = y0 - 5 * mm
+        if title == "kompensacja":
+            y = draw_komp_tabela(c, x, y0 - 2.4 * mm, col_w) - 3.2 * mm
         for item in items:
             c.setFillColor(MUTED)
             c.circle(x + 0.7 * mm, y + 0.7 * mm, 0.5 * mm, stroke=0, fill=1)

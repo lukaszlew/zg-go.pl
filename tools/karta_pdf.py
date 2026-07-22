@@ -65,6 +65,7 @@ THICK_BEFORE = {"przeciwnik", "wynik"}
 
 # nadruk planszy w naglowku karty — zakresla sie jedna z trzech
 PLANSZA_PREPRINT = "9×9 · 13×13 · 19×19"
+PLANSZA_FS = 9                          # nadruk wyraznie wiekszy od etykiet rubryk
 
 @dataclass(frozen=True)
 class Wiersz:
@@ -86,9 +87,6 @@ class KartaDane:
     """Wypelnienie naglowka karty + wiersze gier; cala karta dotyczy jednej planszy."""
     nick: str
     plansza: str            # "9×9" | "13×13" | "19×19" — zakreslana w naglowku
-    pkt_9: str
-    pkt_13: str
-    pkt_19: str
     wiersze: list[Wiersz]
 
 
@@ -99,14 +97,14 @@ BLUE_LEAFS = {1, 3, 4, 8, 9}    # moje PS, PS przeciwnika, roznica PS, zmiana, n
 # nad punktami rysowana jest mini-tabela KOMP_TABELA
 SCIAGA: list[tuple[str, list[str]]] = [
     ("kompensacja", [
-        "różnica 0–5: kolory losujecie; silniejszy Czarnymi: kamienie = −różnica − 6",
+        "różnica 0–6: kolory losujecie; silniejszy Czarnymi: kamienie = −różnica − 6",
         "kamienie ujemne: Czarny daje je Białemu",
-        "różnica powyżej 65: każde pełne 12 to kolejny ruch",
+        "różnica powyżej 70: każde pełne 13 to kolejny ruch",
         "otrzymane kamienie liczą się przy podliczaniu",
     ]),
     ("zmiana PS", [
         "zwycięzca +1, przegrany −1",
-        "wygrana o 12+ kamieni albo poddanie: ±2",
+        "wygrana o 13+ kamieni albo poddanie: ±2",
         "remis: bez zmiany",
         "3. wygrana z rzędu na planszy i kolejne: zwycięzca ×2",
     ]),
@@ -120,11 +118,11 @@ SCIAGA: list[tuple[str, list[str]]] = [
 # i formula na kamienie dla Czarnego; zgodna z tabelami na ranking.html
 KOMP_TABELA_HEAD = ("różnica PS", "ruchy Czarnego", "kamienie dla Czarnego")
 KOMP_TABELA: list[tuple[str, str, str]] = [
-    ("0–17", "1", "różnica − 6"),
-    ("18–29", "2", "różnica − 18"),
-    ("30–41", "3", "różnica − 30"),
-    ("42–53", "4", "różnica − 42"),
-    ("54–65", "5", "różnica − 54"),
+    ("0–18", "1", "różnica − 6"),
+    ("19–31", "2", "różnica − 19"),
+    ("32–44", "3", "różnica − 32"),
+    ("45–57", "4", "różnica − 45"),
+    ("58–70", "5", "różnica − 58"),
 ]
 
 
@@ -158,22 +156,18 @@ FIELD_H = 11 * mm
 # (etykieta rubryki, szerokosc) — nick dostaje reszte szerokosci karty
 FIELDS: list[tuple[str, float]] = [
     ("NICK", 0.0),
-    ("PLANSZA", 32 * mm),
-    ("PS 9×9", 16 * mm),
-    ("PS 13×13", 17 * mm),
-    ("PS 19×19", 17 * mm),
+    ("PLANSZA (ZAKREŚL JEDNĄ)", 50 * mm),
 ]
 
 
 def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
                 dane: KartaDane | None) -> float:
-    """Rubryki Nick / plansza / pkt sily jako obramowany pasek; zwraca y pod nim."""
+    """Rubryki Nick / plansza jako obramowany pasek; zwraca y pod nim."""
     fixed = sum(w for _, w in FIELDS)
     nick_w = card_w - fixed
     assert nick_w > 30 * mm, f"za malo miejsca na rubryke nicku: {nick_w / mm:.1f} mm"
     widths = [w if w > 0 else nick_w for _, w in FIELDS]
-    values = ([""] * len(FIELDS) if dane is None
-              else [dane.nick, "", dane.pkt_9, dane.pkt_13, dane.pkt_19])
+    values = ["", ""] if dane is None else [dane.nick, ""]
 
     bottom = top - FIELD_H
     c.setStrokeColor(INK)
@@ -182,17 +176,19 @@ def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
     x = x0
     for (label, _), w, value in zip(FIELDS, widths, values):
         c.line(x, top, x, bottom)
-        c.setFillColor(PKT_SILY if "PS" in label.split() else MUTED)
+        c.setFillColor(MUTED)
         c.setFont(FONT, 5.5)
         c.drawString(x + 1.5 * mm, top - 3 * mm, label)
-        if label == "PLANSZA":
-            c.setFillColor(MUTED)
-            c.setFont(FONT, 6.5)
-            c.drawCentredString(x + w / 2, bottom + 3.5 * mm, PLANSZA_PREPRINT)
+        if label.startswith("PLANSZA"):
+            assert pdfmetrics.stringWidth(PLANSZA_PREPRINT, FONT_BOLD, PLANSZA_FS) <= w - 6 * mm, \
+                "nadruk planszy za szeroki na rubryke"
+            c.setFillColor(INK)
+            c.setFont(FONT_BOLD, PLANSZA_FS)
+            c.drawCentredString(x + w / 2, bottom + 3 * mm, PLANSZA_PREPRINT)
             if dane is not None:
-                draw_plansza_kolko(c, x, w, bottom + 3.5 * mm, dane.plansza)
+                draw_plansza_kolko(c, x, w, bottom + 3 * mm, dane.plansza)
         else:
-            c.setFillColor(PKT_SILY if "PS" in label.split() else INK)
+            c.setFillColor(INK)
             c.setFont(FONT_HAND, HAND_FS_FIELDS)
             c.drawString(x + 2 * mm, bottom + 2.5 * mm, value)
         x += w
@@ -306,11 +302,12 @@ def row_baseline(top: float, row: int) -> float:
 def draw_plansza_kolko(c: Canvas, x: float, w: float, y: float, plansza: str) -> None:
     """Zakresla wybrana plansze w nadruku PLANSZA_PREPRINT (naglowek karty)."""
     assert plansza in PLANSZA_PREPRINT.split(" · "), f"nieznana plansza: {plansza}"
-    start = x + w / 2 - pdfmetrics.stringWidth(PLANSZA_PREPRINT, FONT, 6.5) / 2
-    x1 = start + pdfmetrics.stringWidth(PLANSZA_PREPRINT[: PLANSZA_PREPRINT.index(plansza)], FONT, 6.5)
-    num_w = pdfmetrics.stringWidth(plansza, FONT, 6.5)
-    cx, cy = x1 + num_w / 2, y + 1.1 * mm
-    rx, ry = num_w / 2 + 1.4 * mm, 2.7 * mm
+    start = x + w / 2 - pdfmetrics.stringWidth(PLANSZA_PREPRINT, FONT_BOLD, PLANSZA_FS) / 2
+    prefix = PLANSZA_PREPRINT[: PLANSZA_PREPRINT.index(plansza)]
+    x1 = start + pdfmetrics.stringWidth(prefix, FONT_BOLD, PLANSZA_FS)
+    num_w = pdfmetrics.stringWidth(plansza, FONT_BOLD, PLANSZA_FS)
+    cx, cy = x1 + num_w / 2, y + 1.4 * mm
+    rx, ry = num_w / 2 + 1.6 * mm, 3.1 * mm
     c.setStrokeColor(INK)
     c.setLineWidth(1.5)
     c.ellipse(cx - rx, cy - ry, cx + rx, cy + ry, stroke=1, fill=0)

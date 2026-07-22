@@ -16,25 +16,25 @@ from PIL import Image
 
 from karta_pdf import KartaDane, Wiersz, generuj_karte, generuj_wycinek
 
-# Gra z przykladu: 9x9, Bianka 81 vs Czarek 60,
-# roznica PS = 81 - 60 = 21 -> zakres 18-29: Czarny zaczyna 2 ruchami,
-# kamienie dla Czarnego = 21 - 18 = 3,
+# Gra z przykladu: 9x9, Bianka 84 vs Czarek 60,
+# roznica PS = 84 - 60 = 24 -> zakres 19-31: Czarny zaczyna 2 ruchami,
+# kamienie dla Czarnego = 24 - 19 = 5,
 # Czarek wygrywa o 15 kamieni (czwarta wygrana z rzedu -> +2x2), Bianka -2.
 CZAREK = KartaDane(
-    nick="Czarek", plansza="9×9", pkt_9="60", pkt_13="", pkt_19="",
+    nick="Czarek", plansza="9×9",
     wiersze=[Wiersz(
         data="15.07", moje_pkt="60",
-        przeciwnik_nick="Bianka", przeciwnik_pkt="81", roznica_ps="21",
-        ruchy="2", kamienie="3", wynik="+15", zmiana="+2×2", nowe_pkt="64",
+        przeciwnik_nick="Bianka", przeciwnik_pkt="84", roznica_ps="24",
+        ruchy="2", kamienie="5", wynik="+15", zmiana="+2×2", nowe_pkt="64",
     )],
 )
 
 BIANKA = KartaDane(
-    nick="Bianka", plansza="9×9", pkt_9="81", pkt_13="", pkt_19="",
+    nick="Bianka", plansza="9×9",
     wiersze=[Wiersz(
-        data="15.07", moje_pkt="81",
-        przeciwnik_nick="Czarek", przeciwnik_pkt="60", roznica_ps="21",
-        ruchy="2", kamienie="3", wynik="−15", zmiana="−2", nowe_pkt="79",
+        data="15.07", moje_pkt="84",
+        przeciwnik_nick="Czarek", przeciwnik_pkt="60", roznica_ps="24",
+        ruchy="2", kamienie="5", wynik="−15", zmiana="−2", nowe_pkt="82",
     )],
 )
 

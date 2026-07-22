@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/svg+xml" href="img/logo.svg">
   <title>Ranking Semedori — Klub Go w Zielonej Górze</title>
-  <meta name="description" content="Zasady rozgrywek klubowych na planszach 9×9, 13×13 i 19×19: punkty siły, kompensacja, handi i kamienie.">
+  <meta name="description" content="Zasady rozgrywek klubowych na planszach 9×9, 13×13 i 19×19: punkty siły, kompensacja, dodatkowe ruchy i kamienie.">
   <link rel="canonical" href="https://zg-go.pl/ranking.html">
   <meta property="og:title" content="Ranking Semedori — Klub Go w Zielonej Górze">
-  <meta property="og:description" content="Zasady rozgrywek klubowych na planszach 9×9, 13×13 i 19×19: punkty siły, kompensacja, handi i kamienie.">
+  <meta property="og:description" content="Zasady rozgrywek klubowych na planszach 9×9, 13×13 i 19×19: punkty siły, kompensacja, dodatkowe ruchy i kamienie.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://zg-go.pl/ranking.html">
   <meta property="og:image" content="https://zg-go.pl/og-karty.png">
@@ -49,66 +49,62 @@
       Dzięki nim każda gra jest wyrównana: słabszy dostaje od silniejszego dodatkowe ruchy i/lub kamienie, więc obie strony mają równe szanse — niezależnie od różnicy poziomów.
       Po każdej grze <span class="ps">PS</span> się zmieniają — z czasem dopasowują się do prawdziwej siły gracza i pokazują jego postępy.</p>
 
+      <p class="karta-link" id="karta"><a href="karta.pdf">Karta gracza (PDF)</a> — dziennik gier i <span class="ps">punktów siły</span>; do wydruku na A4.</p>
+
       <nav class="spis">
         <p class="spis-label">Na tej stronie</p>
         <ul class="links">
+          <li><a href="#punkty-sily">Punkty siły</a></li>
           <li><a href="#przykladowa-gra">Przykładowa gra</a></li>
-          <li><a href="#karta">Karta gracza</a></li>
-          <li><a href="#zasady">Zasady rankingu</a></li>
+          <li><a href="#kompensacja">Kompensacja</a></li>
+          <li><a href="#zmiana-ps">Zmiana PS</a></li>
           <li><a href="#opiekun">Notatki dla opiekuna</a></li>
         </ul>
       </nav>
 
-      <section id="przykladowa-gra">
-      <h2>Przykładowa gra</h2>
-      <div class="przyklad">
-        <p>Tak Czarek i Bianka zapisali swoją grę na <a href="karta.pdf">kartach graczy</a> (<a href="#zasady">dokładne zasady</a> niżej):</p>
-        <img class="wycinek" src="karta-wycinek-czarek.svg" alt="Karta gracza Czarka z wpisaną przykładową grą">
-        <img class="wycinek" src="karta-wycinek-bianka.svg" alt="Karta gracza Bianki z wpisaną przykładową grą">
-        <p><strong>Przed grą.</strong>
-        Bianka (<span class="ps">81 PS</span> na 9×9) gra z Czarkiem (<span class="ps">60</span>).
-        Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi.</p>
-        <p><strong>Kompensacja.</strong>
-        <span class="kol"><span class="ps">różnica PS</span></span>: <span class="ps">81 − 60 = 21</span> — jednakowa na obu kartach.
-        Z tabeli: <span class="kol">ruchy Czarnego</span>: 2 — Czarek zagra dwa ruchy, zanim Bianka odpowie —
-        oraz <span class="kol">kamienie dla Czarnego</span>: 3, które Bianka daje Czarkowi.</p>
-        <p><strong>Po grze.</strong>
-        Czarek wygrywa o 15 kamieni: <span class="kol">wynik</span>: +15 u niego, −15 u Bianki — wygrana o 12 lub więcej daje <span class="ps">±2</span> zamiast <span class="ps">±1</span>.
-        To zarazem czwarta z rzędu wygrana Czarka na 9×9, więc <span class="kol">zmiana <span class="ps">PS</span></span> zwycięzcy jest podwojona: <span class="ps">+2 × 2</span> dla Czarka, <span class="ps">−2</span> dla Bianki.
-        <span class="kol">Nowe <span class="ps">PS</span></span>: Czarek <span class="ps">60 → 64</span>, Bianka <span class="ps">81 → 79</span>.</p>
-      </div>
-      </section>
-
-      <p class="karta-link" id="karta"><a href="karta.pdf">Karta gracza (PDF)</a> — dziennik gier i <span class="ps">punktów siły</span>; do wydruku na A4.</p>
-
-      <section id="zasady">
-        <h2>Zasady rankingu</h2>
-        <p>W tej samej kolejności, w jakiej rozlicza się grę przy stole.</p>
-      </section>
-
-      <section>
-        <h3>1. Punkty siły</h3>
+      <section id="punkty-sily">
+        <h2>Punkty siły</h2>
         <p>Każdy ma <span class="ps">punkty siły</span> (<span class="ps">PS</span>) — osobne dla każdej planszy: 9×9, 13×13 i 19×19.
         To trzy niezależne rankingi.
         Więcej <span class="ps">PS</span> = silniejszy gracz.</p>
         <table class="sila">
           <tr><th>Poziom</th><th>9×9</th><th>13×13</th><th>19×19</th></tr>
-          <tr><td>początkujący</td><td>0–40</td><td>0–100</td><td>0–240</td></tr>
-          <tr><td>30 kyu</td><td>40</td><td>100</td><td>240</td></tr>
-          <tr><td>20 kyu</td><td>60</td><td>150</td><td>360</td></tr>
-          <tr><td>10 kyu</td><td>80</td><td>200</td><td>480</td></tr>
-          <tr><td>1 dan</td><td>100</td><td>250</td><td>600</td></tr>
+          <tr><td>początkujący</td><td>0–40</td><td>0–100</td><td>0–260</td></tr>
+          <tr><td>30 kyu</td><td>40</td><td>100</td><td>260</td></tr>
+          <tr><td>20 kyu</td><td>60</td><td>150</td><td>390</td></tr>
+          <tr><td>10 kyu</td><td>80</td><td>200</td><td>520</td></tr>
+          <tr><td>1 dan</td><td>100</td><td>250</td><td>650</td></tr>
         </table>
-        <p>Każdy stopień to mniej więcej <span class="ps">2 PS</span> na 9×9, <span class="ps">5</span> na 13×13 i <span class="ps">12</span> na 19×19.</p>
+        <p>Każdy stopień to mniej więcej <span class="ps">2 PS</span> na 9×9, <span class="ps">5</span> na 13×13 i <span class="ps">13</span> na 19×19.</p>
         <p>Tabela służy do ustalenia początkowych <span class="ps">PS</span> — jeśli znamy przybliżony poziom gracza w kyu / dan.</p>
         <p>Potem liczy się już tylko to, co pokaże na planszy.</p>
       </section>
 
-      <section>
-        <h3>2. Kompensacja</h3>
+      <section id="przykladowa-gra">
+      <h2>Przykładowa gra</h2>
+      <div class="przyklad">
+        <p>Tak Czarek i Bianka zapisali swoją grę na <a href="karta.pdf">kartach graczy</a> (<a href="#kompensacja">dokładne zasady</a> niżej):</p>
+        <img class="wycinek" src="karta-wycinek-czarek.svg" alt="Karta gracza Czarka z wpisaną przykładową grą">
+        <img class="wycinek" src="karta-wycinek-bianka.svg" alt="Karta gracza Bianki z wpisaną przykładową grą">
+        <p><strong>Przed grą.</strong>
+        Bianka (<span class="ps">84 PS</span> na 9×9) gra z Czarkiem (<span class="ps">60</span>).
+        Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi.</p>
+        <p><strong>Kompensacja.</strong>
+        <span class="kol"><span class="ps">różnica PS</span></span>: <span class="ps">84 − 60 = 24</span> — jednakowa na obu kartach.
+        Z tabeli: <span class="kol">ruchy Czarnego</span>: 2 — Czarek zagra dwa ruchy, zanim Bianka odpowie —
+        oraz <span class="kol">kamienie dla Czarnego</span>: 5, które Bianka daje Czarkowi.</p>
+        <p><strong>Po grze.</strong>
+        Czarek wygrywa o 15 kamieni: <span class="kol">wynik</span>: +15 u niego, −15 u Bianki — wygrana o 13 lub więcej daje <span class="ps">±2</span> zamiast <span class="ps">±1</span>.
+        To zarazem czwarta z rzędu wygrana Czarka na 9×9, więc <span class="kol">zmiana <span class="ps">PS</span></span> zwycięzcy jest podwojona: <span class="ps">+2 × 2</span> dla Czarka, <span class="ps">−2</span> dla Bianki.
+        <span class="kol">Nowe <span class="ps">PS</span></span>: Czarek <span class="ps">60 → 64</span>, Bianka <span class="ps">84 → 82</span>.</p>
+      </div>
+      </section>
+
+      <section id="kompensacja">
+        <h2>Kompensacja</h2>
         <p>Znajdźcie <span class="ps">różnicę PS</span> w tabeli:</p>
 
-        <h4>2.1. Mała <span class="ps">różnica PS</span> (0–5)</h4>
+        <h4>Mała <span class="ps">różnica PS</span> (0–6)</h4>
         <p>Kolory losujecie — losowanie wybiera więc też kolumnę tabeli:</p>
         <table class="sila komp">
           <tr><th></th><th>silniejszy gra Białymi</th><th>silniejszy gra Czarnymi</th></tr>
@@ -119,41 +115,43 @@
           <tr><td>3</td><td class="komp-kamienie">−3</td><td class="komp-kamienie">−9</td></tr>
           <tr><td>4</td><td class="komp-kamienie">−2</td><td class="komp-kamienie">−10</td></tr>
           <tr><td>5</td><td class="komp-kamienie">−1</td><td class="komp-kamienie">−11</td></tr>
-          <tr class="komp-handi"><th colspan="3">Czarny zaczyna:</th></tr>
-          <tr class="komp-handi"><th colspan="3">1 ruchem</th></tr>
+          <tr><td>6</td><td class="komp-kamienie">0</td><td class="komp-kamienie">−12</td></tr>
+          <tr class="komp-ruchy"><th colspan="3">Czarny zaczyna:</th></tr>
+          <tr class="komp-ruchy"><th colspan="3">1 ruchem</th></tr>
         </table>
         <p>Kamienie ujemne: to Czarny daje je Białemu.</p>
-        <h4>2.2. Duża <span class="ps">różnica PS</span> (6+)</h4>
+        <h4>Duża <span class="ps">różnica PS</span> (7+)</h4>
         <p>Silniejszy gra Białymi, słabszy zaczyna Czarnymi.</p>
         <table class="sila komp">
           <tr><th colspan="5"><span class="ps">różnica PS</span></th><th>kamienie<br>dla Czarnego</th></tr>
-          <tr><td>6</td><td>18</td><td>30</td><td>42</td><td>54</td><td class="komp-kamienie">0</td></tr>
-          <tr><td>7</td><td>19</td><td>31</td><td>43</td><td>55</td><td class="komp-kamienie">1</td></tr>
-          <tr><td>8</td><td>20</td><td>32</td><td>44</td><td>56</td><td class="komp-kamienie">2</td></tr>
-          <tr><td>9</td><td>21</td><td>33</td><td>45</td><td>57</td><td class="komp-kamienie">3</td></tr>
-          <tr><td>10</td><td>22</td><td>34</td><td>46</td><td>58</td><td class="komp-kamienie">4</td></tr>
-          <tr><td>11</td><td>23</td><td>35</td><td>47</td><td>59</td><td class="komp-kamienie">5</td></tr>
-          <tr><td>12</td><td>24</td><td>36</td><td>48</td><td>60</td><td class="komp-kamienie">6</td></tr>
-          <tr><td>13</td><td>25</td><td>37</td><td>49</td><td>61</td><td class="komp-kamienie">7</td></tr>
-          <tr><td>14</td><td>26</td><td>38</td><td>50</td><td>62</td><td class="komp-kamienie">8</td></tr>
-          <tr><td>15</td><td>27</td><td>39</td><td>51</td><td>63</td><td class="komp-kamienie">9</td></tr>
-          <tr><td>16</td><td>28</td><td>40</td><td>52</td><td>64</td><td class="komp-kamienie">10</td></tr>
-          <tr><td>17</td><td>29</td><td>41</td><td>53</td><td>65</td><td class="komp-kamienie">11</td></tr>
-          <tr class="komp-handi"><th colspan="5">Czarny zaczyna:</th><th></th></tr>
-          <tr class="komp-handi"><th>1 ruchem</th><th>2 ruchami</th><th>3 ruchami</th><th>4 ruchami</th><th>5 ruchami</th><th></th></tr>
+          <tr><td>—</td><td>19</td><td>32</td><td>45</td><td>58</td><td class="komp-kamienie">0</td></tr>
+          <tr><td>7</td><td>20</td><td>33</td><td>46</td><td>59</td><td class="komp-kamienie">1</td></tr>
+          <tr><td>8</td><td>21</td><td>34</td><td>47</td><td>60</td><td class="komp-kamienie">2</td></tr>
+          <tr><td>9</td><td>22</td><td>35</td><td>48</td><td>61</td><td class="komp-kamienie">3</td></tr>
+          <tr><td>10</td><td>23</td><td>36</td><td>49</td><td>62</td><td class="komp-kamienie">4</td></tr>
+          <tr><td>11</td><td>24</td><td>37</td><td>50</td><td>63</td><td class="komp-kamienie">5</td></tr>
+          <tr><td>12</td><td>25</td><td>38</td><td>51</td><td>64</td><td class="komp-kamienie">6</td></tr>
+          <tr><td>13</td><td>26</td><td>39</td><td>52</td><td>65</td><td class="komp-kamienie">7</td></tr>
+          <tr><td>14</td><td>27</td><td>40</td><td>53</td><td>66</td><td class="komp-kamienie">8</td></tr>
+          <tr><td>15</td><td>28</td><td>41</td><td>54</td><td>67</td><td class="komp-kamienie">9</td></tr>
+          <tr><td>16</td><td>29</td><td>42</td><td>55</td><td>68</td><td class="komp-kamienie">10</td></tr>
+          <tr><td>17</td><td>30</td><td>43</td><td>56</td><td>69</td><td class="komp-kamienie">11</td></tr>
+          <tr><td>18</td><td>31</td><td>44</td><td>57</td><td>70</td><td class="komp-kamienie">12</td></tr>
+          <tr class="komp-ruchy"><th colspan="5">Czarny zaczyna:</th><th></th></tr>
+          <tr class="komp-ruchy"><th>1 ruchem</th><th>2 ruchami</th><th>3 ruchami</th><th>4 ruchami</th><th>5 ruchami</th><th></th></tr>
         </table>
-        <p>Różnica powyżej 65: każde pełne 12 więcej to kolejny ruch Czarnego na start.</p>
+        <p>Różnica powyżej 70: każde pełne 13 więcej to kolejny ruch Czarnego na start.</p>
 
         <p>Otrzymane kamienie trzyma się do końca gry — przy liczeniu każdy to punkt.</p>
         <p>Skąd te liczby: 6 kamieni to komi — cena przywileju pierwszego ruchu Czarnego,
-        a <span class="ps">12 PS</span> to wartość jednego ruchu, więc każde pełne <span class="ps">12</span> różnicy zamienia się w dodatkowy ruch — handi.</p>
+        a <span class="ps">13 PS</span> to wartość jednego ruchu, więc każde pełne <span class="ps">13</span> różnicy zamienia się w dodatkowy ruch.</p>
       </section>
 
-      <section>
-        <h3>3. Zmiana PS</h3>
+      <section id="zmiana-ps">
+        <h2>Zmiana PS</h2>
         <p>Gracie i zapisujecie wynik w kamieniach ze znakiem: + wygrana, − przegrana.
         Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>.</p>
-        <p>Wygrana o 12 kamieni lub więcej — czyli o równowartość jednego handi — albo przez poddanie: <span class="ps">+2</span> i <span class="ps">−2 PS</span> zamiast <span class="ps">±1</span>.</p>
+        <p>Wygrana o 13 kamieni lub więcej — czyli o równowartość jednego ruchu — albo przez poddanie: <span class="ps">+2</span> i <span class="ps">−2 PS</span> zamiast <span class="ps">±1</span>.</p>
         <p>Remis: <span class="ps">PS</span> się nie zmieniają.</p>
         <p>Trzecia wygrana z rzędu na danej planszy i każda kolejna: zmiana <span class="ps">PS</span> zwycięzcy jest podwojona.</p>
       </section>
@@ -162,12 +160,12 @@
         <h2>Notatki dla opiekuna</h2>
         <ul class="links">
           <li>Opiekun klubu może swobodnie korygować <span class="ps">PS</span> każdego gracza — gdy widzi, że gracz wygrywa zbyt często, że jego <span class="ps">PS</span> były źle ustalone, albo że robi postępy szybciej, niż ranking nadąża.</li>
-          <li>Startowe <span class="ps">PS</span> na jednej planszy można przeliczyć z innej — mają się do siebie jak <span class="ps">2 : 5 : 12</span> na 9×9 : 13×13 : 19×19.
-            Np. <span class="ps">60</span> na 9×9 to <span class="ps">60 × 5/2 = 150</span> na 13×13 i <span class="ps">60 × 12/2 = 360</span> na 19×19.</li>
+          <li>Startowe <span class="ps">PS</span> na jednej planszy można przeliczyć z innej — mają się do siebie jak <span class="ps">2 : 5 : 13</span> na 9×9 : 13×13 : 19×19.
+            Np. <span class="ps">60</span> na 9×9 to <span class="ps">60 × 5/2 = 150</span> na 13×13 i <span class="ps">60 × 13/2 = 390</span> na 19×19.</li>
           <li>Wartość startową z przedziału „początkujący" wybiera opiekun — dzieci zwykle bliżej dolnej granicy, dorośli bliżej górnej.</li>
           <li>Kalibracja nowego gracza: rozegrajcie zwykłą grę, a po niej skoryguj jego <span class="ps">PS</span> o wynik — wygrał o X kamieni, dodaj <span class="ps">X</span>; przegrał o X, odejmij <span class="ps">X</span> — tak, żeby ta gra wyszła na remis.
             Można to powtórzyć kilka razy i przypisać średnią.
-            Na koniec odejmij nowemu graczowi równowartość dwóch stopni — około <span class="ps">4 PS</span> na 9×9, <span class="ps">10</span> na 13×13, <span class="ps">24</span> na 19×19 — jako margines na możliwy błąd tej procedury.</li>
+            Na koniec odejmij nowemu graczowi równowartość dwóch stopni — około <span class="ps">4 PS</span> na 9×9, <span class="ps">10</span> na 13×13, <span class="ps">26</span> na 19×19 — jako margines na możliwy błąd tej procedury.</li>
         </ul>
       </section>
 

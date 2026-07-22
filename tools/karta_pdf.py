@@ -50,7 +50,6 @@ SUB_FS = 5.2                            # naglowki podkolumn (wersaliki)
 # bez podzialu; szerokosc 0.0 = reszta szerokosci karty (nick przeciwnika)
 COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("data", [("", 9 * mm)]),
-    ("plansza", [("", 12.5 * mm)]),
     ("moje PS", [("", 12 * mm)]),
     ("przeciwnik", [("nick", 0.0), ("PS", 8 * mm)]),
     ("kompensacja", [("różnica PS", 15 * mm), ("ruchy\nCzarnego", 13 * mm),
@@ -64,14 +63,13 @@ COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
 # przed gra | przeciwnik i wyrownanie | po grze
 THICK_BEFORE = {"przeciwnik", "wynik"}
 
-# nadruk do zakreslania w kazdym wierszu kolumny
-PREPRINT = {"plansza": "9·13·19"}
+# nadruk planszy w naglowku karty — zakresla sie jedna z trzech
+PLANSZA_PREPRINT = "9×9 · 13×13 · 19×19"
 
 @dataclass(frozen=True)
 class Wiersz:
     """Jedna gra na karcie; wartosci jako napisy, dokladnie jak wpisalby je gracz."""
     data: str
-    plansza: str            # "9" | "13" | "19" — zakreslana w nadruku
     moje_pkt: str
     przeciwnik_nick: str
     przeciwnik_pkt: str
@@ -85,8 +83,9 @@ class Wiersz:
 
 @dataclass(frozen=True)
 class KartaDane:
-    """Wypelnienie naglowka karty + wiersze gier."""
+    """Wypelnienie naglowka karty + wiersze gier; cala karta dotyczy jednej planszy."""
     nick: str
+    plansza: str            # "9×9" | "13×13" | "19×19" — zakreslana w naglowku
     pkt_9: str
     pkt_13: str
     pkt_19: str
@@ -94,7 +93,7 @@ class KartaDane:
 
 
 # indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze PS
-BLUE_LEAFS = {2, 4, 5, 9, 10}   # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
+BLUE_LEAFS = {1, 3, 4, 8, 9}    # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
 
 # sciaga na dole karty: (tytul kolumny, punkty); w kolumnie "kompensacja"
 # nad punktami rysowana jest mini-tabela KOMP_TABELA
@@ -159,6 +158,7 @@ FIELD_H = 11 * mm
 # (etykieta rubryki, szerokosc) — nick dostaje reszte szerokosci karty
 FIELDS: list[tuple[str, float]] = [
     ("NICK", 0.0),
+    ("PLANSZA", 32 * mm),
     ("PS 9×9", 16 * mm),
     ("PS 13×13", 17 * mm),
     ("PS 19×19", 17 * mm),
@@ -167,12 +167,13 @@ FIELDS: list[tuple[str, float]] = [
 
 def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
                 dane: KartaDane | None) -> float:
-    """Rubryki Nick / pkt sily na plansze jako obramowany pasek; zwraca y pod nim."""
+    """Rubryki Nick / plansza / pkt sily jako obramowany pasek; zwraca y pod nim."""
     fixed = sum(w for _, w in FIELDS)
     nick_w = card_w - fixed
     assert nick_w > 30 * mm, f"za malo miejsca na rubryke nicku: {nick_w / mm:.1f} mm"
     widths = [w if w > 0 else nick_w for _, w in FIELDS]
-    values = ["", "", "", ""] if dane is None else [dane.nick, dane.pkt_9, dane.pkt_13, dane.pkt_19]
+    values = ([""] * len(FIELDS) if dane is None
+              else [dane.nick, "", dane.pkt_9, dane.pkt_13, dane.pkt_19])
 
     bottom = top - FIELD_H
     c.setStrokeColor(INK)
@@ -184,9 +185,16 @@ def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
         c.setFillColor(PKT_SILY if "PS" in label.split() else MUTED)
         c.setFont(FONT, 5.5)
         c.drawString(x + 1.5 * mm, top - 3 * mm, label)
-        c.setFillColor(PKT_SILY if "PS" in label.split() else INK)
-        c.setFont(FONT_HAND, HAND_FS_FIELDS)
-        c.drawString(x + 2 * mm, bottom + 2.5 * mm, value)
+        if label == "PLANSZA":
+            c.setFillColor(MUTED)
+            c.setFont(FONT, 6.5)
+            c.drawCentredString(x + w / 2, bottom + 3.5 * mm, PLANSZA_PREPRINT)
+            if dane is not None:
+                draw_plansza_kolko(c, x, w, bottom + 3.5 * mm, dane.plansza)
+        else:
+            c.setFillColor(PKT_SILY if "PS" in label.split() else INK)
+            c.setFont(FONT_HAND, HAND_FS_FIELDS)
+            c.drawString(x + 2 * mm, bottom + 2.5 * mm, value)
         x += w
     return bottom - 3 * mm
 
@@ -295,13 +303,11 @@ def row_baseline(top: float, row: int) -> float:
     return top - HEAD_H - row * ROW_H - ROW_H / 2 - 1
 
 
-def draw_plansza_kolko(c: Canvas, leaf: tuple[float, float], y: float, plansza: str) -> None:
-    """Zakresla wybrana plansze w nadruku 9·13·19."""
-    text = PREPRINT["plansza"]
-    assert plansza in text.split("·"), f"nieznana plansza: {plansza}"
-    lx, lw = leaf
-    start = lx + lw / 2 - pdfmetrics.stringWidth(text, FONT, 6.5) / 2
-    x1 = start + pdfmetrics.stringWidth(text[: text.index(plansza)], FONT, 6.5)
+def draw_plansza_kolko(c: Canvas, x: float, w: float, y: float, plansza: str) -> None:
+    """Zakresla wybrana plansze w nadruku PLANSZA_PREPRINT (naglowek karty)."""
+    assert plansza in PLANSZA_PREPRINT.split(" · "), f"nieznana plansza: {plansza}"
+    start = x + w / 2 - pdfmetrics.stringWidth(PLANSZA_PREPRINT, FONT, 6.5) / 2
+    x1 = start + pdfmetrics.stringWidth(PLANSZA_PREPRINT[: PLANSZA_PREPRINT.index(plansza)], FONT, 6.5)
     num_w = pdfmetrics.stringWidth(plansza, FONT, 6.5)
     cx, cy = x1 + num_w / 2, y + 1.1 * mm
     rx, ry = num_w / 2 + 1.4 * mm, 2.7 * mm
@@ -314,10 +320,10 @@ def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
                  wiersze: list[Wiersz]) -> None:
     """Wypelnione wiersze gier (karty przykladowe)."""
     leaves = leaf_geometry(x0, widths)
-    assert len(leaves) == 11, len(leaves)
+    assert len(leaves) == 10, len(leaves)
     for row, w in enumerate(wiersze):
         y = row_baseline(top, row)
-        values = [w.data, "", w.moje_pkt, w.przeciwnik_nick, w.przeciwnik_pkt, w.roznica_ps,
+        values = [w.data, w.moje_pkt, w.przeciwnik_nick, w.przeciwnik_pkt, w.roznica_ps,
                   w.ruchy, w.kamienie, w.wynik, w.zmiana, w.nowe_pkt]
         for li, ((lx, lw), value) in enumerate(zip(leaves, values)):
             if not value:
@@ -325,7 +331,6 @@ def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
             c.setFillColor(PKT_SILY if li in BLUE_LEAFS else INK)
             c.setFont(FONT_HAND, HAND_FS)
             c.drawCentredString(lx + lw / 2, y, value)
-        draw_plansza_kolko(c, leaves[1], y, w.plansza)
 
 
 def draw_table(c: Canvas, x0: float, top: float, card_w: float,
@@ -342,17 +347,6 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
     c.setFillColor(HEADER_BG)
     c.rect(x0, top - HEAD_H, card_w, HEAD_H, stroke=0, fill=1)
     draw_header_labels(c, x0, top, widths)
-
-    c.setFont(FONT, 6.5)
-    c.setFillColor(MUTED)
-    for col_label, text in PREPRINT.items():
-        idx = [i for i, (label, _) in enumerate(COLUMNS) if label == col_label]
-        assert len(idx) == 1, f"dokladnie jedna kolumna '{col_label}'"
-        col_w = sum(widths[idx[0]])
-        assert pdfmetrics.stringWidth(text, FONT, 6.5) <= col_w - 1 * mm, f"nadruk '{text}' za szeroki"
-        cx = x0 + sum(sum(ws) for ws in widths[: idx[0]]) + col_w / 2
-        for row in range(int(n_rows)):
-            c.drawCentredString(cx, row_baseline(top, row), text)
 
     draw_wiersze(c, x0, top, widths, wiersze)
     draw_grid(c, x0, top, card_w, widths, n_rows)

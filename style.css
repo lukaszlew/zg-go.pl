@@ -1,3 +1,15 @@
+/* Georgia przeskalowana do metryk EB Garamond (dane: Capsize, formula: fontaine):
+   nagłówki renderują się od razu we właściwym rozmiarze i podmiana webfontu
+   (display=swap) nie przesuwa layoutu */
+@font-face {
+  font-family: "EB Garamond Fallback";
+  src: local("Georgia");
+  size-adjust: 86.36%;
+  ascent-override: 116.61%;
+  descent-override: 34.51%;
+  line-gap-override: 0%;
+}
+
 :root {
   --bg: #f4e9cf;
   --fg: #1a1a1a;
@@ -6,7 +18,7 @@
   --pkt-sily: #2e7d32;
   --rule: #d9c896;
   --card: #ffffff;
-  --serif: 'EB Garamond', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --serif: 'EB Garamond', 'EB Garamond Fallback', Georgia, 'Times New Roman', serif;
   --page-w: 60%;
 }
 * { box-sizing: border-box; }

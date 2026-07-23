@@ -10,6 +10,9 @@ Wymaga: reportlab, czcionki DejaVu (pakiet fonts-dejavu).
 from dataclasses import dataclass
 from pathlib import Path
 
+from reportlab.graphics import renderPDF
+from reportlab.graphics.barcode.qr import QrCodeWidget
+from reportlab.graphics.shapes import Drawing
 from reportlab.lib.colors import HexColor
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
@@ -35,7 +38,7 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "22.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
+WERSJA = "23.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
 ROWS = 23                               # mini-tabela wyrownania w sciadze kosztuje 3 wiersze
 ROW_H = 8 * mm
 HEAD_H = 13 * mm
@@ -93,23 +96,26 @@ class KartaDane:
 # indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze PS
 BLUE_LEAFS = {1, 3, 4, 8, 9}    # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
 
-# sciaga na dole karty: (tytul kolumny, punkty); w kolumnie "wyrownanie"
-# nad punktami rysowana jest mini-tabela KOMP_TABELA
+# sciaga na dole karty: (tytul kolumny, punkty); kolumny w rytmie wypelniania
+# karty (wyrownanie -> wynik -> zmiana PS); w kolumnie "wyrownanie" nad
+# punktami rysowana jest mini-tabela KOMP_TABELA
 SCIAGA: list[tuple[str, list[str]]] = [
     ("wyrównanie", [
-        "różnica 0–5: gra równa — nigiri, Czarny daje 6 jeńców (−6), remis wygrywa Biały",
-        "różnica powyżej 70: odejmuj po 13, każde odjęcie to dodatkowy ruch",
-        "jeńców dostajesz na starcie — przy liczeniu każdy to punkt",
+        "różnica PS = silniejszy − słabszy; jednakowa na obu kartach",
+        "np. różnica 24 → ruchy 2, jeńcy 24 − 19 = 5",
+        "gra równa (0–5): kolory nigiri, remis wygrywa Biały",
+        "powyżej 70: odejmuj po 13, każde odjęcie to dodatkowy ruch",
+    ]),
+    ("wynik", [
+        "w punktach: + wygrana, − przegrana",
+        "na obu kartach ta sama liczba, przeciwne znaki",
+        "przy podliczaniu dolicz jeńców — każdy to punkt",
     ]),
     ("zmiana PS", [
         "zwycięzca +1, przegrany −1",
         "wygrana o 13+ punktów albo poddanie: ±2",
-        "remis (możliwy przy dużej różnicy): PS bez zmian",
-        "3. wygrana z rzędu na planszy i kolejne: zwycięzca ×2",
-    ]),
-    ("zapis ze znakiem", [
-        "RÓŻNICA PS: silniejszy − słabszy; jednakowa na obu kartach",
-        "WYNIK: w punktach, + wygrana, − przegrana",
+        "remis (przy różnicy PS ≥ 6): PS bez zmian",
+        "trzecia wygrana z rzędu (i kolejne): zwycięzca ×2",
     ]),
 ]
 
@@ -350,6 +356,15 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
     return bottom - 4 * mm
 
 
+def draw_qr(c: Canvas, x: float, y: float, size: float, url: str) -> None:
+    """Kod QR o boku size, lewym dolnym rogiem w (x, y)."""
+    qr = QrCodeWidget(url, barLevel="M")
+    x0, y0, x1, y1 = qr.getBounds()
+    d = Drawing(size, size, transform=[size / (x1 - x0), 0, 0, size / (y1 - y0), 0, 0])
+    d.add(qr)
+    renderPDF.draw(d, c, x, y)
+
+
 def draw_komp_tabela(c: Canvas, x: float, top: float, col_w: float) -> float:
     """Mini-tabela wyrownania w kolumnie sciagi; zwraca y dolnej krawedzi."""
     ws = [0.22 * col_w, 0.32 * col_w, 0.46 * col_w]
@@ -413,10 +428,12 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
             y -= 0.7 * mm
         bottoms.append(y)
     y = min(bottoms) - 1.5 * mm
+    qr_size = 14 * mm
+    draw_qr(c, x0 + card_w - qr_size, y, qr_size, "https://zg-go.pl/ranking.html")
     c.setFont(FONT, 6)
     c.setFillColor(MUTED)
     c.drawString(x0, y, "PS = punkty siły · Pełne zasady: zg-go.pl/ranking.html")
-    c.drawRightString(x0 + card_w, y, f"wersja karty {WERSJA}")
+    c.drawRightString(x0 + card_w - qr_size - 2 * mm, y, f"wersja karty {WERSJA}")
     return y
 
 

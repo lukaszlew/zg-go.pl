@@ -103,13 +103,14 @@ SCIAGA: list[tuple[str, list[str]]] = [
     ("wyrównanie", [
         "różnica PS = silniejszy − słabszy; jednakowa na obu kartach",
         "np. różnica 24 → ruchy 2, jeńcy 24 − 19 = 5",
-        "gra równa (0–5): kolory nigiri, remis wygrywa Biały",
+        "gra równa (0–5): kolory nigiri",
         "powyżej 70: odejmuj po 13, każde odjęcie to dodatkowy ruch",
     ]),
     ("wynik", [
         "w punktach: + wygrana, − przegrana",
         "na obu kartach ta sama liczba, przeciwne znaki",
         "przy podliczaniu dolicz jeńców — każdy to punkt",
+        "remis przy grze równej: wygrywa Biały",
     ]),
     ("zmiana PS", [
         "zwycięzca +1, przegrany −1",

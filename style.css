@@ -19,10 +19,11 @@
   --rule: #d9c896;
   --card: #ffffff;
   --serif: 'EB Garamond', 'EB Garamond Fallback', Georgia, 'Times New Roman', serif;
-  --page-w: 60%;
+  --page-w: 58rem;            /* jedna szerokosc kolumny, identyczna na kazdej podstronie */
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+html { scrollbar-gutter: stable; }  /* pasek przewijania nie zmienia szerokosci ukladu */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background: var(--bg);
@@ -31,7 +32,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 .page {
-  width: var(--page-w);
+  width: min(var(--page-w), 92%);
   margin: 0 auto;
   padding-bottom: 2rem;
 }
@@ -90,7 +91,6 @@ a:hover { text-decoration: underline; }
 }
 
 @media (max-width: 820px) {
-  .page, .footer-inner { width: 92%; }
   .hero-band {
     grid-template-columns: 1fr;
     row-gap: 1.25rem;
@@ -138,13 +138,23 @@ ul.links li::before {
 /* zdania lamane jak w zrodle (ranking.html ma jedno zdanie na linie) */
 .zdania p, .zdania li { white-space: pre-line; }
 
-/* wycinki kart graczy osadzone przy przykladzie: na pelna szerokosc ramki */
+/* wycinki kart graczy: stala szerokosc (naturalny rozmiar karty A4 przy 96 dpi),
+   pismo na karcie ma ~rozmiar tekstu strony. Ramka przykladu poszerza sie ponad
+   kolumne tekstu (wysrodkowana), zeby wycinki nie musialy sie przewijac;
+   scroll poziomy wewnatrz ramki dopiero, gdy ekran jest wezszy od karty. */
+.przyklad {
+  overflow-x: auto;
+  width: min(calc(194mm + 2.4rem), calc(100vw - 2rem));
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
 img.wycinek {
-  width: calc(100% + 2.2rem);
+  width: 194mm;               /* szerokosc wycinka: karta 190mm + marginesy ciecia */
   max-width: none;
   height: auto;
   display: block;
-  margin: 0.8rem -1.1rem 0;
+  margin: 0.8rem 0 0;
 }
 
 /* spis tresci pod wstepem: zlota linia + wciecie + wersalikowa etykieta */
@@ -202,7 +212,7 @@ table.komp td.komp-jency { color: var(--fg); background: color-mix(in srgb, var(
   margin-top: 2rem;
 }
 .footer-inner {
-  width: var(--page-w);
+  width: min(var(--page-w), 92%);
   margin: 0 auto;
   padding: 1.25rem 0;
   color: var(--muted); font-size: 0.9rem;
@@ -215,6 +225,8 @@ table.komp td.komp-jency { color: var(--fg); background: color-mix(in srgb, var(
   .banner, .hb-menu, .site-footer, .spis { display: none; }
   .page, .footer-inner { width: 100%; }
   a { color: inherit; }
+  .przyklad { width: auto; left: 0; transform: none; overflow: visible; }
+  img.wycinek { width: 100%; }
 }
 
 figure { margin: 1.8rem 0; }

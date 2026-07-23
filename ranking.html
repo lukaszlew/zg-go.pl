@@ -55,9 +55,9 @@
         <p class="spis-label">Na tej stronie</p>
         <ul class="links">
           <li><a href="#punkty-sily">Punkty siły</a></li>
-          <li><a href="#przykladowa-gra">Przykładowa gra</a></li>
           <li><a href="#wyrownanie">Wyrównanie</a></li>
           <li><a href="#zmiana-ps">Zmiana PS</a></li>
+          <li><a href="#przykladowa-gra">Przykładowa gra</a></li>
           <li><a href="#opiekun">Notatki dla opiekuna</a></li>
         </ul>
       </nav>
@@ -77,37 +77,17 @@
         <p>Tabela służy do ustalenia początkowych <span class="ps">PS</span>, jeśli znamy przybliżony poziom gracza w kyu / dan — potem liczy się już tylko to, co pokaże na planszy.</p>
       </section>
 
-      <section id="przykladowa-gra">
-      <h2>Przykładowa gra</h2>
-      <div class="przyklad">
-        <p>Tak Czarek i Bianka zapisali swoją grę na <a href="karta.pdf">kartach graczy</a> (<a href="#wyrownanie">dokładne zasady</a> niżej):</p>
-        <img class="wycinek" src="karta-wycinek-czarek.svg" alt="Karta gracza Czarka z wpisaną przykładową grą">
-        <img class="wycinek" src="karta-wycinek-bianka.svg" alt="Karta gracza Bianki z wpisaną przykładową grą">
-        <p><strong>Przed grą.</strong>
-        Bianka (<span class="ps">84 PS</span> na 9×9) gra z Czarkiem (<span class="ps">60</span>).
-        Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi — przy różnicy od 6 kolory są ustalone (<a href="#wyrownanie">zasady</a> niżej).</p>
-        <p><strong>Wyrównanie.</strong>
-        <span class="kol"><span class="ps">różnica PS</span></span>: <span class="ps">84 − 60 = 24</span> — jednakowa na obu kartach.
-        Z tabeli: <span class="kol">ruchy Czarnego</span>: 2 — Czarek zagra dwa ruchy, zanim Bianka odpowie —
-        oraz <span class="kol">jeńcy dla Czarnego</span>: 5, których Bianka daje Czarkowi.</p>
-        <p><strong>Po grze.</strong>
-        Czarek wygrywa o 15 punktów: <span class="kol">wynik</span>: +15 u niego, −15 u Bianki — wygrana o 13 lub więcej daje <span class="ps">±2</span> zamiast <span class="ps">±1</span>.
-        To zarazem czwarta z rzędu wygrana Czarka na 9×9, więc <span class="kol">zmiana <span class="ps">PS</span></span> zwycięzcy jest podwojona: <span class="ps">+2 × 2</span> dla Czarka, <span class="ps">−2</span> dla Bianki.
-        <span class="kol">Nowe <span class="ps">PS</span></span>: Czarek <span class="ps">60 → 64</span>, Bianka <span class="ps">84 → 82</span>.</p>
-      </div>
-      </section>
-
       <section id="wyrownanie">
         <h2>Wyrównanie</h2>
-        <p>Słabszy dostaje od silniejszego wyrównanie: dodatkowe ruchy na start i jeńców.
+        <p>Przy różnicy od 6 słabszy dostaje od silniejszego wyrównanie: dodatkowe ruchy na start i jeńców.
         Jeńców nie kładzie się na planszy — trzyma się ich do końca gry, a przy liczeniu każdy to punkt.
-        Policzcie <span class="ps">różnicę PS</span> — <span class="ps">PS</span> silniejszego minus słabszego — i znajdźcie ją w tabeli:</p>
+        Policzcie <span class="ps">różnicę PS</span> — <span class="ps">PS</span> silniejszego minus słabszego.</p>
 
-        <h4>Mała <span class="ps">różnica PS</span> (0–5): gra równa</h4>
-        <p>Kolory losujecie za pomocą <a href="#nigiri">nigiri</a>.
+        <h3>Mała <span class="ps">różnica PS</span> (0–5): gra równa</h3>
+        <p>Kolory losujecie za pomocą nigiri: jeden gracz bierze w dłoń garść białych kamieni, drugi kładzie jeden czarny (zgaduje: nieparzysta) albo dwa czarne (parzysta); jeśli zgadł, gra Czarnymi.
         Czarny daje Białemu 6 jeńców (na karcie: −6), a remis wygrywa Biały — razem to komi 6,5.</p>
 
-        <h4>Duża <span class="ps">różnica PS</span> (6+)</h4>
+        <h3>Duża <span class="ps">różnica PS</span> (6+)</h3>
         <p>Silniejszy gra Białymi, słabszy zaczyna Czarnymi.
         Znajdźcie różnicę w siatce: kolumna mówi, iloma ruchami zaczyna Czarny, a wiersz — ilu jeńców dostaje:</p>
         <table class="sila komp">
@@ -127,7 +107,7 @@
           <tr><td>18</td><td>31</td><td>44</td><td>57</td><td>70</td><td class="komp-jency">12</td></tr>
           <tr class="komp-ruchy"><th>1 ruch</th><th>2 ruchy</th><th>3 ruchy</th><th>4 ruchy</th><th>5 ruchów</th><th>ruchy Czarnego</th></tr>
         </table>
-        <p>Różnica powyżej 70: każde pełne 13 więcej to kolejny ruch Czarnego na start.</p>
+        <p>Różnica powyżej 70: odejmujcie po 13 — każde odjęcie to dodatkowy ruch Czarnego — aż wynik znajdzie się w tabeli.</p>
         <p>Skąd te liczby: komi — cena przywileju pierwszego ruchu Czarnego — to 6 jeńców i remis dla Białego (razem 6,5),
         a <span class="ps">13 PS</span> to wartość jednego ruchu, więc każde pełne <span class="ps">13</span> różnicy zamienia się w dodatkowy ruch.</p>
       </section>
@@ -136,8 +116,29 @@
         <h2>Zmiana PS</h2>
         <p>Gracie i zapisujecie wynik w punktach ze znakiem: + wygrana, − przegrana. Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>.</p>
         <p>Wygrana o 13 punktów lub więcej — czyli o równowartość jednego ruchu — albo przez poddanie: <span class="ps">+2</span> i <span class="ps">−2 PS</span> zamiast <span class="ps">±1</span>.</p>
-        <p>Remis na planszy: wygrywa Biały (komi 6,5).</p>
+        <p>Remis — równy wynik po doliczeniu jeńców — możliwy tylko przy dużej różnicy <span class="ps">PS</span>: <span class="ps">PS</span> się wtedy nie zmieniają.
+        W grze równej remisu nie ma — równy wynik wygrywa Biały (komi 6,5).</p>
         <p>Trzecia wygrana z rzędu na danej planszy — z kimkolwiek — i każda kolejna: zmiana <span class="ps">PS</span> zwycięzcy jest podwojona, żeby ranking szybko dogonił gracza robiącego postępy.</p>
+      </section>
+
+      <section id="przykladowa-gra">
+      <h2>Przykładowa gra</h2>
+      <div class="przyklad">
+        <p>Tak Czarek i Bianka zapisali swoją grę na <a href="karta.pdf">kartach graczy</a>:</p>
+        <img class="wycinek" src="karta-wycinek-czarek.svg" alt="Karta gracza Czarka z wpisaną przykładową grą">
+        <img class="wycinek" src="karta-wycinek-bianka.svg" alt="Karta gracza Bianki z wpisaną przykładową grą">
+        <p><strong>Przed grą.</strong>
+        Bianka (<span class="ps">84 PS</span> na 9×9) gra z Czarkiem (<span class="ps">60</span>).
+        Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi — przy różnicy od 6 kolory są ustalone.</p>
+        <p><strong>Wyrównanie.</strong>
+        <span class="kol"><span class="ps">różnica PS</span></span>: <span class="ps">84 − 60 = 24</span> — jednakowa na obu kartach.
+        Z tabeli: <span class="kol">ruchy Czarnego</span>: 2 — Czarek zagra dwa ruchy, zanim Bianka odpowie —
+        oraz <span class="kol">jeńcy dla Czarnego</span>: 5, których Bianka daje Czarkowi.</p>
+        <p><strong>Po grze.</strong>
+        Czarek wygrywa o 15 punktów: <span class="kol">wynik</span>: +15 u niego, −15 u Bianki — wygrana o 13 lub więcej daje <span class="ps">±2</span> zamiast <span class="ps">±1</span>.
+        To zarazem czwarta z rzędu wygrana Czarka na 9×9, więc <span class="kol">zmiana <span class="ps">PS</span></span> zwycięzcy jest podwojona: <span class="ps">+2 × 2</span> dla Czarka, <span class="ps">−2</span> dla Bianki.
+        <span class="kol">Nowe <span class="ps">PS</span></span>: Czarek <span class="ps">60 → 64</span>, Bianka <span class="ps">84 → 82</span>.</p>
+      </div>
       </section>
 
       <section class="opiekun" id="opiekun">
@@ -147,13 +148,11 @@
           <li>Startowe <span class="ps">PS</span> na jednej planszy można przeliczyć z innej — mają się do siebie jak <span class="ps">2 : 5 : 13</span> na 9×9 : 13×13 : 19×19.
             Np. <span class="ps">60</span> na 9×9 to <span class="ps">60 × 5/2 = 150</span> na 13×13 i <span class="ps">60 × 13/2 = 390</span> na 19×19.</li>
           <li>Wartość startową z przedziału „początkujący" wybiera opiekun — dzieci zwykle bliżej dolnej granicy, dorośli bliżej górnej.</li>
-          <li>Kalibracja nowego gracza: rozegrajcie zwykłą grę, a po niej skoryguj jego <span class="ps">PS</span> o wynik — wygrał o X punktów, dodaj <span class="ps">X</span>; przegrał o X, odejmij <span class="ps">X</span> — tak, żeby ta gra wyszła na remis.
+          <li>Kalibracja nowego gracza: rozegrajcie zwykłą grę, a po niej skoryguj jego <span class="ps">PS</span> o wynik — wygrał o X punktów, dodaj <span class="ps">X</span>; przegrał o X, odejmij <span class="ps">X</span> — tak, żeby ta gra wyszła na zero.
             Można to powtórzyć kilka razy i przypisać średnią.
             Na koniec odejmij nowemu graczowi równowartość dwóch stopni — około <span class="ps">4 PS</span> na 9×9, <span class="ps">10</span> na 13×13, <span class="ps">26</span> na 19×19 — jako margines na możliwy błąd tej procedury.</li>
         </ul>
       </section>
-
-      <p class="przypis" id="nigiri">Nigiri — losowanie kolorów: jeden gracz bierze w dłoń garść białych kamieni, drugi kładzie jeden czarny (zgaduje: nieparzysta) albo dwa czarne (parzysta); jeśli zgadł, gra Czarnymi.</p>
 
     </main>
   </div>

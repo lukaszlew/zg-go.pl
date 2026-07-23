@@ -197,9 +197,6 @@ table.komp td { color: var(--pkt-sily); }
 table.komp tr.komp-ruchy th { background: color-mix(in srgb, var(--rule) 45%, transparent); font-weight: 600; }
 table.komp td.komp-jency { color: var(--fg); background: color-mix(in srgb, var(--rule) 45%, transparent); }
 
-/* przypis na dole strony (np. nigiri) */
-.przypis { font-size: 0.9rem; margin-top: 2.5rem; }
-
 .site-footer {
   border-top: 1px solid var(--rule);
   margin-top: 2rem;

@@ -98,13 +98,13 @@ BLUE_LEAFS = {1, 3, 4, 8, 9}    # moje PS, PS przeciwnika, roznica PS, zmiana, n
 SCIAGA: list[tuple[str, list[str]]] = [
     ("wyrównanie", [
         "różnica 0–5: gra równa — nigiri, Czarny daje 6 jeńców (−6), remis wygrywa Biały",
-        "różnica powyżej 70: każde pełne 13 to kolejny ruch",
+        "różnica powyżej 70: odejmuj po 13, każde odjęcie to dodatkowy ruch",
         "jeńców dostajesz na starcie — przy liczeniu każdy to punkt",
     ]),
     ("zmiana PS", [
         "zwycięzca +1, przegrany −1",
         "wygrana o 13+ punktów albo poddanie: ±2",
-        "remis na planszy: wygrywa Biały",
+        "remis (możliwy przy dużej różnicy): PS bez zmian",
         "3. wygrana z rzędu na planszy i kolejne: zwycięzca ×2",
     ]),
     ("zapis ze znakiem", [

@@ -18,14 +18,14 @@ from karta_pdf import KartaDane, Wiersz, generuj_karte, generuj_wycinek
 
 # Gra z przykladu: 9x9, Bianka 84 vs Czarek 60,
 # roznica PS = 84 - 60 = 24 -> zakres 19-31: Czarny zaczyna 2 ruchami,
-# kamienie dla Czarnego = 24 - 19 = 5,
-# Czarek wygrywa o 15 kamieni (czwarta wygrana z rzedu -> +2x2), Bianka -2.
+# jency dla Czarnego = 24 - 19 = 5,
+# Czarek wygrywa o 15 punktow (czwarta wygrana z rzedu -> +2x2), Bianka -2.
 CZAREK = KartaDane(
     nick="Czarek", plansza="9×9",
     wiersze=[Wiersz(
         data="15.07", moje_pkt="60",
         przeciwnik_nick="Bianka", przeciwnik_pkt="84", roznica_ps="24",
-        ruchy="2", kamienie="5", wynik="+15", zmiana="+2×2", nowe_pkt="64",
+        ruchy="2", jency="5", wynik="+15", zmiana="+2×2", nowe_pkt="64",
     )],
 )
 
@@ -34,7 +34,7 @@ BIANKA = KartaDane(
     wiersze=[Wiersz(
         data="15.07", moje_pkt="84",
         przeciwnik_nick="Czarek", przeciwnik_pkt="60", roznica_ps="24",
-        ruchy="2", kamienie="5", wynik="−15", zmiana="−2", nowe_pkt="82",
+        ruchy="2", jency="5", wynik="−15", zmiana="−2", nowe_pkt="82",
     )],
 )
 

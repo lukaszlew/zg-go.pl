@@ -188,14 +188,17 @@ table.sila th, table.sila td {
 }
 table.sila th { background: var(--rule); font-weight: 600; }
 
-/* tabela kompensacji: siatka roznic (PS, zielone), kamienie dla Czarnego
-   w wyroznionych komorkach, ruchy Czarnego w dolnych wierszach */
+/* tabela wyrownania: siatka roznic (PS, zielone), jency dla Czarnego
+   w wyroznionych komorkach, ruchy Czarnego w dolnym wierszu */
 table.komp td, table.komp th { padding: 0.2rem 0.5rem; text-align: center; }
 table.komp th { border-color: color-mix(in srgb, var(--rule) 85%, black); }
 table.komp td { color: var(--pkt-sily); }
-/* wyroznienie tym samym jasnozlotym tlem: wiersze ruchow i komorki kamieni */
+/* wyroznienie tym samym jasnozlotym tlem: wiersz ruchow i komorki jencow */
 table.komp tr.komp-ruchy th { background: color-mix(in srgb, var(--rule) 45%, transparent); font-weight: 600; }
-table.komp td.komp-kamienie { color: var(--fg); background: color-mix(in srgb, var(--rule) 45%, transparent); }
+table.komp td.komp-jency { color: var(--fg); background: color-mix(in srgb, var(--rule) 45%, transparent); }
+
+/* przypis na dole strony (np. nigiri) */
+.przypis { font-size: 0.9rem; margin-top: 2.5rem; }
 
 .site-footer {
   border-top: 1px solid var(--rule);

@@ -45,19 +45,20 @@
            Nazwy kolumn przywoluj w <span class="kol">...</span>.
            Sprawdzaj przy kazdej edycji tresci tu i tam. -->
 
-      <p>Każdy gracz klubu ma <span class="ps">punkty siły</span> (w skrócie <span class="ps">PS</span>) — miarę tego, jak mocno aktualnie gra.
-      Dzięki nim każda gra jest <a href="#wyrownanie">wyrównana</a> — obie strony mają równe szanse, niezależnie od różnicy poziomów.
+      <p>Każdy gracz klubu ma <span class="ps">punkty siły</span> (w skrócie <span class="ps">PS</span>) — miarę tego, jak mocno aktualnie gra: więcej <span class="ps">PS</span>, silniejszy gracz.
+      Są osobne dla każdej planszy, bo 9×9, 13×13 i 19×19 to trzy niezależne rankingi; jeden stopień to mniej więcej <span class="ps">2 PS</span> na 9×9, <span class="ps">5 PS</span> na 13×13 i <span class="ps">13 PS</span> na 19×19.
       Po każdej grze <span class="ps">PS</span> się zmieniają — nadążają za formą gracza i pokazują jego postępy.</p>
 
-      <p>Po co to wszystko: punkty sprawiają, że gra zaczyna się liczyć, a wyrównanie — że liczy się każda, niezależnie od tego, kto siedzi po drugiej stronie.
-      Właśnie stąd bierze się wzrost siły, i o tym jest <a href="#dlaczego">dolna część strony</a>.</p>
+      <p>Dzięki <span class="ps">PS</span> każda gra jest <a href="#wyrownanie">wyrównana</a>: obie strony mają równe szanse, niezależnie od różnicy poziomów.
+      Punkty sprawiają przy tym, że gra zaczyna się liczyć, a wyrównanie — że liczy się każda, niezależnie od tego, kto siedzi po drugiej stronie. Właśnie stąd bierze się wzrost siły, i o tym jest <a href="#dlaczego">dolna część strony</a>.</p>
+
+      <p>Wszystko stoi na dobrze ustawionej wartości startowej: z zawyżonymi <span class="ps">PS</span> nowy gracz przegra serię gier i tyle zapamięta. Dlatego <a href="#kalibracja">kalibracja</a> jest tak ważna — potem liczy się już tylko to, co pokaże na planszy.</p>
 
       <p class="karta-link" id="karta"><a href="karta.pdf">Karta gracza (PDF)</a> — dziennik gier i <span class="ps">punktów siły</span>; do wydruku na A4.</p>
 
       <nav class="spis">
         <p class="spis-label">Na tej stronie</p>
         <ul class="links">
-          <li><a href="#punkty-sily">Punkty siły</a></li>
           <li><a href="#wyrownanie">Wyrównanie</a>
             <ul class="links">
               <li><a href="#gra-rowna">Mała różnica PS: gra równa</a></li>
@@ -78,21 +79,6 @@
           </li>
         </ul>
       </nav>
-
-      <section id="punkty-sily">
-        <h2>Punkty siły</h2>
-        <p><span class="ps">PS</span> są osobne dla każdej planszy — 9×9, 13×13 i 19×19 — to trzy niezależne rankingi. Więcej <span class="ps">PS</span> = silniejszy gracz.</p>
-        <table class="sila">
-          <tr><th>Poziom</th><th>9×9</th><th>13×13</th><th>19×19</th></tr>
-          <tr><td>początkujący</td><td>0–40</td><td>0–100</td><td>0–260</td></tr>
-          <tr><td>30 kyu</td><td>40</td><td>100</td><td>260</td></tr>
-          <tr><td>20 kyu</td><td>60</td><td>150</td><td>390</td></tr>
-          <tr><td>10 kyu</td><td>80</td><td>200</td><td>520</td></tr>
-          <tr><td>1 dan</td><td>100</td><td>250</td><td>650</td></tr>
-        </table>
-        <p>Każdy stopień to mniej więcej <span class="ps">2 PS</span> na 9×9, <span class="ps">5</span> na 13×13 i <span class="ps">13</span> na 19×19.</p>
-        <p>Tabela służy do ustalenia początkowych <span class="ps">PS</span>, jeśli znamy przybliżony poziom gracza w kyu / dan — potem liczy się już tylko to, co pokaże na planszy.</p>
-      </section>
 
       <section id="wyrownanie">
         <h2>Wyrównanie</h2>
@@ -125,15 +111,15 @@
           <tr><td>18</td><td>31</td><td>44</td><td>57</td><td>70</td><td class="komp-jency">12</td></tr>
           <tr class="komp-ruchy"><th>1 ruch</th><th>2 ruchy</th><th>3 ruchy</th><th>4 ruchy</th><th>5 ruchów</th><th>ruchy Czarnego</th></tr>
         </table>
-        <p>Różnica powyżej 70: odejmujcie po 13 — każde odjęcie to dodatkowy ruch Czarnego — aż wynik znajdzie się w tabeli.</p>
+        <p>Różnica powyżej <span class="ps">70 PS</span>: odejmujcie po <span class="ps">13 PS</span> — każde odjęcie to dodatkowy ruch Czarnego — aż wynik znajdzie się w tabeli.</p>
         <p>Skąd te liczby: komi — cena przywileju pierwszego ruchu Czarnego — to 6 jeńców i remis dla Białego (razem 6,5),
-        a <span class="ps">13 PS</span> to wartość jednego ruchu, więc każde pełne <span class="ps">13</span> różnicy zamienia się w dodatkowy ruch.</p>
+        a <span class="ps">13 PS</span> to wartość jednego ruchu, więc każde pełne <span class="ps">13 PS</span> różnicy zamienia się w dodatkowy ruch.</p>
       </section>
 
       <section id="zmiana-ps">
         <h2>Zmiana PS</h2>
         <p>Gracie i zapisujecie wynik w punktach ze znakiem: + wygrana, − przegrana. Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>.</p>
-        <p>Wygrana o 13 punktów lub więcej — czyli o równowartość jednego ruchu — albo przez poddanie: <span class="ps">+2</span> i <span class="ps">−2 PS</span> zamiast <span class="ps">±1</span>.
+        <p>Wygrana o 13 punktów lub więcej — czyli o równowartość jednego ruchu — albo przez poddanie: <span class="ps">+2 PS</span> i <span class="ps">−2 PS</span> zamiast <span class="ps">±1 PS</span>.
         Po poddaniu nie ma czego liczyć, więc w kolumnie <span class="kol">wynik</span> wpisujecie +R u zwycięzcy i −R u przegranego.</p>
         <p>Remis — równy wynik po doliczeniu jeńców — możliwy tylko przy dużej różnicy <span class="ps">PS</span>: <span class="ps">PS</span> się wtedy nie zmieniają.
         W grze równej remisu nie ma — równy wynik wygrywa Biały (komi 6,5).</p>
@@ -150,15 +136,15 @@
         <img class="wycinek" src="karta-wycinek-czarek.svg" alt="Karta gracza Czarka z wpisaną przykładową grą">
         <img class="wycinek" src="karta-wycinek-bianka.svg" alt="Karta gracza Bianki z wpisaną przykładową grą">
         <p><strong>Przed grą.</strong>
-        Bianka (<span class="ps">84 PS</span> na 9×9) gra z Czarkiem (<span class="ps">60</span>).
-        Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi — przy <span class="ps">różnicy PS</span> od 6 kolory są ustalone.</p>
+        Bianka (<span class="ps">84 PS</span> na 9×9) gra z Czarkiem (<span class="ps">60 PS</span>).
+        Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi — przy <span class="ps">różnicy PS</span> od <span class="ps">6 PS</span> kolory są ustalone.</p>
         <p><strong>Wyrównanie.</strong>
-        <span class="kol"><span class="ps">różnica PS</span></span>: <span class="ps">84 − 60 = 24</span> — jednakowa na obu kartach.
+        <span class="kol"><span class="ps">różnica PS</span></span>: <span class="ps">84 − 60 = 24 PS</span> — jednakowa na obu kartach.
         Z tabeli: <span class="kol">ruchy Czarnego</span>: 2 — Czarek zagra dwa ruchy, zanim Bianka odpowie —
         oraz <span class="kol">jeńcy dla Czarnego</span>: 5, których Bianka daje Czarkowi.</p>
         <p><strong>Po grze.</strong>
-        Czarek wygrywa o 15 punktów: <span class="kol">wynik</span>: +15 u niego, −15 u Bianki — wygrana o 13 lub więcej daje <span class="ps">±2</span> zamiast <span class="ps">±1</span>.
-        To zarazem czwarta z rzędu wygrana Czarka na 9×9, więc <span class="kol">zmiana <span class="ps">PS</span></span> zwycięzcy jest podwojona: <span class="ps">+2 × 2</span> dla Czarka, <span class="ps">−2</span> dla Bianki.
+        Czarek wygrywa o 15 punktów: <span class="kol">wynik</span>: +15 u niego, −15 u Bianki — wygrana o 13 lub więcej daje <span class="ps">±2 PS</span> zamiast <span class="ps">±1 PS</span>.
+        To zarazem czwarta z rzędu wygrana Czarka na 9×9, więc <span class="kol">zmiana <span class="ps">PS</span></span> zwycięzcy jest podwojona: <span class="ps">+2 × 2 = +4 PS</span> dla Czarka, <span class="ps">−2 PS</span> dla Bianki.
         <span class="kol">Nowe <span class="ps">PS</span></span>: Czarek <span class="ps">60 → 64</span>, Bianka <span class="ps">84 → 82</span>.</p>
       </div>
       </section>
@@ -179,16 +165,26 @@
             Jedna gra nie wystarczy: potrzeba kilku, a na koniec bierzesz średnią z poprawek.</li>
           <li>Gra kalibrująca nie wchodzi do rankingu przeciwnika: jego <span class="ps">PS</span> zostają bez zmian i nie liczy mu się do serii, a na swojej karcie wpisuje <span class="kol">zmianę PS</span> równą zero.
             Wynik takiej gry mówi wyłącznie o nowym graczu.</li>
-          <li>Na koniec odejmij nowemu graczowi równowartość dwóch stopni — około <span class="ps">4 PS</span> na 9×9, <span class="ps">10</span> na 13×13, <span class="ps">26</span> na 19×19 — jako margines na możliwy błąd tej procedury.</li>
+          <li>Na koniec odejmij nowemu graczowi równowartość dwóch stopni — około <span class="ps">4 PS</span> na 9×9, <span class="ps">10 PS</span> na 13×13, <span class="ps">26 PS</span> na 19×19 — jako margines na możliwy błąd tej procedury.</li>
         </ul>
-        <p>Dwa sposoby uzupełniające — dają wartość, od której można zacząć, ale gier nie zastępują:</p>
-        <ul class="links">
-          <li>Jeśli znasz przybliżony poziom gracza w kyu / dan, weź wartość z <a href="#punkty-sily">tabeli poziomów</a>.
-            Wartość z przedziału „początkujący" wybierasz sam — dzieci zwykle bliżej dolnej granicy, dorośli bliżej górnej.</li>
-          <li>Startowe <span class="ps">PS</span> na jednej planszy można spróbować przeliczyć z innej — mają się do siebie jak <span class="ps">2 : 5 : 13</span> na 9×9 : 13×13 : 19×19.
-            Np. <span class="ps">60</span> na 9×9 to <span class="ps">60 × 5/2 = 150</span> na 13×13 i <span class="ps">60 × 13/2 = 390</span> na 19×19.
-            Siła na różnych planszach nie musi jednak iść w parze.</li>
-        </ul>
+        <p>Są jeszcze dwa sposoby uzupełniające — dają wartość, od której można zacząć, ale gier nie zastępują.</p>
+
+        <p><strong>Z poziomu w kyu / dan.</strong>
+        Jeśli znasz przybliżony poziom nowego gracza, odczytaj startowe <span class="ps">PS</span> z tabeli.
+        Wartość z przedziału „początkujący" wybierasz sam — dzieci zwykle bliżej dolnej granicy, dorośli bliżej górnej.</p>
+        <table class="sila">
+          <tr><th>Poziom</th><th>9×9</th><th>13×13</th><th>19×19</th></tr>
+          <tr><td>początkujący</td><td>0–40</td><td>0–100</td><td>0–260</td></tr>
+          <tr><td>30 kyu</td><td>40</td><td>100</td><td>260</td></tr>
+          <tr><td>20 kyu</td><td>60</td><td>150</td><td>390</td></tr>
+          <tr><td>10 kyu</td><td>80</td><td>200</td><td>520</td></tr>
+          <tr><td>1 dan</td><td>100</td><td>250</td><td>650</td></tr>
+        </table>
+
+        <p><strong>Z innej planszy.</strong>
+        Startowe <span class="ps">PS</span> można spróbować przeliczyć z planszy, na której gracz jest już skalibrowany — mają się do siebie jak <span class="ps">2 : 5 : 13</span> na 9×9 : 13×13 : 19×19.
+        Np. <span class="ps">60 PS</span> na 9×9 to <span class="ps">150 PS</span> na 13×13 (60 × 5/2) i <span class="ps">390 PS</span> na 19×19 (60 × 13/2).
+        Siła na różnych planszach nie musi jednak iść w parze.</p>
       </section>
 
       <section id="dla-klubow">
@@ -212,7 +208,7 @@
         W klubie, w którym przy jednym stoliku siada 20 kyu z 2 danem, to jest warunek tego, żeby obaj chcieli przyjść znowu.</p>
         <p><strong>Przegrana niesie informację, a nie wstyd.</strong>
         Przy wyrównaniu „przegrałem o 3" znaczy „byłem blisko" — to konkretny feedback, a nie zero-jedynkowa porażka.
-        A ponieważ jedna gra to <span class="ps">±1</span> albo <span class="ps">±2 PS</span>, zły dzień nic nie kosztuje: nie ma czego bronić i nie ma powodu unikać silniejszych.</p>
+        A ponieważ jedna gra to <span class="ps">±1 PS</span> albo <span class="ps">±2 PS</span>, zły dzień nic nie kosztuje: nie ma czego bronić i nie ma powodu unikać silniejszych.</p>
         <p><strong>Do gry równej wchodzi się wcześniej, niż się rywala naprawdę dogoni.</strong>
         Wystarczy zbliżyć się na mniej niż komi, czyli poniżej <span class="ps">6 PS</span> różnicy.
         Ten próg jest widocznym kamieniem milowym: rywal, którego słabszy gracz od miesięcy próbuje złapać, siada z nim wreszcie do gry bez wyrównania.
@@ -257,7 +253,7 @@
         To, że <span class="ps">PS</span> skaczą szybko, jest w porządku — wierne odwzorowanie siły gracza nie jest tu celem.
         Istotne jest, żeby dało się zbierać punkty.</p>
         <p><strong>Na mniejszej planszy ranking porusza się szybciej.</strong>
-        Stopień to <span class="ps">2 PS</span> na 9×9, ale <span class="ps">13</span> na 19×19, a zmiana po grze jest wszędzie ta sama — <span class="ps">±1</span> albo <span class="ps">±2</span>.
+        Stopień to <span class="ps">2 PS</span> na 9×9, ale <span class="ps">13 PS</span> na 19×19, a zmiana po grze jest wszędzie ta sama — <span class="ps">±1 PS</span> albo <span class="ps">±2 PS</span>.
         Na 9×9 dwie wygrane to więc cały stopień, na 19×19 trzeba ich trzynastu.
         Na 9×9 jest to celowe i wygodne — gra się szybko i dużo, więc ranking od razu nadąża za postępem, a nowy gracz widzi ruch po jednym wieczorze zamiast po miesiącach.
         Na 13×13 tempo jest w sam raz, a na 19×19 trochę za wolne — to może wymagać zmiany w przyszłości.</p>

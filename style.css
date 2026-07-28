@@ -171,7 +171,8 @@ img.wycinek {
   margin: 0 0 0.3rem;
 }
 .spis ul.links { margin: 0; }
-.spis ul.links li { padding-left: 0; margin: 0.15rem 0; }
+/* spis nie jest proza: pre-line z .zdania robilby puste linie wokol zagniezdzonych list */
+.spis ul.links li { padding-left: 0; margin: 0.15rem 0; white-space: normal; }
 .spis ul.links li::before { display: none; }
 .spis ul.links ul.links { margin: 0.1rem 0 0.35rem 1.1rem; }
 

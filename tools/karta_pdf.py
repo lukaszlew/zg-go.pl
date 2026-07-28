@@ -38,7 +38,7 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "23.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
+WERSJA = "28.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
 ROWS = 23                               # mini-tabela wyrownania w sciadze kosztuje 3 wiersze
 ROW_H = 8 * mm
 HEAD_H = 13 * mm
@@ -110,6 +110,7 @@ SCIAGA: list[tuple[str, list[str]]] = [
         "w punktach: + wygrana, − przegrana",
         "na obu kartach ta sama liczba, przeciwne znaki",
         "przy podliczaniu dolicz jeńców — każdy to punkt",
+        "poddanie: +R i −R zamiast liczby",
         "remis przy grze równej: wygrywa Biały",
     ]),
     ("zmiana PS", [
@@ -117,6 +118,8 @@ SCIAGA: list[tuple[str, list[str]]] = [
         "wygrana o 13+ punktów albo poddanie: ±2",
         "remis (przy różnicy PS ≥ 6): PS bez zmian",
         "trzecia wygrana z rzędu (i kolejne): zwycięzca ×2",
+        "serię przerywa każda gra bez wygranej, też remis",
+        "gra kalibrująca nowego gracza: przeciwnik wpisuje 0",
     ]),
 ]
 

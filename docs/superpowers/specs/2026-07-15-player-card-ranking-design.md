@@ -1,5 +1,19 @@
 # Ranking na żywo — pozostały zakres
 
+> **PORZUCONE 2026-07-27. Nie wdrażamy.**
+>
+> Powód: papierowe karty działają za dobrze. Prowadzenie własnego dziennika
+> gier okazało się częścią przyjemności, a nie niedogodnością do usunięcia —
+> gracz widzi na karcie własną historię zamiast liczby w cudzej bazie.
+> Karta ma przy tym wbudowany audyt (ta sama gra na dwóch kartach, łańcuch
+> `moje PS` → `nowe PS`), więc arkusz nie jest potrzebny nawet jako kontrola.
+> Karty zostają w klubie pod opieką opiekuna, więc nie giną między środami.
+> Do tego cały argument „samograj" — zero serwera, konta i aplikacji —
+> osłabłby, gdyby ranking wymagał wpisywania gier do formularza.
+>
+> Uzasadnienie w wersji dla czytelnika: `ranking.html`, sekcja
+> „Dla innych klubów". Dokument zostaje jako zapis rozważanego wariantu.
+
 Data: 2026-07-15 (zaktualizowany po wdrożeniu karty gracza i przykładu).
 Zrobione i poza tym dokumentem: karta gracza PDF (`tools/karta_pdf.py`,
 `make`), karty przykładowe i wycinki SVG na ranking.html, zasady PS.

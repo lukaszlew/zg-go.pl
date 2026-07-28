@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/svg+xml" href="img/logo.svg">
   <title>Ranking Semedori — Klub Go w Zielonej Górze</title>
-  <meta name="description" content="Zasady rozgrywek klubowych na planszach 9×9, 13×13 i 19×19: punkty siły oraz wyrównanie — dodatkowe ruchy i jeńcy.">
+  <meta name="description" content="Zasady rozgrywek klubowych: punkty siły i wyrównanie — dodatkowe ruchy i jeńcy. Dlaczego ten ranking działa i jak wdrożyć go u siebie w klubie.">
   <link rel="canonical" href="https://zg-go.pl/ranking.html">
   <meta property="og:title" content="Ranking Semedori — Klub Go w Zielonej Górze">
-  <meta property="og:description" content="Zasady rozgrywek klubowych na planszach 9×9, 13×13 i 19×19: punkty siły oraz wyrównanie — dodatkowe ruchy i jeńcy.">
+  <meta property="og:description" content="Zasady rozgrywek klubowych: punkty siły i wyrównanie — dodatkowe ruchy i jeńcy. Dlaczego ten ranking działa i jak wdrożyć go u siebie w klubie.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://zg-go.pl/ranking.html">
   <meta property="og:image" content="https://zg-go.pl/og-karty.png">
@@ -47,7 +47,10 @@
 
       <p>Każdy gracz klubu ma <span class="ps">punkty siły</span> (w skrócie <span class="ps">PS</span>) — miarę tego, jak mocno aktualnie gra.
       Dzięki nim każda gra jest <a href="#wyrownanie">wyrównana</a> — obie strony mają równe szanse, niezależnie od różnicy poziomów.
-      Po każdej grze <span class="ps">PS</span> się zmieniają — z czasem dopasowują się do prawdziwej siły gracza i pokazują jego postępy.</p>
+      Po każdej grze <span class="ps">PS</span> się zmieniają — nadążają za formą gracza i pokazują jego postępy.</p>
+
+      <p>Po co to wszystko: punkty sprawiają, że gra zaczyna się liczyć, a wyrównanie — że liczy się każda, niezależnie od tego, kto siedzi po drugiej stronie.
+      Właśnie stąd bierze się wzrost siły, i o tym jest <a href="#dlaczego">dolna część strony</a>.</p>
 
       <p class="karta-link" id="karta"><a href="karta.pdf">Karta gracza (PDF)</a> — dziennik gier i <span class="ps">punktów siły</span>; do wydruku na A4.</p>
 
@@ -55,10 +58,24 @@
         <p class="spis-label">Na tej stronie</p>
         <ul class="links">
           <li><a href="#punkty-sily">Punkty siły</a></li>
-          <li><a href="#wyrownanie">Wyrównanie</a></li>
+          <li><a href="#wyrownanie">Wyrównanie</a>
+            <ul class="links">
+              <li><a href="#gra-rowna">Mała różnica PS: gra równa</a></li>
+              <li><a href="#gra-z-wyrownaniem">Duża różnica PS</a></li>
+            </ul>
+          </li>
           <li><a href="#zmiana-ps">Zmiana PS</a></li>
           <li><a href="#przykladowa-gra">Przykładowa gra</a></li>
           <li><a href="#opiekun">Notatki dla opiekuna</a></li>
+          <li><a href="#kalibracja">Kalibracja nowego gracza</a></li>
+          <li><a href="#dla-klubow">Dla innych klubów</a>
+            <ul class="links">
+              <li><a href="#dlaczego">Dlaczego motywuje</a></li>
+              <li><a href="#samograj">Samograj</a></li>
+              <li><a href="#dlaczego-tak">Dlaczego akurat tak</a></li>
+              <li><a href="#wady">Wady i ograniczenia</a></li>
+            </ul>
+          </li>
         </ul>
       </nav>
 
@@ -82,13 +99,13 @@
         <p>Słabszy dostaje od silniejszego wyrównanie — dodatkowe ruchy na start i jeńców — tak, żeby obie strony miały równe szanse.
         Policzcie <span class="ps">różnicę PS</span> — <span class="ps">PS</span> silniejszego minus słabszego.</p>
 
-        <h3>Mała <span class="ps">różnica PS</span> (0–5): gra równa</h3>
+        <h3 id="gra-rowna">Mała <span class="ps">różnica PS</span> (0–5): gra równa</h3>
         <p>Kolory losujecie za pomocą nigiri: jeden gracz bierze w dłoń garść białych kamieni, drugi kładzie jeden czarny (zgaduje: nieparzysta) albo dwa czarne (parzysta); jeśli zgadł, gra Czarnymi.
         Czarny daje Białemu 6 jeńców (na karcie: −6).
         Jeńców nie kładzie się na planszy — trzyma się ich do końca gry, a przy liczeniu każdy to punkt.
         Remis wygrywa Biały — razem z jeńcami to komi 6,5.</p>
 
-        <h3>Duża <span class="ps">różnica PS</span> (6+)</h3>
+        <h3 id="gra-z-wyrownaniem">Duża <span class="ps">różnica PS</span> (6+)</h3>
         <p>Silniejszy gra Białymi, słabszy zaczyna Czarnymi.
         Znajdźcie różnicę w siatce: kolumna mówi, iloma ruchami zaczyna Czarny, a wiersz — ilu jeńców dostaje:</p>
         <table class="sila komp">
@@ -116,10 +133,14 @@
       <section id="zmiana-ps">
         <h2>Zmiana PS</h2>
         <p>Gracie i zapisujecie wynik w punktach ze znakiem: + wygrana, − przegrana. Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>.</p>
-        <p>Wygrana o 13 punktów lub więcej — czyli o równowartość jednego ruchu — albo przez poddanie: <span class="ps">+2</span> i <span class="ps">−2 PS</span> zamiast <span class="ps">±1</span>.</p>
+        <p>Wygrana o 13 punktów lub więcej — czyli o równowartość jednego ruchu — albo przez poddanie: <span class="ps">+2</span> i <span class="ps">−2 PS</span> zamiast <span class="ps">±1</span>.
+        Po poddaniu nie ma czego liczyć, więc w kolumnie <span class="kol">wynik</span> wpisujecie +R u zwycięzcy i −R u przegranego.</p>
         <p>Remis — równy wynik po doliczeniu jeńców — możliwy tylko przy dużej różnicy <span class="ps">PS</span>: <span class="ps">PS</span> się wtedy nie zmieniają.
         W grze równej remisu nie ma — równy wynik wygrywa Biały (komi 6,5).</p>
-        <p>Trzecia wygrana z rzędu na danej planszy — z kimkolwiek — i każda kolejna: zmiana <span class="ps">PS</span> zwycięzcy jest podwojona, żeby ranking szybko dogonił gracza robiącego postępy.</p>
+        <p>Trzecia wygrana z rzędu na danej planszy — z kimkolwiek — i każda kolejna: zmiana <span class="ps">PS</span> zwycięzcy jest podwojona, żeby ranking szybko dogonił gracza robiącego postępy.
+        Serię przerywa każda gra na tej planszy, która nie kończy się wygraną.</p>
+        <p>Wyjątek: <a href="#kalibracja">gra kalibrująca</a> nowego gracza nie zmienia <span class="ps">PS</span> przeciwnika ani jego serii — jej wynik mówi tylko o nowym graczu.
+        Przeciwnik wpisuje ją na swojej karcie ze <span class="kol">zmianą PS</span> równą zero.</p>
       </section>
 
       <section id="przykladowa-gra">
@@ -142,17 +163,125 @@
       </div>
       </section>
 
-      <section class="opiekun" id="opiekun">
+      <section id="opiekun">
         <h2>Notatki dla opiekuna</h2>
+        <p>Od tego miejsca strona mówi już do prowadzącego klub, nie do graczy.</p>
+        <p>Opiekun klubu może swobodnie korygować <span class="ps">PS</span> każdego gracza — gdy widzi, że gracz wygrywa zbyt często, że jego <span class="ps">PS</span> były źle ustalone, albo że robi postępy szybciej, niż ranking nadąża.</p>
+      </section>
+
+      <section id="kalibracja">
+        <h2>Kalibracja nowego gracza</h2>
+        <p>To najważniejsza czynność opiekuna.
+        Za wysoko ustawione startowe <span class="ps">PS</span> oznaczają dla nowego gracza serię przegranych i zniechęcenie, zanim zdąży cokolwiek zbudować.</p>
         <ul class="links">
-          <li>Opiekun klubu może swobodnie korygować <span class="ps">PS</span> każdego gracza — gdy widzi, że gracz wygrywa zbyt często, że jego <span class="ps">PS</span> były źle ustalone, albo że robi postępy szybciej, niż ranking nadąża.</li>
+          <li>Jeśli znasz przybliżony poziom gracza w kyu / dan, weź wartość z <a href="#punkty-sily">tabeli poziomów</a>.
+            Wartość z przedziału „początkujący" wybierasz sam — dzieci zwykle bliżej dolnej granicy, dorośli bliżej górnej.</li>
           <li>Startowe <span class="ps">PS</span> na jednej planszy można przeliczyć z innej — mają się do siebie jak <span class="ps">2 : 5 : 13</span> na 9×9 : 13×13 : 19×19.
             Np. <span class="ps">60</span> na 9×9 to <span class="ps">60 × 5/2 = 150</span> na 13×13 i <span class="ps">60 × 13/2 = 390</span> na 19×19.</li>
-          <li>Wartość startową z przedziału „początkujący" wybiera opiekun — dzieci zwykle bliżej dolnej granicy, dorośli bliżej górnej.</li>
-          <li>Kalibracja nowego gracza: rozegrajcie zwykłą grę, a po niej skoryguj jego <span class="ps">PS</span> o wynik — wygrał o X punktów, dodaj <span class="ps">X</span>; przegrał o X, odejmij <span class="ps">X</span> — tak, żeby ta gra wyszła na zero.
-            Można to powtórzyć kilka razy i przypisać średnią.
-            Na koniec odejmij nowemu graczowi równowartość dwóch stopni — około <span class="ps">4 PS</span> na 9×9, <span class="ps">10</span> na 13×13, <span class="ps">26</span> na 19×19 — jako margines na możliwy błąd tej procedury.</li>
+          <li>Kalibracja grą: rozegrajcie zwykłą grę, a po niej skoryguj jego <span class="ps">PS</span> o wynik — wygrał o X punktów, dodaj <span class="ps">X</span>; przegrał o X, odejmij <span class="ps">X</span> — tak, żeby ta gra wyszła na zero.
+            Można to powtórzyć kilka razy i przypisać średnią.</li>
+          <li>Gra kalibrująca nie wchodzi do rankingu przeciwnika: jego <span class="ps">PS</span> zostają bez zmian i nie liczy mu się do serii, a na swojej karcie wpisuje <span class="kol">zmianę PS</span> równą zero.
+            Wynik takiej gry mówi wyłącznie o nowym graczu.</li>
+          <li>Na koniec odejmij nowemu graczowi równowartość dwóch stopni — około <span class="ps">4 PS</span> na 9×9, <span class="ps">10</span> na 13×13, <span class="ps">26</span> na 19×19 — jako margines na możliwy błąd tej procedury.</li>
         </ul>
+      </section>
+
+      <section id="dla-klubow">
+        <h2>Dla innych klubów</h2>
+        <p><strong>Polecamy ten system każdemu klubowi, a zwłaszcza takiemu, do którego przychodzą dzieci.</strong>
+        Z dwóch powodów: bo motywuje do pracy nad własną grą i bo jest samograjem — nie wymaga prawie żadnej organizacji.
+        Poniżej rozwinięcie obu, a do tego skąd wzięły się liczby i czego się po tym systemie nie spodziewać.</p>
+
+        <p><strong>Nie wymyśliliśmy tego w próżni.</strong>
+        O tym, jak buduje się żywy klub, najwięcej nauczyliśmy się od Damira Medaka, prezesa <a href="https://hgos.hr/" target="_blank" rel="noopener">Chorwackiego Związku Go</a> — u niego od lat działa <a href="https://www.higou.hr/" target="_blank" rel="noopener">międzyszkolna liga go</a>, obozy i letnie festiwale, w wielu miejscowościach naraz.
+        Warto tam zaglądać.</p>
+
+        <h3 id="dlaczego">Dlaczego motywuje</h3>
+        <p><strong>Ranking przesuwa charakter gier z towarzyskich w stronę rywalizacji.</strong>
+        Klub bez rankingu to miłe spotkanie, po którym wynik gry zapomina się w godzinę.
+        Nad grą, która się liczy, myśli się inaczej niż nad grą do zapomnienia, i właśnie stąd bierze się wzrost siły.
+        Punkty dają grze ciąg dalszy — następnym razem chce się wypaść lepiej niż dziś.
+        Dla zaskakująco wielu osób samo zbieranie punktów wystarcza, żeby przyjść na kolejne spotkanie — i żeby między spotkaniami popracować nad swoją grą.</p>
+        <p><strong>Wyrównanie sprawia, że nie ma gier bez sensu.</strong>
+        Silniejszy nie miażdży, słabszy nie jest bez szans — obie strony grają o wynik do ostatniego ruchu.
+        W klubie, w którym przy jednym stoliku siada 20 kyu z 2 danem, to jest warunek tego, żeby obaj chcieli przyjść znowu.</p>
+        <p><strong>Przegrana niesie informację, a nie wstyd.</strong>
+        Przy wyrównaniu „przegrałem o 3" znaczy „byłem blisko" — to konkretny feedback, a nie zero-jedynkowa porażka.
+        A ponieważ jedna gra to <span class="ps">±1</span> albo <span class="ps">±2 PS</span>, zły dzień nic nie kosztuje: nie ma czego bronić i nie ma powodu unikać silniejszych.</p>
+        <p><strong>Do gry równej wchodzi się wcześniej, niż się rywala naprawdę dogoni.</strong>
+        Wystarczy zbliżyć się na mniej niż komi, czyli poniżej <span class="ps">6 PS</span> różnicy.
+        Ten próg jest widocznym kamieniem milowym: rywal, którego słabszy gracz od miesięcy próbuje złapać, siada z nim wreszcie do gry bez wyrównania.
+        Widać to na karcie i warto ogłosić.</p>
+
+        <h3 id="samograj">Samograj</h3>
+        <p><strong>Ten ranking nie wymaga żadnej organizacji.</strong>
+        Turniej potrzebuje terminu, sędziego, rund, kojarzenia par i obecności wszystkich od początku do końca.
+        Tu gry idą asynchronicznie, w dowolnych parach i w dowolnej kolejności, a każda para po grze sama się rozlicza — liczy <span class="kol">różnicę PS</span>, gra, wpisuje <span class="kol">wynik</span> i <span class="kol">nowe PS</span> na obie karty.
+        Nie ma serwera, konta, aplikacji ani rundy, na którą trzeba zdążyć.
+        Można wpaść na dwadzieścia minut, zagrać jedną grę i wyjść — ranking i tak jest aktualny.</p>
+        <p><strong>Koszt organizacyjny nie rośnie z liczbą graczy.</strong>
+        Klub dziesięcioosobowy i trzydziestoosobowy obsługują się tak samo, bo cała praca dzieje się w parach, a nie w jednym miejscu.
+        Turniej skaluje się odwrotnie: im więcej ludzi, tym więcej rund i tym trudniej zebrać wszystkich na całe popołudnie.</p>
+        <p><strong>Karta jest papierowa i to jest wybór, nie zaszłość.</strong>
+        Prowadzenie własnego dziennika gier jest po prostu przyjemne — widać na nim własną historię, a nie liczbę w cudzej bazie.
+        Trochę jak karteczkowe turnieje, które robił kiedyś Krzysztof Giedrojć, z tą różnicą, że ta karta żyje dłużej niż jedno popołudnie: leży w klubie i czeka do następnego spotkania.
+        Karty trzyma klub i pilnuje ich opiekun, więc nie giną po drodze.
+        Żadna wersja online nie jest do tego potrzebna — u nas kartki wygrały z arkuszem, zanim arkusz w ogóle powstał.</p>
+
+        <h3 id="dlaczego-tak">Dlaczego akurat tak</h3>
+        <p><strong>Odrzucamy kyu i dany na rzecz jednej waluty: punktu.</strong>
+        Punkt na planszy, punkt wyrównania i <span class="ps">punkt siły</span> to ta sama jednostka.
+        Dzięki temu wynik gry przekłada się wprost na ranking, a ranking wprost na wyrównanie następnej gry — i nikomu nie trzeba tłumaczyć, ile stopni wart jest kamień.
+        Stopnie zostają wyłącznie po to, żeby ustawić nowemu graczowi start.</p>
+        <p><strong><span class="ps">PS</span> to nie kyu ani dan.</strong>
+        Nie mają też nic wspólnego z rankingiem PSG czy EGD.
+        To liczba lokalna dla klubu, sensowna wyłącznie wobec innych graczy tego samego klubu.</p>
+        <p><strong>Do dobrania zostaje jedna jedyna stała: ile punktów wart jest ruch.</strong>
+        Wartość ruchu — te <span class="ps">13</span> punktów, z których wyrasta cała tabela wyrównania — bierze się z eksperymentów z KataGo i jest zaskakująco stabilna.
+        Można podnieść zarzut, że początkujący nie wykorzysta darmowego ruchu tak dobrze jak KataGo — ale ten sam zarzut stosuje się symetrycznie do obu stron, czarnej i białej.
+        W praktyce trzynastka sprawdza się u nas dobrze.</p>
+        <p><strong>Wyrównanie idzie zawsze w jedną stronę.</strong>
+        Jest wariantem tego, które znamy z Letniej Szkoły Go, z dwiema zmianami.
+        Biały nigdy nie dokłada kamieni, a Czarny dostaje wyrównanie zawsze w obu postaciach naraz: ruchy na planszy plus jeńcy.
+        Różnica mniejsza niż <span class="ps">6 PS</span>, czyli mniejsza niż komi, jest po prostu grą równą.</p>
+        <p><strong>Nawet skrajne wyrównanie na 9×9 daje sensowną grę.</strong>
+        Przy dużej różnicy sił Czarny dostaje na małej planszy kilka ruchów na start i kilkunastu jeńców naraz — wygląda to jak przepis na farsę.
+        A jednak działa: gry wychodzą wyrównane i obie strony grają serio do końca.
+        Sami byliśmy tym zaskoczeni.</p>
+        <p><strong>Ranking nie musi być dokładny.</strong>
+        To, że <span class="ps">PS</span> skaczą szybko, jest w porządku — wierne odwzorowanie siły gracza nie jest tu celem.
+        Istotne jest, żeby dało się zbierać punkty.</p>
+        <p><strong>Na mniejszej planszy ranking porusza się szybciej.</strong>
+        Stopień to <span class="ps">2 PS</span> na 9×9, ale <span class="ps">13</span> na 19×19, a zmiana po grze jest wszędzie ta sama — <span class="ps">±1</span> albo <span class="ps">±2</span>.
+        Na 9×9 dwie wygrane to więc cały stopień, na 19×19 trzeba ich trzynastu.
+        Na 9×9 jest to celowe i wygodne — gra się szybko i dużo, więc ranking od razu nadąża za postępem, a nowy gracz widzi ruch po jednym wieczorze zamiast po miesiącach.
+        Na 13×13 tempo jest w sam raz, a na 19×19 trochę za wolne — to może wymagać zmiany w przyszłości.</p>
+        <p><strong>Podwojenie serii daje graczowi świeże punkty zamiast cudzych.</strong>
+        Gracz robiący szybkie postępy musi swoje <span class="ps">PS</span> skądś wziąć — i lepiej, żeby dostawał świeże, niż żeby wyjmował je z kart tych, z którymi akurat siada.
+        Podwojona zmiana zwycięzcy przy niezmienionej zmianie przegranego robi dokładnie to: nadwyżka wchodzi do klubu z zewnątrz, zamiast być komuś zabrana.
+        Suma <span class="ps">PS</span> w klubie przez to powoli rośnie i tak ma być — liczą się wyłącznie różnice, a ranking jest klubowy, nie ogólnopolski.</p>
+
+        <h3 id="wady">Wady i ograniczenia</h3>
+        <p><strong>Największe ryzyko to źle ustawiony start nowego gracza.</strong>
+        Za wysokie startowe <span class="ps">PS</span> oznaczają serię przegranych i zniechęcenie, zanim gracz zdąży cokolwiek zbudować — łatwo w ten sposób sparzyć kogoś na dobre.
+        Dlatego kalibracja jest najważniejszą czynnością opiekuna, a na koniec odejmuje się jeszcze zapas dwóch stopni na wypadek błędu.
+        Procedura stoi wyżej, w sekcji <a href="#kalibracja">Kalibracja nowego gracza</a>.</p>
+        <p><strong>Wszystko opiera się na zaufaniu — ale karta ma wbudowany audyt.</strong>
+        Wyniku nie weryfikuje nikt poza dwójką graczy przy stoliku, a dzieci bywają pomysłowe.
+        Tyle że każda gra jest zapisana na dwóch kartach: <span class="kol">różnica PS</span> musi być na obu ta sama, a <span class="kol">wynik</span> — ten sam co do liczby, przeciwny co do znaku.
+        Do tego kolumny <span class="kol">moje PS</span> i <span class="kol">nowe PS</span> tworzą łańcuch, w którym każdy wiersz zaczyna się tam, gdzie skończył poprzedni.
+        Zmyślony wpis nie spina się ani z kartą przeciwnika, ani z własnym łańcuchem.</p>
+        <p><strong>Kliki dryfują.</strong>
+        Grupa, która gra głównie ze sobą — inny klub, ale tak samo mała paczka wewnątrz jednego klubu — z czasem odjeżdża reszcie: jej <span class="ps">PS</span> są spójne wewnętrznie, ale nieporównywalne na zewnątrz.
+        Naprawa jest prosta, bo dodanie albo odjęcie tej samej stałej wszystkim w grupie nie zmienia ani jednego wyrównania wewnątrz niej.
+        Wystarczy więc rozegrać kilka gier między grupami i przesunąć całą grupę o średni błąd wyniku — dokładnie tak, jak kalibruje się pojedynczego gracza.
+        Tą samą drogą dwa kluby o zupełnie nieskalibrowanych rankingach mogą zagrać ze sobą.</p>
+        <p><strong>Sprawdziliśmy to na 9×9 i 13×13, nie na 19×19.</strong>
+        Stan na 27 lipca 2026: system wciąż się zmienia i będziemy go poprawiać w miarę zbierania doświadczeń.</p>
+
+        <p><strong>Wdrażajcie u siebie — <a href="karta.pdf">karta do druku</a> jest gotowa.</strong>
+        A jak wdrożycie, to koniecznie dajcie znać na <a href="https://discord.gg/EB5at7kM9v" target="_blank" rel="noopener">naszym Discordzie</a>.
+        Tam też odpowiemy na pytania i pomożemy przy kalibracji.</p>
       </section>
 
     </main>

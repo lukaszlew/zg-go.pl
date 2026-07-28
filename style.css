@@ -173,6 +173,7 @@ img.wycinek {
 .spis ul.links { margin: 0; }
 .spis ul.links li { padding-left: 0; margin: 0.15rem 0; }
 .spis ul.links li::before { display: none; }
+.spis ul.links ul.links { margin: 0.1rem 0 0.35rem 1.1rem; }
 
 /* wyeksponowany link do karty gracza */
 .karta-link { font-size: 1.2rem; margin: 1.6rem 0; }

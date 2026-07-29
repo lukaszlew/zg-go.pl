@@ -40,60 +40,40 @@
 
     <main class="content zdania">
 
-      <!-- INWARIANT: terminologia przykladu i zasad (zwlaszcza nazwy w «...») musi byc
-           zgodna z kolumnami karty gracza (tools/karta_pdf.py: FIELDS, COLUMNS, SCIAGA).
-           Nazwy kolumn przywoluj w <span class="kol">...</span>.
-           Sprawdzaj przy kazdej edycji tresci tu i tam. -->
+      <!-- ZASADY: zdania w bloku "Zasady" i pogrubione naglowki w rozdzialach
+           Wyrownanie / Wynik / Zmiana PS pochodza z tools/zasady.py i musza sie z nim
+           zgadzac co do slowa — pilnuje tego tools/test_zasady.py (pre-commit hook).
+           Zmiana zasady: najpierw zasady.py, potem tu i `make`.
+           INWARIANT recznie sprawdzany: nazwy kolumn karty (tools/karta_pdf.py: FIELDS,
+           COLUMNS) przywoluj w <span class="kol">...</span> dokladnie tak, jak brzmia. -->
 
-      <p>Każdy gracz klubu ma <span class="ps">punkty siły</span> (w skrócie <span class="ps">PS</span>) — miarę tego, jak mocno aktualnie gra: więcej <span class="ps">PS</span>, silniejszy gracz.
-      Są osobne dla każdej planszy: 9×9, 13×13 i 19×19 to trzy niezależne rankingi, a jeden stopień to mniej więcej <span class="ps">2 PS</span> na 9×9, <span class="ps">5 PS</span> na 13×13 i <span class="ps">13 PS</span> na 19×19.
-      Po każdej grze <span class="ps">PS</span> się zmieniają — nadążają za formą gracza i pokazują jego postępy.</p>
+      <p>Każdy gracz klubu ma <span class="ps">punkty siły</span> (w skrócie <span class="ps">PS</span>) — miarę tego, jak mocno aktualnie gra.
+      Ranking ma dwa cele.</p>
 
-      <p>Dzięki <span class="ps">PS</span> każda gra jest <a href="#wyrownanie">wyrównana</a>: obie strony mają równe szanse, niezależnie od różnicy poziomów.
-      Punkty sprawiają przy tym, że gra zaczyna się liczyć, a wyrównanie — że liczy się każda, niezależnie od tego, kto siedzi po drugiej stronie. Właśnie stąd bierze się wzrost siły, i o tym jest <a href="#dlaczego">dolna część strony</a>.</p>
+      <p><strong>Dobra gra z każdym.</strong>
+      Nie trzeba szukać przeciwnika na swoim poziomie — pary tworzą się same, siadacie z kim akurat wypadnie i gra jest ciekawa dla obu stron.
+      Techniką, która to zapewnia, jest <a href="#wyrownanie">wyrównanie</a>: obie strony mają równe szanse, niezależnie od różnicy poziomów.</p>
 
-      <p>Wszystko stoi na dobrze ustawionej wartości startowej: z zawyżonymi <span class="ps">PS</span> nowy gracz przegra serię gier i tyle zapamięta. Dlatego <a href="#kalibracja">kalibracja</a> jest tak ważna — potem liczy się już tylko to, co pokaże na planszy.</p>
+      <p><strong>Widoczne postępy.</strong>
+      Po każdej grze <span class="ps">PS</span> się zmieniają — nadążają za formą gracza i widać na karcie, że idzie do przodu.
+      To motywuje: gra przestaje być tylko towarzyska i zaczyna się liczyć, a właśnie stąd bierze się wzrost siły.
+      Więcej o tym w <a href="#dlaczego">dolnej części strony</a>.</p>
 
-      <p class="karta-link" id="karta"><a href="karta.pdf">Karta gracza (PDF)</a> — dziennik gier i <span class="ps">punktów siły</span>; do wydruku na A4.</p>
+      <p class="karta-link" id="karta"><a href="karta.pdf">Karta gracza (PDF)</a> — dziennik gier i <span class="ps">punktów siły</span>, który gracze wypełniają sami po każdej grze; do wydruku na A4.</p>
 
-      <nav class="spis">
-        <p class="spis-label">Na tej stronie</p>
-        <ul class="links">
-          <li><a href="#wyrownanie">Wyrównanie</a>
-            <ul class="links">
-              <li><a href="#gra-rowna">Gra równa</a></li>
-              <li><a href="#gra-z-wyrownaniem">Gra z wyrównaniem</a></li>
-            </ul>
-          </li>
-          <li><a href="#zmiana-ps">Zmiana PS</a></li>
-          <li><a href="#przykladowa-gra">Przykładowa gra</a></li>
-          <li><a href="#kalibracja">Kalibracja nowego gracza</a></li>
-          <li><a href="#dla-klubow">Dla innych klubów</a>
-            <ul class="links">
-              <li><a href="#dlaczego">Dlaczego motywuje</a></li>
-              <li><a href="#samograj">Samograj</a></li>
-              <li><a href="#dlaczego-tak">Dlaczego akurat tak</a></li>
-              <li><a href="#wady">Wady i ograniczenia</a></li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
+      <section id="zasady">
+        <h2>Zasady</h2>
+        <p>Jest ich dwanaście i to jest całość — te same dwanaście zdań stoi na dole <a href="karta.pdf">karty gracza</a>.
+        Każda prowadzi do swojego rozwinięcia niżej, ze szczegółami dla tych, którzy czytają pierwszy raz albo mają wątpliwość.</p>
 
-      <section id="wyrownanie">
-        <h2>Wyrównanie</h2>
-        <p>Słabszy dostaje od silniejszego wyrównanie — dodatkowe ruchy na start i jeńców — tak, żeby obie strony miały równe szanse.
-        Policzcie <span class="ps">różnicę PS</span> — <span class="ps">PS</span> silniejszego minus słabszego.</p>
+        <h3><a href="#wyrownanie">Wyrównanie</a></h3>
+        <ol class="zasady">
+          <li><a href="#zasada-1">Policzcie <span class="ps">różnicę PS</span>: <span class="ps">PS</span> silniejszego minus <span class="ps">PS</span> słabszego.</a></li>
+          <li><a href="#zasada-2">Różnica 0–5 to gra równa: kolory przez nigiri, Czarny daje Białemu 6 jeńców.</a></li>
+          <li><a href="#zasada-3">Od różnicy 6 silniejszy gra Białymi, a Czarny bierze z tabeli ruchy i jeńców.</a></li>
+        </ol>
 
-        <h3 id="gra-rowna">Gra równa: <span class="ps">różnica PS</span> 0–5</h3>
-        <p>Kolory losujecie za pomocą nigiri: jeden gracz bierze w dłoń garść białych kamieni, drugi kładzie jeden czarny (zgaduje: nieparzysta) albo dwa czarne (parzysta); jeśli zgadł, gra Czarnymi.
-        Czarny daje Białemu 6 jeńców (na karcie: −6).
-        Jeńców nie kładzie się na planszy — trzyma się ich do końca gry, a przy liczeniu każdy to punkt.
-        Remis wygrywa Biały — razem z jeńcami to komi 6,5.</p>
-
-        <h3 id="gra-z-wyrownaniem">Gra z wyrównaniem: <span class="ps">różnica PS</span> 6 i więcej</h3>
-        <p>Silniejszy gra Białymi, słabszy zaczyna Czarnymi.
-        Znajdźcie różnicę w siatce: kolumna mówi, iloma ruchami zaczyna Czarny, a wiersz — ilu jeńców dostaje:</p>
-        <table class="sila komp">
+        <table class="sila komp" id="tabela-wyrownania">
           <tr><th colspan="5"><span class="ps">różnica PS</span></th><th>jeńcy<br>dla Czarnego</th></tr>
           <tr><td>6</td><td>19</td><td>32</td><td>45</td><td>58</td><td class="komp-jency">0</td></tr>
           <tr><td>7</td><td>20</td><td>33</td><td>46</td><td>59</td><td class="komp-jency">1</td></tr>
@@ -110,23 +90,36 @@
           <tr><td>18</td><td>31</td><td>44</td><td>57</td><td>70</td><td class="komp-jency">12</td></tr>
           <tr class="komp-ruchy"><th>1 ruch</th><th>2 ruchy</th><th>3 ruchy</th><th>4 ruchy</th><th>5 ruchów</th><th>ruchy Czarnego</th></tr>
         </table>
-        <p>Różnica powyżej <span class="ps">70 PS</span>: odejmujcie po <span class="ps">13 PS</span> — każde odjęcie to dodatkowy ruch Czarnego — aż wynik znajdzie się w tabeli.</p>
-        <p>Skąd te liczby: komi — cena przywileju pierwszego ruchu Czarnego — to 6 jeńców i remis dla Białego (razem 6,5),
-        a <span class="ps">13 PS</span> to wartość jednego ruchu, więc każde pełne <span class="ps">13 PS</span> różnicy zamienia się w dodatkowy ruch.</p>
+
+        <h3><a href="#wynik">Wynik</a></h3>
+        <ol class="zasady" start="4">
+          <li><a href="#zasada-4">Przy liczeniu doliczcie jeńców — każdy z nich to punkt.</a></li>
+          <li><a href="#zasada-5">Wynik wpisujecie w punktach ze znakiem: plus u zwycięzcy, minus u przegranego.</a></li>
+          <li><a href="#zasada-6">Po poddaniu wpisujecie +R i −R zamiast liczby.</a></li>
+          <li><a href="#zasada-7">Równy wynik w grze równej wygrywa Biały — remis zdarza się tylko przy wyrównaniu.</a></li>
+          <li><a href="#zasada-8">Ta sama gra stoi na dwóch kartach: różnica jednakowa, wynik z przeciwnymi znakami.</a></li>
+        </ol>
+
+        <h3><a href="#zmiana-ps">Zmiana PS</a></h3>
+        <ol class="zasady" start="9">
+          <li><a href="#zasada-9">Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>; remis nie zmienia nic.</a></li>
+          <li><a href="#zasada-10">Wygrana o 13 punktów lub więcej albo przez poddanie: <span class="ps">±2 PS</span>.</a></li>
+          <li><a href="#zasada-11">Trzecia wygrana z rzędu na danej planszy i każda kolejna podwaja zmianę zwycięzcy.</a></li>
+          <li><a href="#zasada-12">Gra kalibrująca nowego gracza nie zmienia <span class="ps">PS</span> przeciwnika — wpisuje zero.</a></li>
+        </ol>
       </section>
 
-      <section id="zmiana-ps">
-        <h2>Zmiana PS</h2>
-        <p>Gracie i zapisujecie wynik w punktach ze znakiem: + wygrana, − przegrana. Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>.</p>
-        <p>Wygrana o 13 punktów lub więcej — czyli o równowartość jednego ruchu — albo przez poddanie: <span class="ps">+2 PS</span> i <span class="ps">−2 PS</span> zamiast <span class="ps">±1 PS</span>.
-        Po poddaniu nie ma czego liczyć, więc w kolumnie <span class="kol">wynik</span> wpisujecie +R u zwycięzcy i −R u przegranego.</p>
-        <p>Remis — równy wynik po doliczeniu jeńców — możliwy tylko przy dużej różnicy <span class="ps">PS</span>: <span class="ps">PS</span> się wtedy nie zmieniają.
-        W grze równej remisu nie ma — równy wynik wygrywa Biały (komi 6,5).</p>
-        <p>Trzecia wygrana z rzędu na danej planszy — z kimkolwiek — i każda kolejna: zmiana <span class="ps">PS</span> zwycięzcy jest podwojona, żeby ranking szybko dogonił gracza robiącego postępy.
-        Serię przerywa każda gra na tej planszy, która nie kończy się wygraną.</p>
-        <p>Wyjątek: <a href="#kalibracja">gra kalibrująca</a> nowego gracza nie zmienia <span class="ps">PS</span> przeciwnika ani jego serii — jej wynik mówi tylko o nowym graczu.
-        Przeciwnik wpisuje ją na swojej karcie ze <span class="kol">zmianą PS</span> równą zero.</p>
-      </section>
+      <nav class="spis">
+        <p class="spis-label">Dalej na tej stronie</p>
+        <ul class="links">
+          <li><a href="#przykladowa-gra">Przykładowa gra</a></li>
+          <li><a href="#wyrownanie">Wyrównanie</a></li>
+          <li><a href="#wynik">Wynik</a></li>
+          <li><a href="#zmiana-ps">Zmiana PS</a></li>
+          <li><a href="#kalibracja">Kalibracja nowego gracza</a></li>
+          <li><a href="#dla-klubow">Dla innych klubów</a></li>
+        </ul>
+      </nav>
 
       <section id="przykladowa-gra">
       <h2>Przykładowa gra</h2>
@@ -139,7 +132,7 @@
         Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi — przy różnicy <span class="ps">6 PS</span> i większej kolory są ustalone.</p>
         <p><strong>Wyrównanie.</strong>
         <span class="kol"><span class="ps">różnica PS</span></span>: <span class="ps">84 − 60 = 24 PS</span> — jednakowa na obu kartach.
-        Z tabeli: <span class="kol">ruchy Czarnego</span>: 2 — Czarek zagra dwa ruchy, zanim Bianka odpowie —
+        Z <a href="#tabela-wyrownania">tabeli</a>: <span class="kol">ruchy Czarnego</span>: 2 — Czarek zagra dwa ruchy, zanim Bianka odpowie —
         oraz <span class="kol">jeńcy dla Czarnego</span>: 5, których Bianka daje Czarkowi.</p>
         <p><strong>Po grze.</strong>
         Czarek wygrywa o 15 punktów: <span class="kol">wynik</span>: +15 u niego, −15 u Bianki — wygrana o 13 punktów lub więcej daje <span class="ps">±2 PS</span> zamiast <span class="ps">±1 PS</span>.
@@ -148,15 +141,79 @@
       </div>
       </section>
 
+      <section id="wyrownanie">
+        <h2>Wyrównanie</h2>
+        <p>Słabszy dostaje od silniejszego wyrównanie — dodatkowe ruchy na start i jeńców — tak, żeby obie strony miały równe szanse.</p>
+
+        <p class="zasada" id="zasada-1"><span class="nr">1.</span><strong>Policzcie <span class="ps">różnicę PS</span>: <span class="ps">PS</span> silniejszego minus <span class="ps">PS</span> słabszego.</strong>
+        Silniejszy to ten, kto ma więcej <span class="ps">PS</span>.
+        <span class="ps">PS</span> są osobne dla każdej planszy — 9×9, 13×13 i 19×19 to trzy niezależne rankingi — więc bierzecie te z planszy, na której właśnie gracie.
+        Wychodzi jedna liczba i wpisujecie ją oboje, w kolumnie <span class="kol">różnica PS</span>.
+        Od niej zależy wszystko, co dalej: kolory i wyrównanie.</p>
+
+        <p class="zasada" id="zasada-2"><span class="nr">2.</span><strong>Różnica 0–5 to gra równa: kolory przez nigiri, Czarny daje Białemu 6 jeńców.</strong>
+        Nigiri: jeden gracz bierze w dłoń garść białych kamieni, drugi kładzie jeden czarny (zgaduje: nieparzysta) albo dwa czarne (parzysta); jeśli zgadł, gra Czarnymi.
+        Sześciu jeńców nie kładzie się na planszy — Czarny odkłada je Białemu i leżą obok do końca gry. Na karcie zapisujecie to jako −6.</p>
+
+        <p class="zasada" id="zasada-3"><span class="nr">3.</span><strong>Od różnicy 6 silniejszy gra Białymi, a Czarny bierze z tabeli ruchy i jeńców.</strong>
+        Kolorów już się nie losuje.
+        W <a href="#tabela-wyrownania">tabeli przy zasadach</a> kolumna mówi, iloma ruchami zaczyna Czarny, a wiersz — ilu jeńców dostaje.</p>
+
+        <p>Przy różnicy powyżej <span class="ps">70 PS</span> — co zdarza się rzadko — odejmujcie po <span class="ps">13 PS</span>, bo każde odjęcie to dodatkowy ruch Czarnego.
+        Odejmujcie, aż wynik znajdzie się w <a href="#tabela-wyrownania">tabeli</a>, a potem doczytajcie z niej ruchy i jeńców i dodajcie do ruchów tyle, ile razy odejmowaliście.</p>
+      </section>
+
+      <section id="wynik">
+        <h2>Wynik</h2>
+        <p>Gra się skończyła, liczycie punkty i zapisujecie je na obu kartach.</p>
+
+        <p class="zasada" id="zasada-4"><span class="nr">4.</span><strong>Przy liczeniu doliczcie jeńców — każdy z nich to punkt.</strong>
+        Dotyczy to zarówno kamieni zbitych w czasie gry, jak i tych, które ktoś dostał w ramach wyrównania i trzymał obok planszy.</p>
+
+        <p class="zasada" id="zasada-5"><span class="nr">5.</span><strong>Wynik wpisujecie w punktach ze znakiem: plus u zwycięzcy, minus u przegranego.</strong>
+        Wygrana o 15 punktów to <span class="kol">wynik</span> +15 u jednego gracza i −15 u drugiego.</p>
+
+        <p class="zasada" id="zasada-6"><span class="nr">6.</span><strong>Po poddaniu wpisujecie +R i −R zamiast liczby.</strong>
+        Poddanej gry nie ma jak policzyć, a litera wystarczy: do <a href="#zmiana-ps">zmiany PS</a> poddanie liczy się tak samo jak wygrana o 13 punktów.</p>
+
+        <p class="zasada" id="zasada-7"><span class="nr">7.</span><strong>Równy wynik w grze równej wygrywa Biały — remis zdarza się tylko przy wyrównaniu.</strong>
+        Sześciu jeńców plus wygrana przy równym wyniku to razem komi 6,5, a o pół punktu nikt nie zremisuje.
+        Przy wyrównaniu wszystkie liczby są całkowite, więc remis jest możliwy.</p>
+
+        <p class="zasada" id="zasada-8"><span class="nr">8.</span><strong>Ta sama gra stoi na dwóch kartach: różnica jednakowa, wynik z przeciwnymi znakami.</strong>
+        To jest wasza kontrola — jeśli się nie zgadza, ktoś się pomylił i lepiej sprawdzić od razu niż za tydzień.</p>
+      </section>
+
+      <section id="zmiana-ps">
+        <h2>Zmiana PS</h2>
+        <p>Na koniec każdy przelicza swoje <span class="ps">PS</span>: najpierw <span class="kol">zmiana PS</span>, potem <span class="kol">nowe PS</span>.</p>
+
+        <p class="zasada" id="zasada-9"><span class="nr">9.</span><strong>Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>; remis nie zmienia nic.</strong>
+        <span class="kol">Nowe PS</span> to <span class="kol">moje PS</span> plus <span class="kol">zmiana PS</span> — i od nich zaczyna się następny wiersz karty.</p>
+
+        <p class="zasada" id="zasada-10"><span class="nr">10.</span><strong>Wygrana o 13 punktów lub więcej albo przez poddanie: <span class="ps">±2 PS</span>.</strong>
+        Trzynaście punktów to równowartość jednego ruchu, czyli wygrana na tyle wyraźna, że starczyłoby jej nawet o ruch mniej.</p>
+
+        <p class="zasada" id="zasada-11"><span class="nr">11.</span><strong>Trzecia wygrana z rzędu na danej planszy i każda kolejna podwaja zmianę zwycięzcy.</strong>
+        Liczy się seria z kimkolwiek, nie z jednym przeciwnikiem.
+        Przerywa ją każda gra, która nie kończy się wygraną — przegrana i remis tak samo.
+        Podwojenie dotyczy tylko zwycięzcy: przegrany traci tyle, ile zwykle.</p>
+
+        <p class="zasada" id="zasada-12"><span class="nr">12.</span><strong>Gra kalibrująca nowego gracza nie zmienia <span class="ps">PS</span> przeciwnika — wpisuje zero.</strong>
+        Nie liczy mu się też do serii.
+        Wynik takiej gry mówi wyłącznie o nowym graczu; cała procedura jest w <a href="#kalibracja">Kalibracji nowego gracza</a>.</p>
+      </section>
+
       <section id="kalibracja">
         <h2>Kalibracja nowego gracza</h2>
         <p>Od tego miejsca strona mówi już do prowadzącego klub, nie do graczy.
-        Kalibracja to najważniejsza rzecz, jaką dla nowego gracza zrobisz.</p>
+        Kalibracja to najważniejsza rzecz, jaką dla nowego gracza zrobisz — potem liczy się już tylko to, co pokaże na planszy.</p>
         <p>Metoda właściwa i w zasadzie konieczna to kalibracja grami, ale zacząć trzeba od wartości wstępnej — bez niej nie ma jak wyliczyć wyrównania do pierwszej gry.</p>
 
         <p><strong>Wartość wstępna z poziomu w kyu / dan.</strong>
         Jeśli znasz przybliżony poziom nowego gracza, odczytaj startowe <span class="ps">PS</span> z tabeli.
-        Wartość z przedziału „początkujący" wybierasz sam — dzieci zwykle bliżej dolnej granicy, dorośli bliżej górnej.</p>
+        Wartość z przedziału „początkujący" wybierasz sam — dzieci zwykle bliżej dolnej granicy, dorośli bliżej górnej.
+        Jeden stopień to w tej skali mniej więcej <span class="ps">2 PS</span> na 9×9, <span class="ps">5 PS</span> na 13×13 i <span class="ps">13 PS</span> na 19×19.</p>
         <table class="sila">
           <tr><th>Poziom</th><th>9×9</th><th>13×13</th><th>19×19</th></tr>
           <tr><td>początkujący</td><td>0–40</td><td>0–100</td><td>0–260</td></tr>
@@ -237,7 +294,8 @@
         Nie mają też nic wspólnego z rankingiem PSG czy EGD.
         To liczba lokalna dla klubu, sensowna wyłącznie wobec innych graczy tego samego klubu.</p>
         <p><strong>Do dobrania zostaje jedna jedyna stała: ile punktów wart jest ruch.</strong>
-        Wartość ruchu — te <span class="ps">13</span> punktów, z których wyrasta cała tabela wyrównania — bierze się z eksperymentów z KataGo i jest zaskakująco stabilna.
+        Komi, czyli cena pierwszego ruchu, to 6 jeńców i wygrana przy równym wyniku — razem 6,5, a darmowy ruch jest wart dwa razy tyle.
+        Te <span class="ps">13</span> punktów, z których wyrasta cała tabela wyrównania, potwierdzają eksperymenty z KataGo — liczba okazuje się zaskakująco stabilna.
         Można podnieść zarzut, że początkujący nie wykorzysta darmowego ruchu tak dobrze jak KataGo — ale ten sam zarzut stosuje się symetrycznie do obu stron, czarnej i białej.
         W praktyce trzynastka sprawdza się u nas dobrze.</p>
         <p><strong>Wyrównanie idzie zawsze w jedną stronę.</strong>

@@ -21,6 +21,8 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 
+from zasady import KOLUMNY, w_kolumnie
+
 PAGE_W, PAGE_H = A4                     # 210 x 297 mm, pion
 MARGIN = 10 * mm                        # margines zewnetrzny strony
 
@@ -38,16 +40,17 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "28.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
-ROWS = 23                               # mini-tabela wyrownania w sciadze kosztuje 3 wiersze
+WERSJA = "29.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
+ROWS = 23                               # mini-tabela wyrownania i 12 zasad w sciadze kosztuja 3 wiersze
 ROW_H = 8 * mm
 HEAD_H = 13 * mm
 NICK_MAX = 40 * mm                      # nick nie zabiera calej reszty szerokosci
 HEAD_FS = 6.0                           # naglowki kolumn (wersaliki)
 SUB_FS = 5.2                            # naglowki podkolumn (wersaliki)
 
-# INWARIANT: nazwy rubryk/kolumn (FIELDS, COLUMNS) i tresc SCIAGA musza byc zgodne
-# z terminologia przykladu i zasad na ranking.html — sprawdzaj przy kazdej edycji.
+# INWARIANT: nazwy rubryk/kolumn (FIELDS, COLUMNS) musza byc zgodne z terminologia
+# przykladu i zasad na ranking.html — sprawdzaj przy kazdej edycji.
+# (Tresc sciagi nie wymaga juz czujnosci: idzie z zasady.py, pilnuje jej test_zasady.py.)
 #
 # (naglowek grupy, [(podkolumna, szerokosc)]) — pojedyncza podkolumna "" = kolumna
 # bez podzialu; szerokosc 0.0 = reszta szerokosci karty (nick przeciwnika)
@@ -96,31 +99,13 @@ class KartaDane:
 # indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze PS
 BLUE_LEAFS = {1, 3, 4, 8, 9}    # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
 
-# sciaga na dole karty: (tytul kolumny, punkty); kolumny w rytmie wypelniania
-# karty (wyrownanie -> wynik -> zmiana PS); w kolumnie "wyrownanie" nad
-# punktami rysowana jest mini-tabela KOMP_TABELA
-SCIAGA: list[tuple[str, list[str]]] = [
-    ("wyrównanie", [
-        "różnica PS = silniejszy − słabszy; jednakowa na obu kartach",
-        "np. różnica 24 → ruchy 2, jeńcy 24 − 19 = 5",
-        "gra równa (0–5): kolory nigiri",
-        "powyżej 70: odejmuj po 13, każde odjęcie to dodatkowy ruch",
-    ]),
-    ("wynik", [
-        "w punktach: + wygrana, − przegrana",
-        "na obu kartach ta sama liczba, przeciwne znaki",
-        "przy podliczaniu dolicz jeńców — każdy to punkt",
-        "poddanie: +R i −R zamiast liczby",
-        "remis przy grze równej: wygrywa Biały",
-    ]),
-    ("zmiana PS", [
-        "zwycięzca +1, przegrany −1",
-        "wygrana o 13+ punktów albo poddanie: ±2",
-        "remis (przy różnicy PS ≥ 6): PS bez zmian",
-        "trzecia wygrana z rzędu (i kolejne): zwycięzca ×2",
-        "serię przerywa każda gra bez wygranej, też remis",
-        "gra kalibrująca nowego gracza: przeciwnik wpisuje 0",
-    ]),
+# sciaga na dole karty: (tytul kolumny, [(numer, zasada)]); kolumny w rytmie
+# wypelniania karty (wyrownanie -> wynik -> zmiana PS); w kolumnie "wyrownanie"
+# pod zasadami rysowana jest mini-tabela KOMP_TABELA.
+# Tresc pochodzi w calosci z zasady.py — sciaga to dokladnie zasady ze strony,
+# nic wiecej i nic mniej.
+SCIAGA: list[tuple[str, list[tuple[int, str]]]] = [
+    (kolumna, w_kolumnie(kolumna)) for kolumna in KOLUMNY
 ]
 
 # mini-tabela wyrownania: zakres roznicy PS -> ruchy Czarnego na start
@@ -154,7 +139,7 @@ def draw_title(c: Canvas, x0: float, top: float, card_w: float) -> float:
     c.setFont(FONT_SERIF, 14)
     c.drawString(x0, y, "Karta gracza")
     c.setFont(FONT, 7)
-    c.drawRightString(x0 + card_w, y, "Klub Go Semedori · zg-go.pl")
+    c.drawRightString(x0 + card_w, y, "Ranking Semedori · zg-go.pl")
     c.setStrokeColor(HEADER_BG)
     c.setLineWidth(0.8)
     c.line(x0, y - 3 * mm, x0 + card_w, y - 3 * mm)
@@ -419,17 +404,18 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
         c.setLineWidth(0.8)
         c.line(x, y0 - 1.6 * mm, x + col_w, y0 - 1.6 * mm)
         y = y0 - 5 * mm
-        if title == "wyrównanie":
-            y = draw_komp_tabela(c, x, y0 - 2.4 * mm, col_w) - 3.2 * mm
-        for item in items:
+        for numer, zasada in items:
+            c.setFont(FONT_BOLD, 6)
             c.setFillColor(MUTED)
-            c.circle(x + 0.7 * mm, y + 0.7 * mm, 0.5 * mm, stroke=0, fill=1)
+            c.drawString(x, y, f"{numer}.")          # numer zamiast punktora: zasady sa numerowane
             c.setFont(FONT, 6)
             c.setFillColor(INK)
-            for line in simpleSplit(item, FONT, 6, col_w - 3 * mm):
-                c.drawString(x + 2.8 * mm, y, line)
+            for line in simpleSplit(zasada, FONT, 6, col_w - 4.2 * mm):
+                c.drawString(x + 4.2 * mm, y, line)
                 y -= line_h
             y -= 0.7 * mm
+        if title == "wyrównanie":                   # dane pod zasadami, ktorych dotycza
+            y = draw_komp_tabela(c, x, y + 1.0 * mm, col_w) - 1.0 * mm
         bottoms.append(y)
     y = min(bottoms) - 1.5 * mm
     qr_size = 14 * mm

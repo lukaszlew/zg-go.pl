@@ -46,6 +46,7 @@ body {
   display: block;
 }
 a { color: var(--accent); text-decoration: none; }
+h2 a, h3 a { color: inherit; }   /* naglowek-link wyglada jak naglowek */
 a:hover { text-decoration: underline; }
 
 /* --- Naglowek: tytul (60) | odstep (20) | info (20) | menu (20) --- */
@@ -174,10 +175,30 @@ img.wycinek {
 /* spis nie jest proza: pre-line z .zdania robilby puste linie wokol zagniezdzonych list */
 .spis ul.links li { padding-left: 0; margin: 0.15rem 0; white-space: normal; }
 .spis ul.links li::before { display: none; }
-.spis ul.links ul.links { margin: 0.1rem 0 0.35rem 1.1rem; }
+
+/* blok "Zasady": trzy numerowane grupy w rytmie kolumn karty.
+   Zasada wyglada tu tak samo jak jej naglowek w rozdziale — to ten sam tekst. */
+ol.zasady { margin: 0.15rem 0 0.5rem; padding-left: 1.9rem; }
+ol.zasady li {
+  margin: 0.2rem 0;
+  white-space: normal;      /* lista zdan, nie proza: bez pre-line */
+  font-weight: 700;
+}
+/* zasada w bloku ma wygladac jak jej naglowek nizej: to ten sam tekst,
+   wiec bez koloru linku — zielen .ps ma dzialac tak samo w obu miejscach */
+ol.zasady a { color: inherit; }
+ol.zasady a:hover { text-decoration: underline; }
+
+/* zasada w rozdziale: numer, pogrubione zdanie w swojej linii, pod nim szczegoly */
+.zasada { margin: 1.1rem 0; }
+.zasada .nr {
+  color: var(--muted);
+  font-weight: 700;
+  margin-right: 0.4rem;
+}
 
 /* wyeksponowany link do karty gracza */
-.karta-link { font-size: 1.2rem; margin: 1.6rem 0; }
+.karta-link { margin: 1.6rem 0; }
 .karta-link a { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
 /* nazwy kolumn karty przywolane w tekscie — jak naglowki karty */
@@ -202,6 +223,7 @@ table.sila th { background: var(--rule); font-weight: 600; }
 
 /* tabela wyrownania: siatka roznic (PS, zielone), jency dla Czarnego
    w wyroznionych komorkach, ruchy Czarnego w dolnym wierszu */
+table.komp { font-size: 0.75rem; }
 table.komp td, table.komp th { padding: 0.2rem 0.5rem; text-align: center; }
 table.komp th { border-color: color-mix(in srgb, var(--rule) 85%, black); }
 table.komp td { color: var(--pkt-sily); }

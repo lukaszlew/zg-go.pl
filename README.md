@@ -3,8 +3,35 @@
 Strona klubu Go **Semedori** w Zielonej Górze.
 Hostowana na GitHub Pages → <https://zg-go.pl/>
 
-Plik źródłowy: `index.html` (czysty HTML + CSS, bez frameworka, bez build-stepa).
+Pliki źródłowe: `index.html`, `ranking.html`, `hikaru-no-go.html` (czysty HTML + CSS, bez frameworka).
 Deploy: `git push` → GitHub Pages auto-deploy.
+
+## Karta gracza i zasady
+
+`make` generuje `karta.pdf` oraz karty i wycinki przykładowe (wymaga `reportlab`,
+`pdftocairo`, fontów DejaVu).
+
+Zasady gry mają jedno źródło prawdy: **`tools/zasady.py`**. Te same zdania, co do
+słowa, stoją w trzech miejscach: w bloku „Wszystkie zasady" na `ranking.html`,
+jako pogrubione nagłówki w rozdziałach Wyrównanie / Wynik / Zmiana PS, oraz na
+ściądze na dole karty (`SCIAGA` budowana z `zasady.py`). Ściąga to dokładnie
+zasady — nic więcej i nic mniej; co jest za drobne na zasadę, idzie do
+szczegółów pod nią na stronie.
+
+Pilnują tego testy na stdlibowym `unittest`, więc działają bez instalowania
+czegokolwiek:
+
+```
+python3 -m unittest discover -s tools
+```
+
+Te same testy odpala hook `pre-commit`. Po sklonowaniu repo trzeba go raz włączyć:
+
+```
+git config core.hooksPath tools/githooks
+```
+
+Po zmianie zasad podbij `WERSJA` w `tools/karta_pdf.py` i uruchom `make`.
 
 ## TODO
 

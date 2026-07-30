@@ -3,7 +3,7 @@
 
 Kazda zasada to jedno zdanie. Te same zdania, co do slowa, stoja w trzech
 miejscach:
-- ranking.html, blok "Wszystkie zasady" (lista, w tej kolejnosci),
+- ranking.html, sekcja "Zasady" (lista, w tej kolejnosci),
 - ranking.html, rozdzialy Wyrownanie / Wynik / Zmiana PS (jako <strong> nad
   akapitem ze szczegolami),
 - sciaga na dole karty gracza (SCIAGA w karta_pdf.py, budowana stad).
@@ -11,6 +11,10 @@ miejscach:
 Zasada: na karcie sa dokladnie te zdania — nic wiecej i nic mniej. Co jest za
 drobne na zasade, idzie do szczegolow pod nia na stronie i na karte nie trafia.
 Zgodnosci pilnuje tools/test_zasady.py (pre-commit hook w tools/githooks).
+
+Zasady sa o grze klubowej i tylko o niej. Kalibracja nowego gracza to robota
+prowadzacego, nie dwojki przy stoliku — stoi wylacznie w rozdziale "Kalibracja
+nowego gracza" na stronie i na karte nie trafia.
 
 Numeracja jest ciagla przez cala liste i wynika z kolejnosci — nie zapisujemy
 jej, tylko liczymy, zeby nie dalo sie jej rozjechac.
@@ -23,17 +27,15 @@ KOLUMNY: tuple[str, ...] = ("wyrównanie", "wynik", "zmiana PS")
 
 ZASADY: list[tuple[str, str]] = [
     ("wyrównanie", "Policzcie różnicę PS: PS silniejszego minus PS słabszego."),
-    ("wyrównanie", "Różnica 0–5 to gra równa: kolory przez nigiri, Czarny daje Białemu 6 jeńców."),
-    ("wyrównanie", "Od różnicy 6 silniejszy gra Białymi, a Czarny bierze z tabeli ruchy i jeńców."),
-    ("wynik", "Przy liczeniu doliczcie jeńców — każdy z nich to punkt."),
-    ("wynik", "Wynik wpisujecie w punktach ze znakiem: plus u zwycięzcy, minus u przegranego."),
-    ("wynik", "Po poddaniu wpisujecie +R i −R zamiast liczby."),
-    ("wynik", "Równy wynik w grze równej wygrywa Biały — remis zdarza się tylko przy wyrównaniu."),
-    ("wynik", "Ta sama gra stoi na dwóch kartach: różnica jednakowa, wynik z przeciwnymi znakami."),
+    ("wyrównanie", "Różnica PS 0–5 to gra równa: kolory przez nigiri, Czarny daje Białemu 6 jeńców i wygraną przy równym wyniku — razem komi 6,5."),
+    ("wyrównanie", "Różnica PS 6 i więcej to gra z wyrównaniem: silniejszy gra Białymi, a Czarny bierze z tabeli pierwsze ruchy i dodatkowych jeńców — liczonych na koniec jak zbite w grze."),
+    ("wyrównanie", "W kolumnie kalibracja wpisujecie oboje numer gry kalibracyjnej nowego gracza — od 1 do 5 — a w każdej innej grze myślnik."),
+    ("wynik", "Wynik wpisujecie w punktach ze znakiem: plus u zwycięzcy, minus u przegranego, remis jako zero; po poddaniu +R i −R."),
+    ("wynik", "Ta sama gra stoi na dwóch kartach: różnica PS jednakowa, wynik z przeciwnymi znakami."),
     ("zmiana PS", "Zwycięzca +1 PS, przegrany −1 PS; remis nie zmienia nic."),
     ("zmiana PS", "Wygrana o 13 punktów lub więcej albo przez poddanie: ±2 PS."),
-    ("zmiana PS", "Trzecia wygrana z rzędu na danej planszy i każda kolejna podwaja zmianę zwycięzcy."),
-    ("zmiana PS", "Gra kalibrująca nowego gracza nie zmienia PS przeciwnika — wpisuje zero."),
+    ("zmiana PS", "Trzecia wygrana z rzędu na danej planszy i każda kolejna podwaja zmianę PS zwycięzcy."),
+    ("zmiana PS", "Gra kalibracyjna: nowy gracz zmienia PS o wynik podzielony przez numer z kolumny kalibracja, a przeciwnik dokładnie o ±1 PS — bez ±2, bez podwojeń i poza serią."),
 ]
 
 assert [k for k, _ in ZASADY] == sorted(

@@ -3,12 +3,13 @@
 
 all: karta.pdf karta-wycinek-czarek.svg
 
-karta.pdf: tools/karta_pdf.py tools/fonts/Caveat-Bold.ttf
+# sciaga na karcie idzie z zasady.py, wiec zmiana zasad tez odswieza karte
+karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 	python3 tools/karta_pdf.py
 
 # jeden przebieg tworzy tez: karta-przyklad.pdf, karta-wycinek.pdf,
 # karta-wycinek-bianka.svg
-karta-wycinek-czarek.svg: tools/karta_przyklad.py tools/karta_pdf.py tools/fonts/Caveat-Bold.ttf
+karta-wycinek-czarek.svg: tools/karta_przyklad.py tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 	python3 tools/karta_przyklad.py
 
 .PHONY: all

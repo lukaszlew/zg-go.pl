@@ -40,8 +40,8 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "29.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
-ROWS = 23                               # mini-tabela wyrownania i 12 zasad w sciadze kosztuja 3 wiersze
+WERSJA = "30.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
+ROWS = 21                               # mini-tabela wyrownania i 10 zasad w sciadze kosztuja 5 wierszy
 ROW_H = 8 * mm
 HEAD_H = 13 * mm
 NICK_MAX = 40 * mm                      # nick nie zabiera calej reszty szerokosci
@@ -57,16 +57,19 @@ SUB_FS = 5.2                            # naglowki podkolumn (wersaliki)
 COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("data", [("", 9 * mm)]),
     ("moje PS", [("", 12 * mm)]),
-    ("przeciwnik", [("nick", 0.0), ("PS", 8 * mm)]),
-    ("wyrównanie", [("różnica PS", 15 * mm), ("ruchy\nCzarnego", 13 * mm),
-                    ("jeńcy\ndla Czarnego", 15.5 * mm)]),
+    ("przeciwnik", [("nick", 0.0), ("PS", 8 * mm), ("różnica PS", 15 * mm)]),
+    # "dla Czarnego" raz, w naglowku grupy — podkolumny zostaja krotkie
+    ("wyrównanie dla Czarnego", [("pierwsze\nruchy", 17 * mm), ("dodatkowi\njeńcy", 19 * mm)]),
+    # numer gry kalibracyjnej (1-5) albo myslnik; ostatnia rubryka wypelniana
+    # przed pierwszym ruchem, wiec zamyka srodkowa sekcje karty
+    ("kalibracja", [("", 15 * mm)]),
     ("wynik", [("", 12 * mm)]),
     ("zmiana PS", [("", 13 * mm)]),
     ("nowe PS", [("", 12.5 * mm)]),
 ]
 
 # przed tymi grupami biegnie gruba kreska — sekcje jak w przykladzie na stronie:
-# przed gra | przeciwnik i wyrownanie | po grze
+# przed gra | przeciwnik, roznica i wyrownanie | po grze
 THICK_BEFORE = {"przeciwnik", "wynik"}
 
 # nadruk planszy w naglowku karty — zakresla sie jedna z trzech
@@ -81,8 +84,9 @@ class Wiersz:
     przeciwnik_nick: str
     przeciwnik_pkt: str
     roznica_ps: str
-    ruchy: str              # ruchy Czarnego na start (1 = zwykla gra)
-    jency: str              # jency dla Czarnego (liczba ujemna = dla Bialego)
+    ruchy: str              # pierwsze ruchy Czarnego (1 = gra rowna)
+    jency: str              # dodatkowi jency dla Czarnego (liczba ujemna = dla Bialego)
+    kalibracja: str         # numer gry kalibracyjnej nowego gracza (1-5) albo myslnik
     wynik: str
     zmiana: str
     nowe_pkt: str
@@ -97,7 +101,7 @@ class KartaDane:
 
 
 # indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze PS
-BLUE_LEAFS = {1, 3, 4, 8, 9}    # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
+BLUE_LEAFS = {1, 3, 4, 9, 10}   # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
 
 # sciaga na dole karty: (tytul kolumny, [(numer, zasada)]); kolumny w rytmie
 # wypelniania karty (wyrownanie -> wynik -> zmiana PS); w kolumnie "wyrownanie"
@@ -108,9 +112,9 @@ SCIAGA: list[tuple[str, list[tuple[int, str]]]] = [
     (kolumna, w_kolumnie(kolumna)) for kolumna in KOLUMNY
 ]
 
-# mini-tabela wyrownania: zakres roznicy PS -> ruchy Czarnego na start
-# i formula na jencow dla Czarnego; zgodna z tabelami na ranking.html
-KOMP_TABELA_HEAD = ("różnica PS", "ruchy Czarnego", "jeńcy dla Czarnego")
+# mini-tabela wyrownania: zakres roznicy PS -> pierwsze ruchy Czarnego
+# i formula na dodatkowych jencow; zgodna z tabelami na ranking.html
+KOMP_TABELA_HEAD = ("różnica PS", "pierwsze ruchy", "dodatkowi jeńcy")
 KOMP_TABELA: list[tuple[str, str, str]] = [
     ("0–5", "1", "−6 (gra równa)"),
     ("6–18", "1", "różnica − 6"),
@@ -312,11 +316,11 @@ def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
                  wiersze: list[Wiersz]) -> None:
     """Wypelnione wiersze gier (karty przykladowe)."""
     leaves = leaf_geometry(x0, widths)
-    assert len(leaves) == 10, len(leaves)
+    assert len(leaves) == 11, len(leaves)
     for row, w in enumerate(wiersze):
         y = row_baseline(top, row)
         values = [w.data, w.moje_pkt, w.przeciwnik_nick, w.przeciwnik_pkt, w.roznica_ps,
-                  w.ruchy, w.jency, w.wynik, w.zmiana, w.nowe_pkt]
+                  w.ruchy, w.jency, w.kalibracja, w.wynik, w.zmiana, w.nowe_pkt]
         for li, ((lx, lw), value) in enumerate(zip(leaves, values)):
             if not value:
                 continue

@@ -19,7 +19,7 @@
   --rule: #d9c896;
   --card: #ffffff;
   --serif: 'EB Garamond', 'EB Garamond Fallback', Georgia, 'Times New Roman', serif;
-  --page-w: 58rem;            /* jedna szerokosc kolumny, identyczna na kazdej podstronie */
+  --page-w: 62rem;            /* jedna szerokosc kolumny, identyczna na kazdej podstronie */
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -116,6 +116,16 @@ h2 {
   font-size: 1.55rem; font-weight: 600;
   margin: 0 0 0.7rem; letter-spacing: 0;
 }
+/* Naglowek drugiej czesci strony: za zasadami zaczyna sie komentarz do systemu,
+   a nie kolejny rozdzial zasad. Wiekszy stopien pisma i zlota kreska robia z
+   tego widoczna cezure; element zostaje h2, bo hierarchia dokumentu sie nie
+   zmienia — zmienia sie temat. */
+h2.dzial {
+  font-size: clamp(1.8rem, 3.4vw, 2.35rem);
+  margin-top: 3.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
 h3 {
   font-family: var(--serif);
   font-size: 1.15rem; font-weight: 600;
@@ -142,6 +152,13 @@ ul.links li::before {
    zwijaja sie do spacji. Zlamanie w innym miejscu: <br>. */
 .zdania p > strong:first-child,
 .zasada > strong { display: block; text-align: left; }
+
+/* Wyjatek: ponumerowane zalety rankingu we wstepie czyta sie jak liste, wiec
+   numer i naglowek zostaja w linii z tekstem, ktory po nich idzie. */
+.zdania p.zaleta > strong:first-child { display: inline; }
+
+/* krotka fraza, ktorej zlamanie w polowie myli czytelnika (np. "+R i −R") */
+.razem { white-space: nowrap; }
 
 /* wycinki kart graczy: stala szerokosc (naturalny rozmiar karty A4 przy 96 dpi),
    pismo na karcie ma ~rozmiar tekstu strony. Ramka przykladu poszerza sie ponad
@@ -225,6 +242,11 @@ table.sila th, table.sila td {
   text-align: left;
 }
 table.sila th { background: var(--rule); font-weight: 600; }
+
+/* dalszy ciag rozwiniecia zasady: kolejne akapity i tabele dostaja to samo
+   wciecie, co pierwszy akapit, zeby caly punkt trzymal sie pod swoim numerem.
+   Stoi za table.sila, bo tamta regula ma ta sama wage i wlasny margin. */
+p.zasada-cd, table.zasada-cd { margin-left: 1.9rem; }
 
 /* tabela wyrownania: siatka roznic (PS, zielone), jency dla Czarnego
    w wyroznionych komorkach, ruchy Czarnego w dolnym wierszu */

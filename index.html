@@ -4,11 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/svg+xml" href="img/logo.svg">
-  <title>Semedori — Klub Go w Zielonej Górze</title>
-  <meta name="description" content="Klub Go w Zielonej Górze. Środy 17:00–19:00, Mediateka Góra Mediów. Wstęp wolny, bez zapisów. Dla początkujących i zaawansowanych.">
+  <title>Klub Semedori — Gramy w Go w Zielonej Górze</title>
+  <!-- Metadane niosą stały rytm i miejsce, bez dnia i godziny: czyta je robot,
+       który JavaScriptu nie uruchamia, więc terminy z kalendarza nigdy tu nie
+       trafią. Zmieniają się tylko wtedy, gdy zmieni się coś na lata. -->
+  <meta name="description" content="Klub Go w Zielonej Górze. Cotygodniowe spotkania w Mediatece Góra Mediów. Wstęp wolny, bez zapisów. Dla początkujących i zaawansowanych.">
   <link rel="canonical" href="https://zg-go.pl/">
-  <meta property="og:title" content="Semedori — Klub Go w Zielonej Górze">
-  <meta property="og:description" content="Środy 17:00–19:00 w Mediatece Góra Mediów. Wstęp wolny, nauczymy zasad w 15 minut.">
+  <meta property="og:title" content="Klub Semedori — Gramy w Go w Zielonej Górze">
+  <meta property="og:description" content="Cotygodniowe spotkania w Mediatece Góra Mediów. Wstęp wolny, nauczymy zasad w 15 minut.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://zg-go.pl/">
   <meta property="og:image" content="https://zg-go.pl/img/grapes.jpeg">
@@ -26,9 +29,9 @@
   {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Semedori",
+    "name": "Klub Semedori",
     "alternateName": "Klub Go Zielona Góra",
-    "description": "Klub gry w Go w Zielonej Górze. Spotkania w środy 17:00–19:00 w Mediatece Góra Mediów.",
+    "description": "Klub gry w Go w Zielonej Górze. Cotygodniowe spotkania w Mediatece Góra Mediów.",
     "email": "klub@zg-go.pl",
     "url": "https://zg-go.pl/",
     "location": {
@@ -52,9 +55,10 @@
     </div>
 
     <header class="hero-band">
-      <h1 class="site-title">Klub Go "Semedori"</h1>
+      <h1 class="site-title">Klub Semedori</h1>
+      <p class="site-tagline">Gramy w Go w Zielonej Górze</p>
       <nav class="hb-menu">
-        <a href="index.html" class="active">Klub Go "Semedori"</a>
+        <a href="index.html" class="active">Klub Semedori</a>
         <a href="ranking.html">Ranking Semedori</a>
         <a href="hikaru-no-go.html">Hikaru no Go</a>
       </nav>
@@ -64,22 +68,55 @@
 
       <section id="gdzie-kiedy">
         <h2>Gdzie i kiedy</h2>
-        <p><strong>Zielona Góra</strong>, Mediateka Góra Mediów ("Norwid"), piętro 1, <a href="https://www.google.com/maps/search/?api=1&amp;query=Mediateka+G%C3%B3ra+Medi%C3%B3w+Al.+Wojska+Polskiego+9+Zielona+G%C3%B3ra" target="_blank" rel="noopener">mapa</a></p>
-        <p><strong>Środy 17:00–19:00</strong></p>
-        <p><strong><a href="https://discord.gg/EB5at7kM9v" target="_blank" rel="noopener">Klubowy Discord</a></strong></p>
+        <!-- Dwie linijki: najpierw dokąd się idzie, potem w jakim mieście.
+             Bez pogrubień — sekcja ma jeden krój na wszystkim, co w niej stoi. -->
+        <p class="adres">Mediateka Góra Mediów ("Norwid"), 1 piętro<br>
+          Zielona Góra, <a href="https://www.google.com/maps/search/?api=1&amp;query=Mediateka+G%C3%B3ra+Medi%C3%B3w+Al.+Wojska+Polskiego+9+Zielona+G%C3%B3ra" target="_blank" rel="noopener">Google mapa</a></p>
+
+        <div class="kiedy">
+          <!-- Terminy wstawia spotkania.js z publicznego Kalendarza Google. Kontener
+               startuje ukryty i odsłania się dopiero po próbie pobrania, więc przy
+               awarii nie zostaje po nim pusty nagłówek.
+               INWARIANT: data-tytul i data-miejsce muszą się zgadzać co do znaku
+               z tym, co stoi w kalendarzu — służą do porównania. Tytuł i adres
+               powtarzające się na każdym spotkaniu są szumem i kod je pomija;
+               pokazuje dopiero to, co odstaje. Sprawdza to tools/test_spotkania.mjs. -->
+          <div id="spotkania" class="spotkania" hidden
+               data-tytul="Klub Semedori - Gramy w Go"
+               data-miejsce="Mediateka Góra Mediów, al. Wojska Polskiego 9, 65-077 Zielona Góra, Poland"
+               data-discord="https://discord.gg/EB5at7kM9v"></div>
+
+          <!-- Zwykłe linki, bez JS i bez API: działają nawet wtedy, gdy lista wyżej
+               się nie wczyta. Żaden pojedynczy adres nie trafia we wszystkie
+               kalendarze — cid otwiera Kalendarz Google, webcal systemowy.
+               Etykiety mówią o usłudze, nie o formacie: "iCal" jest nazwą
+               techniczną, której nikt spoza branży nie rozpoznaje. Link Apple
+               obsługuje też Maca i Outlooka.
+               Klikalna jest cała linijka, nie samo słowo — na telefonie to
+               różnica między celem na 60 px a na 260 px. -->
+          <p class="subskrypcja"><a href="https://calendar.google.com/calendar/render?cid=9687fb38db60e421a2b447fa45aa4ccfb90372f762a48205a3f2a55a7022b9c1%40group.calendar.google.com" target="_blank" rel="noopener">Dodaj do swojego kalendarza Google</a></p>
+          <p class="subskrypcja"><a href="webcal://calendar.google.com/calendar/ical/9687fb38db60e421a2b447fa45aa4ccfb90372f762a48205a3f2a55a7022b9c1%40group.calendar.google.com">Dodaj do swojego kalendarza Apple</a></p>
+        </div>
       </section>
 
       <section id="dla-kogo">
         <h2>Dla kogo</h2>
-        <figure>
-          <img src="img/spotkanie.jpg" alt="Grupowe zdjęcie klubu Go Semedori w Zielonej Górze" loading="lazy">
-          <figcaption>Środowe spotkanie klubu Semedori.</figcaption>
-        </figure>
         <p><strong>Pierwszy raz w Go?</strong> Świetnie — nauczymy cię zasad w 15 minut i zagramy z tobą pierwszą partię. Często gramy na 9×9 i 13×13. Nie musisz nic ze sobą brać; gobany i kamienie mamy.</p>
         <p><strong>Grasz od dawna?</strong> Tym lepiej. Jest z kim pograć i pogadać.</p>
         <p>Przychodzą nastolatki, studenci i dorośli. Dzieci mile widziane z opiekunem. Atmosfera luźna — można pograć w skupieniu i nie odzywać się przez godzinę, można też pogadać przy stoliku obok. Wejdź śmiało — ktoś z nas się odezwie i zaproponuje partię. Możesz zostać 20 minut, możesz dwie godziny.</p>
         <p><strong>Wstęp wolny, bez zapisów.</strong></p>
-        <p><strong><a href="https://discord.gg/EB5at7kM9v" target="_blank" rel="noopener">Discord</a></strong></p>
+      </section>
+
+      <!-- Sekcja opisuje, o czym się na Discordzie rozmawia, i celowo o nic nie
+           prosi. Trzy przykłady w drugim akapicie mają pokazać, że snucie pomysłów
+           na popularyzację Go w mieście jest tu zwykłym tematem — apel w rodzaju
+           "pomóż nam" stawiałby czytelnika przed wyborem, opis pokazuje normę.
+           Nie dopisywać tu próśb o pomoc. -->
+      <section id="miedzy-spotkaniami">
+        <h2>Między spotkaniami</h2>
+        <p>Klub nie kończy się w środę o dziewiętnastej — reszta tygodnia dzieje się na Discordzie. Lecą tam zdjęcia ze spotkań, pozycje z partii, prośby o komentarz gier online i umawianie się na gry poza klubem.</p>
+        <p>Co jakiś czas wraca temat, jak sprawić, żeby w Zielonej Górze grało więcej ludzi — pokazać Go na Winobraniu, zanieść planszę do szkoły, przyprowadzić kogoś z pracy.</p>
+        <p><strong><a href="https://discord.gg/EB5at7kM9v" target="_blank" rel="noopener">Klubowy Discord</a></strong></p>
       </section>
 
       <section id="czemu-go">
@@ -87,7 +124,7 @@
         <p>Czarne kamienie, białe kamienie, plansza. Dwóch graczy stawia po kolei i próbuje otoczyć więcej terytorium niż przeciwnik. Reszta wynika sama — z kilku prostych zasad rośnie gra, w którą można grać całe życie i wciąż znajdować w niej coś nowego.</p>
         <p><strong>Najstarsza gra strategiczna świata</strong> — grana nieprzerwanie od ponad 2500 lat. Na planszy 19×19 jest <strong>więcej możliwych pozycji niż atomów we wszechświecie</strong>.</p>
         <h3>AlphaGo</h3>
-        <p>To ta gra, w której AlphaGo pokonał mistrza świata w 2016 — historię tego meczu opowiada świetny <a href="https://www.youtube.com/watch?v=WXuK6gekU1Y" target="_blank" rel="noopener">dokument na YouTube</a> (90 minut, za darmo).</p>
+        <p>To ta gra, w której AlphaGo pokonał mistrza świata w 2016. Historię tego meczu — i tego, jak rewolucja sztucznej inteligencji zaczęła się właśnie od Go — opowiada świetny <a href="https://www.youtube.com/watch?v=WXuK6gekU1Y" target="_blank" rel="noopener">dokument na YouTube</a> (90 minut, za darmo). Bardzo go polecamy nawet osobom, które o Go nigdy nie słyszały — ogląda się fantastycznie. Jest po angielsku, ale polskie napisy włączysz w ustawieniach odtwarzacza: Napisy → Przetłumacz automatycznie → polski.</p>
 
         <h3>Hikaru no Go</h3>
         <p>A jeśli wolisz anime, zerknij na <a href="hikaru-no-go.html">Hikaru no Go</a> — wystarczą dwa pierwsze odcinki, żeby poczuć smak emocji.</p>
@@ -100,6 +137,7 @@
           <li><a href="https://online-go.com/" target="_blank" rel="noopener">online-go.com</a> — graj w Go online (OGS)</li>
         </ul>
         <p>Jeśli chcesz osłuchać się z grą wcześniej — zaloguj się przez Google na <a href="https://online-go.com/" target="_blank" rel="noopener">online-go.com</a> (OGS) i zagraj z botem. Na start polecamy planszę 9×9 z handicapem 5.</p>
+        <p>W klubie stoi też półka z książkami o Go — można je wypożyczyć do domu.</p>
       </section>
 
       <section id="organizacje">
@@ -118,12 +156,19 @@
 
       <p class="closer">Do zobaczenia, plansza czeka.</p>
 
+      <!-- Zdjęcie zamyka stronę zamiast przerywać "Dla kogo": po zdaniu
+           pożegnalnym działa jak podpis, a nie jak ilustracja akapitu. -->
+      <figure>
+        <img src="img/spotkanie.jpg" alt="Grupowe zdjęcie klubu Go Semedori w Zielonej Górze" loading="lazy">
+        <figcaption>Środowe spotkanie klubu Semedori.</figcaption>
+      </figure>
+
     </main>
   </div>
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <p>Semedori · Klub Go Zielona Góra · <a href="mailto:klub@zg-go.pl">klub@zg-go.pl</a></p>
+      <p>Klub Semedori · Gramy w Go w Zielonej Górze · <a href="mailto:klub@zg-go.pl">klub@zg-go.pl</a></p>
     </div>
   </footer>
 
@@ -140,5 +185,9 @@
       img.src = winobranie ? 'img/bachus.jpeg' : 'img/grapes.jpeg';
     })();
   </script>
+
+  <script type="module" src="spotkania.js"></script>
+
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "be0997012f154acba2d726d888c5293b"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>

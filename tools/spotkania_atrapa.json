@@ -1,0 +1,53 @@
+{
+  "items": [
+    {
+      "summary": "Klub Semedori - Gramy w Go",
+      "start": {
+        "dateTime": "2026-08-03T17:00:00+02:00",
+        "timeZone": "Europe/Warsaw"
+      },
+      "location": "Mediateka Góra Mediów, al. Wojska Polskiego 9, 65-077 Zielona Góra, Poland",
+      "description": "Wyjątkowo w poniedziałek",
+      "originalStartTime": {
+        "dateTime": "2026-08-05T17:00:00+02:00",
+        "timeZone": "Europe/Warsaw"
+      }
+    },
+    {
+      "summary": "Klub Semedori - Gramy w Go",
+      "start": {
+        "dateTime": "2026-08-12T17:00:00+02:00",
+        "timeZone": "Europe/Warsaw"
+      },
+      "location": "Mediateka Góra Mediów, al. Wojska Polskiego 9, 65-077 Zielona Góra, Poland",
+      "originalStartTime": {
+        "dateTime": "2026-08-12T17:00:00+02:00",
+        "timeZone": "Europe/Warsaw"
+      }
+    },
+    {
+      "summary": "Klub Semedori - Gramy w Go",
+      "start": {
+        "dateTime": "2026-08-19T17:00:00+02:00",
+        "timeZone": "Europe/Warsaw"
+      },
+      "location": "Mediateka Góra Mediów, al. Wojska Polskiego 9, 65-077 Zielona Góra, Poland",
+      "originalStartTime": {
+        "dateTime": "2026-08-19T17:00:00+02:00",
+        "timeZone": "Europe/Warsaw"
+      }
+    },
+    {
+      "summary": "Klub Semedori - Gramy w Go",
+      "start": {
+        "dateTime": "2026-08-26T17:00:00+02:00",
+        "timeZone": "Europe/Warsaw"
+      },
+      "location": "Mediateka Góra Mediów, al. Wojska Polskiego 9, 65-077 Zielona Góra, Poland",
+      "originalStartTime": {
+        "dateTime": "2026-08-26T17:00:00+02:00",
+        "timeZone": "Europe/Warsaw"
+      }
+    }
+  ]
+}

@@ -4,9 +4,13 @@
 # Wlaczenie hookow po sklonowaniu repo:
 #     git config core.hooksPath tools/githooks
 #
-# Testy sa na stdlibowym unittest, wiec hook dziala bez instalowania czegokolwiek.
+# Testy sa na stdlibowym unittest i na wbudowanym runnerze Node, wiec hook
+# dziala bez instalowania czegokolwiek.
 # Ida po drzewie roboczym, nie po indeksie: przy czesciowo dodanych zmianach
 # sprawdzasz to, co masz w edytorze.
 set -e
 cd "$(git rev-parse --show-toplevel)"
 python3 -m unittest discover -s tools
+# Sciezka jawnie, bo `node --test` szuka plikow po wzorcu `*.test.js` i nie
+# znalazlby nazwy w konwencji reszty repo.
+node --test tools/test_spotkania.mjs

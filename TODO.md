@@ -2,14 +2,30 @@
 
 ## Treść
 
-- [ ] **Social proof** w sekcji „Dla kogo": od kiedy klub działa, jaka jest frekwencja
-- [ ] **AlphaGo** — dokończyć artykuł, zdjąć `noindex` i wpuścić do menu na wszystkich
-      stronach; wtedy znika też jego wyjątek w teście nawigacji
-- [ ] **Hikaru** — dopisać, gdzie obejrzeć anime
+- [ ] **Social proof** w sekcji „Dla kogo": od kiedy klub działa, jaka jest frekwencja.
+      Do tego kto klub prowadzi — imię, twarz, kontakt bezpośredni. Dziś strona nie ma
+      po drugiej stronie żadnego człowieka, a rodzic decydujący o dziecku i ktoś, kto
+      ma przyjść sam do obcego budynku, potrzebują dokładnie tego
+- [ ] **AlphaGo** — artykuł wygląda na skończony; blokuje go to, że nic go nie linkuje.
+      Zdjąć `noindex`, wpuścić do menu na wszystkich stronach (znika wtedy jego wyjątek
+      w teście nawigacji) i przekierować „Czemu Go" na własny tekst — dziś ta sekcja
+      wysyła czytelnika prosto na YouTube, mijając nasz artykuł. Dorobić `og:image`
+- [ ] **Hikaru** — dopisać, gdzie obejrzeć anime. Przy okazji dwie rzeczy: strona czyta
+      się jak cudza recenzja (bo nią jest — sekcje „Animacja", „Muzyka", „Werdykt" to
+      język recenzenta anime), więc dodać zdanie własne: kto u nas zaczął od tej serii.
+      I zakończyć zaproszeniem na spotkanie, tak jak kończy się AlphaGo — dziś ostatnim
+      akapitem jest przypis o prawach autorskich
 - [ ] **Gdzie się uczyć** — rozszerzyć listę: Go Magic, playgo.to/iwtg, Sensei's Library,
       AI Sensei
 - [ ] **Zasady Go w 15 minut** — osobna strona. Obiecujemy to w „Dla kogo", a w całym
       serwisie nie ma zasad samej gry; do tego to najczęstsze pytanie w wyszukiwarce
+- [ ] **Ranking na eksport.** To najbardziej oryginalna rzecz na tej stronie i najgorzej
+      wyeksponowana: 15 tysięcy znaków po polsku, bez streszczenia. Trzy rzeczy —
+      TL;DR na górze (pięć zdań: co to jest, czemu działa, karta do druku), wersja
+      angielska (idzie razem z „Tłumaczeniami" w sekcji Kod) i wpis na Sensei's Library,
+      bo tylko tą drogą system trafi poza Polskę. Do tego `<title>` i `description`
+      celują dziś we frazę „Ranking Semedori", której nikt nie szuka — szuka się
+      „system rankingowy klub go" i „handicap go"
 
 ## Zdjęcia
 
@@ -35,4 +51,8 @@
 
 - [ ] **Bus factor** — drugi administrator na OVH, GitHubie, Google Cloud, kalendarzu
       i Discordzie. Dziś klub traci stronę razem z jedną osobą
+- [ ] **Kanały dotarcia poza stroną są puste.** Nie ma nas w Mapach Google, więc
+      zapytanie „go zielona góra" nie pokazuje klubu; nie ma Facebooka, na którym żyją
+      lokalne wydarzenia; nie ma numeru telefonu. Prawdopodobnie największy
+      nieodblokowany dopływ nowych ludzi, a żadna z tych rzeczy nie jest zmianą w repo
 - [ ] Cloudflare przed GitHub Pages, gdyby kiedyś były potrzebne nagłówki bezpieczeństwa

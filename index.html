@@ -14,9 +14,11 @@
   <meta property="og:description" content="Cotygodniowe spotkania w Mediatece Góra Mediów. Wstęp wolny, nauczymy zasad w 15 minut.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://zg-go.pl/">
-  <meta property="og:image" content="https://zg-go.pl/img/grapes.jpeg">
-  <meta property="og:image:width" content="2048">
-  <meta property="og:image:height" content="678">
+  <!-- Osobny kadr 1200x630 zamiast banera: podglady na Facebooku i Discordzie
+       przycinaja do tych proporcji, a baner ma 3:1 i tracil srodek. -->
+  <meta property="og:image" content="https://zg-go.pl/img/og-index.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:locale" content="pl_PL">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,7 +53,7 @@
   <div class="page">
 
     <div class="banner">
-      <img id="banner-img" src="img/grapes.jpeg" alt="" loading="eager">
+      <img id="banner-img" src="img/grapes.webp" width="2048" height="678" alt="" loading="eager">
     </div>
 
     <header class="hero-band">
@@ -113,8 +115,8 @@
            "pomóż nam" stawiałby czytelnika przed wyborem, opis pokazuje normę.
            Nie dopisywać tu próśb o pomoc. -->
       <section id="miedzy-spotkaniami">
-        <h2>Między spotkaniami</h2>
-        <p>Klub nie kończy się w środę o dziewiętnastej — reszta tygodnia dzieje się na Discordzie. Lecą tam zdjęcia ze spotkań, pozycje z partii, prośby o komentarz gier online i umawianie się na gry poza klubem.</p>
+        <h2>Między spotkaniami — Discord</h2>
+        <p>Klub nie kończy się razem ze spotkaniem — reszta tygodnia dzieje się na Discordzie. Lecą tam zdjęcia ze spotkań, pozycje z partii, prośby o komentarz gier online i umawianie się na gry poza klubem.</p>
         <p>Co jakiś czas wraca temat, jak sprawić, żeby w Zielonej Górze grało więcej ludzi — pokazać Go na Winobraniu, zanieść planszę do szkoły, przyprowadzić kogoś z pracy.</p>
         <p><strong><a href="https://discord.gg/EB5at7kM9v" target="_blank" rel="noopener">Klubowy Discord</a></strong></p>
       </section>
@@ -150,7 +152,10 @@
 
       <section id="kontakt">
         <h2>Kontakt</h2>
-        <p><strong><a href="https://discord.gg/EB5at7kM9v" target="_blank" rel="noopener">Discord</a></strong></p>
+        <!-- Zaproszenie na Discorda stoi w jednym miejscu — w sekcji "Między
+             spotkaniami". Reszta strony i ranking.html prowadza do tamtej sekcji,
+             zeby wygasly link byl do poprawienia w jednym miejscu, a nie w pieciu. -->
+        <p><strong><a href="#miedzy-spotkaniami">Discord</a></strong></p>
         <p>E-mail: <a href="mailto:klub@zg-go.pl">klub@zg-go.pl</a></p>
       </section>
 
@@ -159,8 +164,8 @@
       <!-- Zdjęcie zamyka stronę zamiast przerywać "Dla kogo": po zdaniu
            pożegnalnym działa jak podpis, a nie jak ilustracja akapitu. -->
       <figure>
-        <img src="img/spotkanie.jpg" alt="Grupowe zdjęcie klubu Go Semedori w Zielonej Górze" loading="lazy">
-        <figcaption>Środowe spotkanie klubu Semedori.</figcaption>
+        <img src="img/spotkanie.webp" width="1500" height="1130" alt="Grupowe zdjęcie klubu Go Semedori w Zielonej Górze" loading="lazy">
+        <figcaption>Spotkanie klubu Semedori.</figcaption>
       </figure>
 
     </main>
@@ -182,7 +187,7 @@
       const now = new Date();
       const md = (now.getMonth() + 1) * 100 + now.getDate(); // np. 8 września -> 908
       const winobranie = md >= 823 && md <= 921;
-      img.src = winobranie ? 'img/bachus.jpeg' : 'img/grapes.jpeg';
+      img.src = winobranie ? 'img/bachus.webp' : 'img/grapes.webp';
     })();
   </script>
 

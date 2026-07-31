@@ -13,7 +13,7 @@
 :root {
   --bg: #f4e9cf;
   --fg: #1a1a1a;
-  --muted: #6b6b6b;
+  --muted: #666666;         /* najjasniejsza szarosc dajaca 4,5:1 na tle strony (WCAG AA) */
   --accent: #9c2a2a;
   --pkt-sily: #2e7d32;
   --rule: #d9c896;
@@ -48,6 +48,11 @@ body {
 a { color: var(--accent); text-decoration: none; }
 h2 a, h3 a { color: inherit; }   /* naglowek-link wyglada jak naglowek */
 a:hover { text-decoration: underline; }
+/* Link w akapicie musi dac sie rozpoznac bez koloru: czerwien akcentu ma wobec
+   tekstu kontrast 2,3:1, a rozroznienie samym kolorem wymaga 3:1. Menu, spis
+   tresci i listy linkow zostaja bez podkreslen — tam caly wiersz jest linkiem
+   i nie da sie w niego nie trafic. */
+p a { text-decoration: underline; text-underline-offset: 2px; }
 
 /* --- Naglowek: nazwa nad podpisem po lewej, menu po prawej ---
    Nazwa i podpis to dwie rozne rzeczy, wiec roznia sie rozmiarem: szyld i to,
@@ -281,6 +286,9 @@ img.wycinek {
 .spis ul.links { margin: 0; }
 .spis ul.links li { padding-left: 0; margin: 0.15rem 0; }
 .spis ul.links li::before { display: none; }
+/* Podrozdzialy "O tym rankingu" wciete o poziom: spis oddaje uklad strony,
+   a nie splaszcza go do jednej listy. */
+.spis ul.links ul { list-style: none; margin: 0.1rem 0 0.25rem; padding-left: 1rem; }
 
 /* blok "Zasady": trzy numerowane grupy w rytmie kolumn karty.
    Zasada wyglada tu tak samo jak jej naglowek w rozdziale — to ten sam tekst. */
@@ -322,6 +330,14 @@ ol.zasady a:hover { text-decoration: underline; }
 table.sila td + td { color: var(--pkt-sily); }
 
 table.sila { border-collapse: collapse; margin: 0.6rem 0; }
+/* Podpis tabeli mowi, jak ja czytac — nagłowki stoja tu i u gory, i na dole,
+   wiec sam uklad tego nie tlumaczy. Czytnik ekranu bierze go jako pierwszy. */
+table.sila caption {
+  text-align: left;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+}
 table.sila th, table.sila td {
   border: 1px solid var(--rule);
   padding: 0.25rem 0.9rem;
@@ -367,8 +383,12 @@ table.komp td.komp-jency { color: var(--fg); background: color-mix(in srgb, var(
 }
 
 figure { margin: 1.8rem 0; }
+/* Zdjecie nie rozciaga sie ponad swoja naturalna szerokosc — kadry z Hikaru
+   maja 720 px i przy `width: 100%` miekly na szerokim ekranie. Wezsze od
+   kolumny stoi wysrodkowane. */
 figure img {
-  width: 100%; height: auto; display: block;
+  max-width: 100%; height: auto; display: block;
+  margin-inline: auto;
   border-radius: 6px;
   border: 1px solid var(--rule);
 }

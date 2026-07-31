@@ -12,4 +12,11 @@ karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 karta-wycinek-czarek.svg: tools/karta_przyklad.py tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 	python3 tools/karta_przyklad.py
 
-.PHONY: all
+# Podglad lokalny. Strona jest statyczna, wiec wystarczy zwykly serwer plikow —
+# ale z pliku (file://) nie zadzialalby modul spotkania.js ani sciezki absolutne.
+# Terminy z Kalendarza Google wczytuja sie tu tak samo jak na produkcji.
+serwuj:
+	@echo "Podglad: http://127.0.0.1:8000/   (Ctrl+C konczy)"
+	@python3 -m http.server 8000 --bind 127.0.0.1 --directory .
+
+.PHONY: all serwuj

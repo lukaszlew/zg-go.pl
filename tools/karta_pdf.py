@@ -7,6 +7,8 @@ z wypelnionym naglowkiem i wierszami gier (np. karty przykladowe).
 Wymaga: reportlab, czcionki DejaVu (pakiet fonts-dejavu).
 """
 
+import hashlib
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -21,7 +23,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 
-from zasady import KOLUMNY, w_kolumnie
+from zasady import KOLUMNY, ZASADY, w_kolumnie
 
 PAGE_W, PAGE_H = A4                     # 210 x 297 mm, pion
 MARGIN = 10 * mm                        # margines zewnetrzny strony
@@ -476,8 +478,65 @@ def generuj_karte(out: Path, karty: list[KartaDane | None]) -> None:
     print(f"OK: {out} ({out.stat().st_size} B)")
 
 
+KORZEN = Path(__file__).resolve().parent.parent
+ZAMEK = KORZEN / "karta.lock"
+
+
+def odcisk() -> str:
+    """Odcisk danych, ktore decyduja o tresci wydrukowanej karty.
+
+    Sa tu zasady i uklad rubryk — czyli wszystko, czego zmiana unieważnia karty
+    lezace w klubie. Wymiary czysto kosmetyczne (wysokosc wiersza, marginesy)
+    swiadomie zostaja poza odciskiem: nie chcemy podbijac wersji karty dlatego,
+    ze ktos przesunal kreske o pol milimetra.
+    """
+    dane = {
+        "zasady": [[k, z] for k, z in ZASADY],
+        "kolumny": list(KOLUMNY),
+        "columns": [[g, [[s, round(w, 3)] for s, w in subs]] for g, subs in COLUMNS],
+        "fields": [[etykieta, round(w, 3)] for etykieta, w in FIELDS],
+        "komp_naglowek": list(KOMP_TABELA_HEAD),
+        "komp": [list(w) for w in KOMP_TABELA],
+        "plansza": PLANSZA_PREPRINT,
+    }
+    kanoniczne = json.dumps(dane, ensure_ascii=False, sort_keys=True)
+    return hashlib.sha256(kanoniczne.encode()).hexdigest()
+
+
+def czytaj_zamek() -> dict[str, str]:
+    """Zawartosc karta.lock jako slownik; pusty, gdy pliku jeszcze nie ma."""
+    if not ZAMEK.is_file():
+        return {}
+    return dict(
+        linia.split("=", 1)
+        for linia in ZAMEK.read_text().splitlines()
+        if linia and not linia.startswith("#")
+    )
+
+
+def zapisz_zamek() -> None:
+    """Zapisuje odcisk i wersje karty; pilnuje, by zmiana tresci podbila WERSJA.
+
+    Bez tego karta.pdf w repo moze byc o dwie zmiany zasad z tylu i nikt tego
+    nie zauwazy — plik jest binarny, wiec diff nic nie mowi.
+    """
+    poprzedni = czytaj_zamek()
+    biezacy = odcisk()
+    assert not (poprzedni and poprzedni["odcisk"] != biezacy and poprzedni["wersja"] == WERSJA), (
+        f"zasady albo uklad karty sie zmienily, a WERSJA dalej brzmi {WERSJA} — "
+        "podbij ja w tools/karta_pdf.py, zeby dalo sie odroznic wydruki"
+    )
+    ZAMEK.write_text(
+        "# Odcisk danych, z ktorych powstaje karta.pdf — pilnuje go tools/test_zasady.py.\n"
+        "# Zmiana zasad albo ukladu bez ponownego `make` konczy sie czerwonym testem.\n"
+        f"wersja={WERSJA}\n"
+        f"odcisk={biezacy}\n"
+    )
+
+
 def main() -> None:
-    generuj_karte(Path(__file__).resolve().parent.parent / "karta.pdf", [None])
+    generuj_karte(KORZEN / "karta.pdf", [None])
+    zapisz_zamek()
 
 
 if __name__ == "__main__":

@@ -92,6 +92,20 @@ class TestZasady(unittest.TestCase):
     def test_sciaga_ma_kolumny_w_kolejnosci_wypelniania(self) -> None:
         self.assertEqual([k for k, _ in karta_pdf.SCIAGA], list(zasady.KOLUMNY))
 
+    def test_karta_w_repo_jest_z_biezacych_zasad(self) -> None:
+        """Ostatnie ogniwo lancucha jednego zrodla prawdy.
+
+        Zasady -> strona i zasady -> SCIAGA pilnuja testy wyzej, ale karta.pdf
+        jest binarna: mogla powstac z zasad sprzed dwoch zmian i diff tego nie
+        pokaze. Zamek zapisuje `make`, wiec rozjazd znaczy tyle, ze ktos zmienil
+        zasady albo uklad i nie przegenerowal karty.
+        """
+        zamek = karta_pdf.czytaj_zamek()
+        self.assertTrue(zamek, f"brak {karta_pdf.ZAMEK.name} — uruchom `make`")
+        self.assertEqual(zamek["odcisk"], karta_pdf.odcisk(),
+                         "zasady albo uklad karty zmienily sie bez `make`")
+        self.assertEqual(zamek["wersja"], karta_pdf.WERSJA)
+
 
 if __name__ == "__main__":
     unittest.main()

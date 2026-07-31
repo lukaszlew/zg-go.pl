@@ -22,13 +22,14 @@ Pilnują tego testy na stdlibowym `unittest`, więc działają bez instalowania
 czegokolwiek:
 
 ```
-python3 -m unittest discover -s tools
+make test
 ```
 
-Te same testy odpala hook `pre-commit`. Po sklonowaniu repo trzeba go raz włączyć:
+Te same testy odpala hook `pre-commit` — wywołuje `make test`, żeby definicja
+stała w jednym miejscu. Po sklonowaniu repo trzeba go raz włączyć:
 
 ```
-git config core.hooksPath tools/githooks
+make hooks
 ```
 
 Po zmianie zasad podbij `WERSJA` w `tools/karta_pdf.py` i uruchom `make`.

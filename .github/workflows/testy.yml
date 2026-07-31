@@ -1,0 +1,19 @@
+# Te same testy, co hook pre-commit — dla commitow z maszyny, na ktorej hooka
+# nikt nie wlaczyl (`make hooks`), i dla zmian robionych przez WWW GitHuba.
+# Celowo nic wiecej: bez sprawdzania linkow wychodzacych i bez walidatora HTML,
+# zeby czerwony wynik zawsze znaczyl "zepsulismy cos u siebie".
+name: testy
+
+on: [push, pull_request]
+
+jobs:
+  testy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # test_zasady importuje karta_pdf, a ten ciagnie reportlab. Reszta stoi na
+      # bibliotece standardowej i na wbudowanym runnerze Node.
+      - run: pip install --quiet reportlab
+      # Przez `make test`, nie wprost — CI ma odpalac dokladnie to samo, co hook
+      # i co czlowiek u siebie.
+      - run: make test

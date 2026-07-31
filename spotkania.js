@@ -20,6 +20,11 @@ export const STREFA = 'Europe/Warsaw';
 export const WIDOCZNE_OD_RAZU = 3;
 export const POBIERAJ = 20;
 
+/* Odpowiedz, ktora nie przychodzi, jest gorsza od bledu: bez tego kontener
+ * zostaje ukryty na zawsze i nie ma ani listy, ani komunikatu. Szesc sekund
+ * przepuszcza slabe Wi-Fi w Mediatece, a dluzej nikt i tak nie patrzy. */
+export const CZAS_OCZEKIWANIA = 6000;
+
 export const BRAK_SPOTKAN = 'Brak zaplanowanych spotkań.';
 
 /* Awaria jest dla odwiedzajacego cicha - sekcja po prostu nie ma czego pokazac.
@@ -236,7 +241,7 @@ async function start() {
       maxResults: String(POBIERAJ),
       timeMin: poczatekDnia(new Date(), STREFA),
     });
-    const odpowiedz = await fetch(adres);
+    const odpowiedz = await fetch(adres, { signal: AbortSignal.timeout(CZAS_OCZEKIWANIA) });
     if (!odpowiedz.ok) throw new Error(`Calendar API: HTTP ${odpowiedz.status}`);
     wydarzenia = (await odpowiedz.json()).items || [];
   } catch (blad) {

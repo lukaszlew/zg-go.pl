@@ -1,16 +1,12 @@
 #!/bin/sh
-# Zasady w tools/zasady.py, na ranking.html i na sciadze karty musza byc te same.
+# Testy przed kazdym commitem. Co dokladnie sie odpala, wie wylacznie Makefile —
+# hook, CI i `make test` maja jedno zrodlo prawdy i nie moga sie rozejsc.
 #
 # Wlaczenie hookow po sklonowaniu repo:
-#     git config core.hooksPath tools/githooks
+#     make hooks
 #
-# Testy sa na stdlibowym unittest i na wbudowanym runnerze Node, wiec hook
-# dziala bez instalowania czegokolwiek.
-# Ida po drzewie roboczym, nie po indeksie: przy czesciowo dodanych zmianach
-# sprawdzasz to, co masz w edytorze.
+# Testy ida po drzewie roboczym, nie po indeksie: przy czesciowo dodanych
+# zmianach sprawdzasz to, co masz w edytorze.
 set -e
 cd "$(git rev-parse --show-toplevel)"
-python3 -m unittest discover -s tools
-# Sciezka jawnie, bo `node --test` szuka plikow po wzorcu `*.test.js` i nie
-# znalazlby nazwy w konwencji reszty repo.
-node --test tools/test_spotkania.mjs
+make test

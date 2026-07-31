@@ -259,6 +259,25 @@ ul.links li::before {
   background: var(--muted);
 }
 
+/* Odznaki sklepow. To pliki marek i obowiazuja przy nich cudze wytyczne, wiec
+   leza u nas w oryginale, a skalujemy je wylacznie wysokoscia — szerokosc idzie
+   z proporcji pliku, zeby nie ruszyc ksztaltu.
+   Rozne wysokosci nie sa pomylka: plik Google ma wliczona przezroczysta otoczke
+   (29 px z 250 u gory i u dolu), Apple nie ma zadnej. 52 px pliku Google to 40 px
+   samego przycisku, czyli dokladnie tyle, ile ma przycisk Apple — dopiero tak
+   wygladaja na jedna miare. Google wychodzi przy tym szerszy i tak ma byc: jego
+   wytyczne wymagaja, zeby nie byl mniejszy od odznaki innego sklepu.
+   `gap` trzyma odstep wiekszy niz 1/4 wysokosci przycisku, czego z kolei zada
+   Google jako pola ochronnego; pionowo daje je sama otoczka w pliku. */
+.sklepy {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0.9rem;
+  margin-top: 0.35rem;
+}
+.sklepy img { display: block; width: auto; }
+.sklepy .sklep-google { height: 52px; }
+.sklepy .sklep-apple { height: 40px; }
+
 /* Akapit z pogrubionym wprowadzeniem: wprowadzenie dostaje wlasna linie, a
    szczegoly pod nim lecza sie w normalny akapit. Zrodlo ranking.html ma jedno
    zdanie na linie — to jest wygoda edycji, nie uklad strony, wiec te zlamania
@@ -311,6 +330,14 @@ img.wycinek {
 /* Podrozdzialy "O tym rankingu" wciete o poziom: spis oddaje uklad strony,
    a nie splaszcza go do jednej listy. */
 .spis ul.links ul { list-style: none; margin: 0.1rem 0 0.25rem; padding-left: 1rem; }
+
+/* Ramka wokol samych zasad: dziesiec zdan i tabela wyrownania, czyli dokladnie
+   to, co stoi na sciadze karty gracza. Poza ramka zostaja naglowek sekcji i
+   akapit wstepny — one o zasadach mowia, ale nia nie sa. Tabela jest w srodku,
+   bo bez niej zasady 3 nie da sie wykonac. */
+.zasady-blok { margin: 0.9rem 0 0; }
+.zasady-blok > :first-child { margin-top: 0; }
+.zasady-blok > :last-child { margin-bottom: 0; }
 
 /* blok "Zasady": trzy numerowane grupy w rytmie kolumn karty.
    Zasada wyglada tu tak samo jak jej naglowek w rozdziale — to ten sam tekst. */
@@ -454,14 +481,17 @@ figcaption {
    Mierzy sie do zawartosci zamiast do policzonej sumy rubryk: dziesiec kolumn
    podanych w milimetrach zaokragla sie kazda z osobna i roznica ulamka piksela
    wystarczyla, zeby wyskoczyl poziomy pasek przewijania. Akapity dostaja
-   szerokosc karty, zeby to tabela decydowala o szerokosci pudelka. */
-.kalkulator {
+   szerokosc karty, zeby to tabela decydowala o szerokosci pudelka.
+   Naglowek sekcji stoi poza ramka, tak samo jak przy "Przykladowej grze": to
+   tytul rozdzialu, a nie podpis pudelka, i ma stac w kolumnie tekstu razem
+   z pozostalymi h2. Dlatego ramka jest osobnym elementem w srodku sekcji. */
+.kalk-ramka {
   --karta-w: 148.5mm;          /* suma rubryk, prawie jak na papierze */
   width: fit-content;
   max-width: 100%;
   margin-inline: auto;
 }
-.kalkulator > h2, .kalkulator > p, .kalkulator > ul { max-width: var(--karta-w); }
+.kalk-ramka > p, .kalk-ramka > ul { max-width: var(--karta-w); }
 .kalkulator p { text-align: left; }
 /* Pasek przewijania wyskakuje dopiero wtedy, gdy karta naprawde nie miesci sie
    na ekranie — czyli na telefonie, a nie na monitorze. */
@@ -533,7 +563,10 @@ table.kalk-karta ::placeholder { color: var(--muted); opacity: 1; }
 .kalk-uwagi { margin: 0.3rem 0 0; padding-left: 1.1rem; font-size: 0.9rem; color: var(--muted); }
 .kalk-uwagi li { margin: 0.15rem 0; }
 
-.credit, .przyklad, .kalkulator {
+/* Jedna ramka dla wszystkiego, co na stronie jest wydzielonym pudelkiem:
+   zasady, przyklad, kalkulator, zrodla. Naglowek sekcji zostaje na zewnatrz
+   kazdego z nich — pudelko trzyma tresc, tytul stoi nad nim w kolumnie tekstu. */
+.zasady-blok, .przyklad, .kalk-ramka, .credit {
   background: rgba(156, 42, 42, 0.06);
   border: 1px solid var(--rule);
   border-radius: 6px;

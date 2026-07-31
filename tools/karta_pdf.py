@@ -34,6 +34,10 @@ GRID = HexColor("#9a9a9a")              # wewnetrzne linie siatki (jasniejsze od
 TITLE_GRAY = HexColor("#6b6b6b")        # --muted ze style.css (kolor tytulow strony)
 HEADER_BG = HexColor("#d9c896")         # --rule ze style.css
 PKT_SILY = HexColor("#2e7d32")          # --pkt-sily ze style.css (zielone punkty sily)
+# tlo rubryki "wynik": ten sam zloty co naglowek, rozcienczony do 45% na bialym.
+# Na drukarce czarno-bialej zostaje z tego okolo 10% szarosci — rubryka dalej
+# odstaje, a wpis olowkiem jest czytelny.
+WYNIK_BG = HexColor("#f0e6cd")
 
 FONT = "DejaVu"
 FONT_BOLD = "DejaVu-Bold"
@@ -348,6 +352,18 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
 
     c.setFillColor(HEADER_BG)
     c.rect(x0, top - HEAD_H, card_w, HEAD_H, stroke=0, fill=1)
+
+    # Rubryka "wynik" dostaje wlasne tlo na calej wysokosci tabeli: to jedyna
+    # liczba wpisywana z pamieci zaraz po grze i ona rozstrzyga o zmianie PS,
+    # wiec ma sie rzucac w oczy takze przy porownywaniu dwoch kart.
+    x = x0
+    for (label, _), sub_ws in zip(COLUMNS, widths):
+        szerokosc = sum(sub_ws)
+        if label == "wynik":
+            c.setFillColor(WYNIK_BG)
+            c.rect(x, bottom, szerokosc, top - HEAD_H - bottom, stroke=0, fill=1)
+        x += szerokosc
+
     draw_header_labels(c, x0, top, widths)
 
     draw_wiersze(c, x0, top, widths, wiersze)

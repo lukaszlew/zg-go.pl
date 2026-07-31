@@ -18,6 +18,8 @@
   --pkt-sily: #2e7d32;
   --rule: #d9c896;
   --card: #ffffff;
+  --pole: #fbf6ea;            /* tlo rubryki do wypelnienia: blizej bieli niz karta */
+  --siatka: #9a9a9a;          /* wewnetrzne linie karty — GRID w tools/karta_pdf.py */
   --serif: 'EB Garamond', 'EB Garamond Fallback', Georgia, 'Times New Roman', serif;
   --page-w: 62rem;            /* jedna szerokosc kolumny, identyczna na kazdej podstronie */
 }
@@ -444,7 +446,94 @@ figcaption {
   text-align: left;
 }
 
-.credit, .przyklad {
+/* Kalkulator jest wierszem karty gracza: te same rubryki, w tej samej kolejnosci,
+   z tymi samymi grubymi kreskami miedzy sekcjami (przed gra | przeciwnik
+   i wyrownanie | po grze). Dwa wiersze, bo ta sama gra stoi na dwoch kartach —
+   widac wtedy, ze roznica PS jest jednakowa, a wynik ma przeciwne znaki. */
+/* Ramka obejmuje kartę, a nie cala kolumne tekstu, wiec stoi wysrodkowana.
+   Mierzy sie do zawartosci zamiast do policzonej sumy rubryk: dziesiec kolumn
+   podanych w milimetrach zaokragla sie kazda z osobna i roznica ulamka piksela
+   wystarczyla, zeby wyskoczyl poziomy pasek przewijania. Akapity dostaja
+   szerokosc karty, zeby to tabela decydowala o szerokosci pudelka. */
+.kalkulator {
+  --karta-w: 148.5mm;          /* suma rubryk, prawie jak na papierze */
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+.kalkulator > h2, .kalkulator > p, .kalkulator > ul { max-width: var(--karta-w); }
+.kalkulator p { text-align: left; }
+/* Pasek przewijania wyskakuje dopiero wtedy, gdy karta naprawde nie miesci sie
+   na ekranie — czyli na telefonie, a nie na monitorze. */
+.kalk-przewijak { overflow-x: auto; max-width: 100%; }
+/* Szerokosci rubryk sa te same, co na papierowej karcie (tools/karta_pdf.py:
+   COLUMNS), wprost w milimetrach — dlatego rubryka na jedna cyfre jest waska
+   jak na papierze, a nie rozciagnieta na rowne czesci strony. */
+table.kalk-karta { font-size: 0.8rem; table-layout: fixed; }
+table.kalk-karta col:nth-child(1) { width: 24mm; }     /* ktora karta */
+table.kalk-karta col:nth-child(2) { width: 12mm; }     /* moje PS */
+table.kalk-karta col:nth-child(3) { width: 12mm; }     /* PS przeciwnika — na karcie 8 mm, tu musi zmiescic trzy cyfry */
+table.kalk-karta col:nth-child(4) { width: 15mm; }     /* roznica PS */
+table.kalk-karta col:nth-child(5) { width: 17mm; }     /* pierwsze ruchy */
+table.kalk-karta col:nth-child(6) { width: 19mm; }     /* dodatkowi jency */
+table.kalk-karta col:nth-child(7) { width: 11mm; }     /* kalibracja — cyfra albo myslnik */
+table.kalk-karta col:nth-child(8) { width: 13mm; }     /* wynik */
+table.kalk-karta col:nth-child(9) { width: 13mm; }     /* zmiana PS */
+table.kalk-karta col:nth-child(10) { width: 12.5mm; }  /* nowe PS */
+table.kalk-karta th, table.kalk-karta td { text-align: center; padding: 0.25rem 0.4rem; }
+table.kalk-karta th {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  line-height: 1.15;
+}
+table.kalk-karta th[scope="row"] {
+  text-transform: none; letter-spacing: 0; font-size: 0.8rem;
+  text-align: left; font-weight: 600;
+}
+/* `table.sila td + td` maluje wszystko na zielono; tutaj zielone sa tylko te
+   rubryki, ktore i na karcie drukuja sie kolorem punktow sily. */
+table.kalk-karta td { color: var(--fg); }
+table.kalk-karta td.ps { color: var(--pkt-sily); font-weight: 600; }
+.kalk-sekcja { border-left: 2px solid var(--fg) !important; }
+/* Pole bierze tlo z rubryki, w ktorej stoi — takze z szarej rubryki wyniku —
+   ale zachowuje wlasna ramke i strzalki. Bez nich rubryka do wpisania niczym
+   nie rozni sie od wyliczonej i nie widac, gdzie mozna cokolwiek zmienic.
+   Wpis stoi na srodku, jak recznie wpisana liczba na papierze. */
+table.kalk-karta input, table.kalk-karta select {
+  font: inherit;
+  text-align: center;
+  text-align-last: center;     /* zamkniety select tez centruje wartosc */
+  padding: 0.1rem 0.15rem;
+  color: var(--fg);
+  background: var(--pole);
+  border: 1px solid var(--siatka);
+  border-radius: 3px;
+  width: 100%;                 /* pole wypelnia rubryke, a nie odwrotnie */
+}
+/* Strzalki wylatuja: w Chrome pokazywaly sie dopiero po najechaniu myszka, na
+   dotyku nigdy, a zjadaly szerokosc rubryki. Nikt zreszta nie szuka swoich PS
+   klikaniem — przepisuje je z karty. To, ze rubryke sie wypelnia, mowi jasne
+   tlo i ramka, tak jak puste kratki na papierowym formularzu. */
+table.kalk-karta input[type="number"] { -moz-appearance: textfield; }
+table.kalk-karta input[type="number"]::-webkit-inner-spin-button,
+table.kalk-karta input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Rubryka wyniku ma tlo takze na karcie (tools/karta_pdf.py: WYNIK_BG): ten sam
+   zloty rozcienczony do 45%, ktory na czarno-bialej drukarce zostaje lekka
+   szaroscia. Wynik jest liczba, od ktorej zalezy cala reszta wiersza. */
+.kalk-wynik-kol { background: color-mix(in srgb, var(--rule) 45%, transparent); }
+table.kalk-karta ::placeholder { color: var(--muted); opacity: 1; }
+.kalk-seria { font-size: 0.95rem; margin-top: 0.5rem; margin-bottom: 0; }
+.kalk-seria label { display: inline-flex; align-items: baseline; gap: 0.4rem; }
+.kalk-podsumowanie { font-weight: 700; margin: 0.3rem 0; }
+.kalk-uwagi { margin: 0.3rem 0 0; padding-left: 1.1rem; font-size: 0.9rem; color: var(--muted); }
+.kalk-uwagi li { margin: 0.15rem 0; }
+
+.credit, .przyklad, .kalkulator {
   background: rgba(156, 42, 42, 0.06);
   border: 1px solid var(--rule);
   border-radius: 6px;

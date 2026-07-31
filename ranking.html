@@ -114,6 +114,7 @@
         <p class="spis-label">Dalej na tej stronie</p>
         <ul class="links">
           <li><a href="#przykladowa-gra">Przykładowa gra</a></li>
+          <li><a href="#kalkulator">Kalkulator</a></li>
           <li><a href="#wyrownanie">Wyrównanie</a></li>
           <li><a href="#wynik">Wynik</a></li>
           <li><a href="#zmiana-ps">Zmiana PS</a></li>
@@ -152,6 +153,86 @@
         Czarek dzieli swój <span class="kol">wynik</span> przez dwa: <span class="ps">+15 / 2 = +7 PS</span>, czyli <span class="ps">60 → 67</span>, i seria go tu nie dotyczy.
         Bianka traci dokładnie <span class="ps">1 PS</span> zamiast dwóch: <span class="ps">84 → 83</span>.</p>
       </div>
+      </section>
+
+      <!-- Kalkulator liczy to samo, co zasady wyzej; kod w wyrownanie.js, testy
+           w tools/test_kalkulator.mjs porownuja go z tabela na tej stronie.
+           Startuje ukryty i odslania sie z JS-u: bez skryptow zostaja zasady
+           i tabela, ktore i tak sa zrodlem. -->
+      <section id="kalkulator" class="kalkulator" hidden>
+        <h2>Kalkulator</h2>
+        <p>Wpiszcie to, co wpisalibyście na kartę — reszta wyliczy się sama.</p>
+
+        <div class="kalk-przewijak">
+          <table class="sila kalk-karta">
+            <colgroup>
+              <col><col><col><col><col><col><col><col><col><col>
+            </colgroup>
+            <tr>
+              <th rowspan="2"></th>
+              <th rowspan="2">moje <span class="ps">PS</span></th>
+              <th colspan="2" class="kalk-sekcja">przeciwnik</th>
+              <th colspan="2">wyrównanie dla Czarnego</th>
+              <th rowspan="2">kalibracja</th>
+              <th rowspan="2" class="kalk-sekcja kalk-wynik-kol">wynik</th>
+              <th rowspan="2"><span class="ps">zmiana PS</span></th>
+              <th rowspan="2"><span class="ps">nowe PS</span></th>
+            </tr>
+            <tr>
+              <th class="kalk-sekcja"><span class="ps">PS</span></th>
+              <th><span class="ps">różnica PS</span></th>
+              <th>pierwsze ruchy</th>
+              <th>dodatkowi jeńcy</th>
+            </tr>
+            <tr>
+              <th scope="row">moja</th>
+              <td><input id="k-moje" type="number" inputmode="numeric" placeholder="?"></td>
+              <td class="kalk-sekcja"><input id="k-jego" type="number" inputmode="numeric" placeholder="?"></td>
+              <td class="ps" id="k-roznica"></td>
+              <td id="k-ruchy"></td>
+              <td id="k-jency"></td>
+              <td>
+                <select id="k-kalibracja">
+                  <option value="">—</option>
+                  <optgroup label="nowy jestem ja">
+                    <option value="ja:1">1</option>
+                    <option value="ja:2">2</option>
+                    <option value="ja:3">3</option>
+                    <option value="ja:4">4</option>
+                    <option value="ja:5">5</option>
+                  </optgroup>
+                  <optgroup label="nowy jest przeciwnik">
+                    <option value="on:1">1</option>
+                    <option value="on:2">2</option>
+                    <option value="on:3">3</option>
+                    <option value="on:4">4</option>
+                    <option value="on:5">5</option>
+                  </optgroup>
+                </select>
+              </td>
+              <td class="kalk-sekcja kalk-wynik-kol"><input id="k-wynik" type="text" placeholder="?"></td>
+              <td class="ps" id="k-zmiana"></td>
+              <td class="ps" id="k-nowe"></td>
+            </tr>
+            <tr>
+              <th scope="row">przeciwnika</th>
+              <td class="ps" id="k-o-moje"></td>
+              <td class="ps kalk-sekcja" id="k-o-jego"></td>
+              <td class="ps" id="k-o-roznica"></td>
+              <td id="k-o-ruchy"></td>
+              <td id="k-o-jency"></td>
+              <td id="k-o-kalibracja"></td>
+              <td class="kalk-sekcja kalk-wynik-kol" id="k-o-wynik"></td>
+              <td class="ps" id="k-o-zmiana"></td>
+              <td class="ps" id="k-o-nowe"></td>
+            </tr>
+          </table>
+        </div>
+
+        <p class="kalk-seria"><label><input id="k-seria" type="checkbox">
+          zwycięzca ma trzecią wygraną z rzędu albo kolejną</label></p>
+        <p id="k-kolory" class="kalk-podsumowanie"></p>
+        <ul id="k-uwagi" class="kalk-uwagi"></ul>
       </section>
 
       <section id="wyrownanie">
@@ -375,6 +456,8 @@
       <p>Klub Semedori · Gramy w Go w Zielonej Górze · <a href="mailto:klub@zg-go.pl">klub@zg-go.pl</a> · <a href="https://github.com/lukaszlew/zg-go.pl" target="_blank" rel="noopener">kod strony</a></p>
     </div>
   </footer>
+  <script type="module" src="wyrownanie.js"></script>
+
   <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "be0997012f154acba2d726d888c5293b"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>

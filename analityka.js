@@ -77,8 +77,20 @@ function zapomnijTozsamosc() {
   document.cookie = `${CIASTECZKO}=; max-age=0; path=/`;
 }
 
-const TRESC = 'Liczymy odwiedziny, żeby wiedzieć, czy ktoś tu zagląda. Zgoda pozwala nam rozpoznać, '
-  + 'że to znowu Ty — bez niej liczymy dalej, tylko anonimowo.';
+/* Tekst banera jest napisany pod czlowieka, ktory sie waha, i trzyma trzy rzeczy
+ * naraz: po co ta strona istnieje, co my z tego mamy i gdzie jest granica.
+ * Zdanie "nie dowiemy sie, kim jestes" nie tlumaczy zadnego mechanizmu — stawia
+ * sufit, a to jedyne, co realnie uspokaja kogos, kto nie wie, o co jest pytany.
+ * Obietnica o reklamach idzie przed nim, bo to jej brak ludzie zakladaja
+ * domyslnie: baner zgody kojarzy sie z targetowaniem, zanim ktokolwiek go
+ * przeczyta. Obie obietnice musza zostac prawdziwe — jesli kiedys pojawi sie
+ * tu licznik reklamowy, to zdanie trzeba usunac, a nie naciagnac.
+ * Mechanizmu (losowy numer, nazwa ciasteczka, czas zycia) celowo tu nie ma:
+ * kogo to interesuje, ten klika w Prywatnosc. */
+const TRESC = 'Robimy tę stronę dla ludzi, którzy tu trafiają — zgoda pozwala nam policzyć, '
+  + 'ilu ich jest. Te liczby to jedyna nagroda za wieczory nad rankingiem i resztą. '
+  + 'Nie zasilą żadnych reklam, nie dowiemy się z nich, kim jesteś, a decyzję możesz '
+  + 'zmienić w każdej chwili.';
 
 function pokazBaner() {
   const baner = document.createElement('div');
@@ -89,8 +101,8 @@ function pokazBaner() {
   const tresc = document.createElement('p');
   const szczegoly = document.createElement('a');
   szczegoly.href = 'prywatnosc.html';
-  szczegoly.textContent = 'Co dokładnie liczymy';
-  tresc.append(`${TRESC} `, szczegoly, '.');
+  szczegoly.textContent = 'Prywatność';
+  tresc.append(`${TRESC} `, szczegoly);
 
   const zapamietaj = (decyzja) => {
     localStorage.setItem(ZGODA, decyzja);
@@ -108,7 +120,10 @@ function pokazBaner() {
     return p;
   };
 
-  baner.append(tresc, przycisk('Zgadzam się', 'tak'), przycisk('Nie, dziękuję', 'nie'));
+  /* "Jasne, liczcie" to gest, "Zgadzam sie" to oswiadczenie; "Wole anonimowo"
+   * to wybor, a "Nie, dziekuje" to odmowa akwizytorowi. Ta sama decyzja, inny
+   * ciezar — a ludzie chetniej robia gesty niz podpisuja zgody. */
+  baner.append(tresc, przycisk('Jasne, liczcie', 'tak'), przycisk('Wolę anonimowo', 'nie'));
   document.body.append(baner);
 }
 

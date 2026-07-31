@@ -107,7 +107,7 @@ class KartaDane:
 
 
 # indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze PS
-BLUE_LEAFS = {1, 3, 4, 9, 10}   # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
+PS_LEAFS = {1, 3, 4, 9, 10}   # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
 
 # sciaga na dole karty: (tytul kolumny, [(numer, zasada)]); kolumny w rytmie
 # wypelniania karty (wyrownanie -> wynik -> zmiana PS); w kolumnie "wyrownanie"
@@ -330,7 +330,7 @@ def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
         for li, ((lx, lw), value) in enumerate(zip(leaves, values)):
             if not value:
                 continue
-            c.setFillColor(PKT_SILY if li in BLUE_LEAFS else INK)
+            c.setFillColor(PKT_SILY if li in PS_LEAFS else INK)
             c.setFont(FONT_HAND, HAND_FS)
             c.drawCentredString(lx + lw / 2, y, value)
 

@@ -56,6 +56,10 @@ a:hover { text-decoration: underline; }
    tresci i listy linkow zostaja bez podkreslen — tam caly wiersz jest linkiem
    i nie da sie w niego nie trafic. */
 p a { text-decoration: underline; text-underline-offset: 2px; }
+/* Obwodka nawigacji klawiatura w kolorze akcentu. Domyslna ramka przegladarki
+   jest granatowa i nie pasuje do kremowego tla; ksztaltu nie ustawiamy, bo
+   outline sam obiega zaokraglenia menu i przycisku "···". */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* Cel odnosnika blyska na moment przygaszonym akcentem — tym samym, co tlo
    pozycji w menu. Po skoku w srodek dlugiej strony inaczej nie wiadomo, ktory

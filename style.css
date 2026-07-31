@@ -550,3 +550,46 @@ table.kalk-karta ::placeholder { color: var(--muted); opacity: 1; }
 }
 .przyklad p { margin: 0.3rem 0; text-align: left; }
 .credit a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+/* Pasek zgody na rozpoznawanie powracajacych. Wstawia go analityka.js, bo
+   strony sa pisane recznie i element wklejony w HTML zylby w czterech kopiach.
+   Pokazuje sie tylko do pierwszej decyzji i znika po kliknieciu — dlatego stac
+   go na pozycje fixed na dole, gdzie nie zaslania naglowka ani menu. */
+.zgoda {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem 1rem;
+  padding: 0.9rem 1.2rem;
+  background: var(--card);
+  border-top: 1px solid var(--rule);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+}
+.zgoda p {
+  margin: 0;
+  max-width: 44rem;
+  font-size: 0.95rem;
+  text-align: left;
+}
+/* Oba przyciski maja identyczna wage wizualna: rozmiar, ramka i krój sa te same,
+   bo odmowa schowana za szarym napisem nie jest realnym wyborem. */
+.zgoda button,
+#zgoda-ustawienia button {
+  flex: none;
+  padding: 0.45rem 1.1rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--accent);
+  background: none;
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  cursor: pointer;
+}
+.zgoda button:hover,
+#zgoda-ustawienia button:hover { background: rgba(156, 42, 42, 0.08); }
+.zgoda a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+#zgoda-ustawienia p { margin: 0 0 0.6rem; }

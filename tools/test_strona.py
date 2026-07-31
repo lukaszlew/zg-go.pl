@@ -20,13 +20,14 @@ KORZEN = Path(__file__).resolve().parent.parent
 # i wlasna, czwarta pozycje w menu. Zasoby i kotwice sprawdzamy w niej tak samo
 # jak wszedzie, ale z porownania nawigacji jest wylaczona — do czasu, az artykul
 # zostanie dokonczony i wejdzie do menu na kazdej stronie.
-STRONY = ["index.html", "ranking.html", "hikaru-no-go.html", "alphago.html"]
+STRONY = ["index.html", "ranking.html", "hikaru-no-go.html", "alphago.html", "prywatnosc.html"]
 SZKICE = ["alphago.html"]
 
 LOKALNY_ZASOB = re.compile(r'(?:src|href)="((?!https?:|mailto:|webcal:|#|//)[^"]+)"')
 KOTWICA = re.compile(r'href="([a-z0-9-]*\.html)?#([a-z0-9-]+)"')
 IDENTYFIKATOR = re.compile(r'id="([^"]+)"')
 ZAPROSZENIE = re.compile(r'https://discord\.gg/[A-Za-z0-9]+')
+ZEWNETRZNY_SKRYPT = re.compile(r'<script[^>]*src=[\'"]https?:[^\'"]*')
 
 
 def tresc(strona: str) -> str:
@@ -84,6 +85,34 @@ class TestDiscord(unittest.TestCase):
         self.assertEqual(len(adresy), 1, f"rozne adresy Discorda na index.html: {adresy}")
 
 
+class TestAnalityka(unittest.TestCase):
+    """Liczniki wchodza na strone wylacznie przez analityka.js.
+
+    Snippet wklejony wprost do HTML-a natychmiast ma cztery kopie, a dopisany
+    tylko do trzech stron daje statystyki, ktore po cichu gubia czesc ruchu —
+    czyli klamia zamiast krzyczec. Stad zakaz zewnetrznych <script> na stronach:
+    kolejny licznik dopisuje sie do listy w analityka.js.
+    """
+
+    def test_polityka_ma_miejsce_na_szczegoly_z_kodu(self) -> None:
+        """Nazwy uslug, nazwe ciasteczka i czas jego zycia wpisuje analityka.js.
+
+        Polityka prywatnosci starzeje sie dokladnie tam, gdzie ktos przepisal do
+        niej szczegol z kodu — zmiana w kodzie nie przypomina o zmianie w tekscie.
+        Skoro wiec pisze je kod, to skasowanie pojemnika zabiera je bez sladu:
+        strona zostaje z ogolnikami i przestaje mowic, co naprawde zapisuje.
+        """
+        html = tresc("prywatnosc.html")
+        for pojemnik in ["prywatnosc-liczniki", "prywatnosc-ciasteczko", "zgoda-ustawienia"]:
+            self.assertIn(f'id="{pojemnik}"', html,
+                          f"prywatnosc.html straciła pojemnik #{pojemnik} wypełniany przez analityka.js")
+
+    def test_zaden_licznik_nie_stoi_wprost_w_html(self) -> None:
+        for strona in STRONY:
+            self.assertEqual(ZEWNETRZNY_SKRYPT.findall(tresc(strona)), [],
+                             f"{strona}: licznik dopisz do analityka.js, nie do HTML-a")
+
+
 class TestPowtorzoneBloki(unittest.TestCase):
     """Cztery pliki maja przepisane te same bloki i nikt tego nie pilnuje.
 
@@ -99,8 +128,8 @@ class TestPowtorzoneBloki(unittest.TestCase):
     def test_stopka_jest_wszedzie_ta_sama(self) -> None:
         self.porownaj(r'<footer class="site-footer">.*?</footer>', STRONY)
 
-    def test_analityka_jest_wszedzie_ta_sama(self) -> None:
-        self.porownaj(r'<script[^>]*cloudflareinsights[^>]*>.*?</script>', STRONY)
+    def test_analityka_wpieta_wszedzie_tak_samo(self) -> None:
+        self.porownaj(r'<script[^>]*analityka\.js[^>]*>.*?</script>', STRONY)
 
     def test_fonty_ladowane_wszedzie_tak_samo(self) -> None:
         self.porownaj(r'<link href="https://fonts\.googleapis\.com[^>]*>', STRONY)

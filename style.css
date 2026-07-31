@@ -23,7 +23,10 @@
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
-html { scrollbar-gutter: stable; }  /* pasek przewijania nie zmienia szerokosci ukladu */
+html {
+  scrollbar-gutter: stable;   /* pasek przewijania nie zmienia szerokosci ukladu */
+  scroll-behavior: smooth;    /* przeskok do kotwicy sam pokazuje, dokad strona pojechala */
+}
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background: var(--bg);
@@ -53,6 +56,19 @@ a:hover { text-decoration: underline; }
    tresci i listy linkow zostaja bez podkreslen — tam caly wiersz jest linkiem
    i nie da sie w niego nie trafic. */
 p a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Cel odnosnika blyska na moment przygaszonym akcentem — tym samym, co tlo
+   pozycji w menu. Po skoku w srodek dlugiej strony inaczej nie wiadomo, ktory
+   akapit byl celem, a na ranking.html kotwic jest kilkanascie.
+   scroll-margin robi nad celem oddech, zeby nie przyklejal sie do krawedzi. */
+:target {
+  animation: cel 1.6s ease-out;
+  scroll-margin-top: 1.5rem;
+}
+@keyframes cel {
+  from { background: rgba(156, 42, 42, 0.16); }
+  to   { background: transparent; }
+}
 
 /* --- Naglowek: nazwa nad podpisem po lewej, menu po prawej ---
    Nazwa i podpis to dwie rozne rzeczy, wiec roznia sie rozmiarem: szyld i to,

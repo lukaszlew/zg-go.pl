@@ -43,6 +43,10 @@ HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
 WERSJA = "30.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
+
+# Obcy klub: jedyne, co jest w karcie lokalne, to nazwa w naglowku (draw_title)
+# i adres w stopce oraz w kodzie QR (draw_sciaga). Gdy zglosi sie pierwszy klub,
+# wyciagnac te trzy napisy do parametru wiersza polecen zamiast kopiowac plik.
 ROWS = 21                               # mini-tabela wyrownania i 10 zasad w sciadze kosztuja 5 wierszy
 ROW_H = 8 * mm
 HEAD_H = 13 * mm

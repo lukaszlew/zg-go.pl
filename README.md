@@ -1,53 +1,59 @@
 # zg-go.pl
 
-Strona klubu Go **Semedori** w Zielonej Górze.
-Hostowana na GitHub Pages → <https://zg-go.pl/>
+Strona klubu Go **Semedori** w Zielonej Górze → <https://zg-go.pl/>
 
-Pliki źródłowe: `index.html`, `ranking.html`, `hikaru-no-go.html` (czysty HTML + CSS, bez frameworka).
-Deploy: `git push` → GitHub Pages auto-deploy.
+Czysty HTML i CSS plus jeden moduł JS. Bez frameworka i bez build-stepu; `git push`
+publikuje na GitHub Pages. `make help` wypisuje wszystkie polecenia.
 
-## Karta gracza i zasady
+Poniżej tylko to, czego nie widać z samego kodu.
 
-`make` generuje `karta.pdf` oraz karty i wycinki przykładowe (wymaga `reportlab`,
-`pdftocairo`, fontów DejaVu).
+## Zasady gry mają jedno źródło prawdy
 
-Zasady gry mają jedno źródło prawdy: **`tools/zasady.py`**. Te same zdania, co do
-słowa, stoją w trzech miejscach: w bloku „Wszystkie zasady" na `ranking.html`,
-jako pogrubione nagłówki w rozdziałach Wyrównanie / Wynik / Zmiana PS, oraz na
-ściądze na dole karty (`SCIAGA` budowana z `zasady.py`). Ściąga to dokładnie
-zasady — nic więcej i nic mniej; co jest za drobne na zasadę, idzie do
-szczegółów pod nią na stronie.
+**`tools/zasady.py`**. Te same zdania, co do słowa, stoją w trzech miejscach: w bloku
+„Zasady" na `ranking.html`, jako pogrubione nagłówki w rozdziałach Wyrównanie / Wynik /
+Zmiana PS, oraz na ściądze na dole karty gracza.
 
-Pilnują tego testy na stdlibowym `unittest`, więc działają bez instalowania
-czegokolwiek:
+Ściąga to dokładnie zasady — nic więcej i nic mniej. Co jest za drobne na zasadę, idzie
+do szczegółów pod nią na stronie i na kartę nie trafia.
 
-```
-make test
-```
+Kolejność przy zmianie zasady: `tools/zasady.py` → `ranking.html` → `make`.
+`karta.lock` trzyma odcisk zasad i układu karty, a `make` odmówi jego zapisu, gdy treść
+się zmieniła, a `WERSJA` w `tools/karta_pdf.py` została ta sama — dwa pokolenia
+wydrukowanych kart muszą dać się odróżnić.
 
-Te same testy odpala hook `pre-commit` — wywołuje `make test`, żeby definicja
-stała w jednym miejscu. Po sklonowaniu repo trzeba go raz włączyć:
+## Terminy spotkań idą z Kalendarza Google
 
-```
-make hooks
-```
+`spotkania.js` czyta publiczny kalendarz, więc osoba prowadząca ogłoszenia nie dotyka
+HTML-a ani gita.
 
-Po zmianie zasad podbij `WERSJA` w `tools/karta_pdf.py` i uruchom `make`.
+Klucz API stoi jawnie w źródle i to jest w porządku: dane są publiczne i tylko do
+odczytu, a klucz jest ograniczony do samego Calendar API. Ograniczenia po adresie
+strony **celowo nie ma** — odcinało odwiedzających, których przeglądarka nie wysyła
+nagłówka `Referer`.
 
-## TODO
+Awaria jest cicha dla odwiedzającego: zamiast listy pojawia się prośba o zgłoszenie na
+Discordzie. Nikt inny nam o niej nie powie.
 
-### Treść / zdjęcia
-- [ ] **Duże logo** klubu — zastąpić tekstowy placeholder ("gdyby tylko klub miał logo…") realnym znakiem (SVG lub PNG, najlepiej kwadratowe)
-- [ ] **Galeria** — przywrócić sekcję `#galeria` w `index.html`, kiedy będą realne zdjęcia ze spotkań (siatka zdjęć była już zaimplementowana, można odgrzebać z gita)
-- [ ] **Osobna sekcja "AlphaGo i Hikaru no Go"** ze zdjęciami / klatkami z filmów — obecnie obie wzmianki siedzą jednym akapitem w "Czemu Go". Sekcja mogłaby mieć poster filmu + kadr z anime, krótki opis każdego.
-- [ ] **Zdjęcia Go** — z turniejów, partii, kamieni na drewnie — do hera lub jako tło sekcji "Czemu Go"
+INWARIANT: `data-tytul` i `data-miejsce` w `index.html` muszą zgadzać się co do znaku
+z tym, co stoi w kalendarzu — po to, żeby powtarzalny tytuł i adres nie zaśmiecały listy.
 
-### Tekst
-- [ ] **Zakończenie "Czemu Go"** — obecne "Ale my po prostu lubimy w nią grać" jest chłodne. Przepisać na konkretną sensorykę / efekt po grze (np. "wychodzisz w piątek wieczór z głową lżejszą inaczej niż po Netflixie").
-- [ ] **Social proof** — uzupełnić placeholder w sekcji "Dla kogo" (`<p class="placeholder">[ tu wejdzie info o frekwencji / od kiedy działa klub ]</p>`) realnymi danymi: od kiedy klub działa, średnia frekwencja, ew. udział w turniejach.
+## Czego pilnują testy
 
-### Nice-to-have
-- [ ] **Obrazek na koniec strony** — pod "Wpadnij raz, zobaczysz." w sekcji "Kontakt" (np. duże zdjęcie partii Go, kamieni na drewnianej planszy — wizualne zamknięcie strony)
-- [ ] Discord — dorzucić info, czy aktywny / ilu członków
-- [ ] OG image (1200×630) dla podglądu na social media
-- [ ] Favicon
+`make test`, to samo robi hook pre-commit. Hook trzeba raz włączyć w każdym klonie:
+`make hooks`.
+
+Poza zasadami i logiką kalendarza testy pilnują samych stron: czy każdy lokalny plik
+istnieje, czy każda kotwica ma cel, czy stopka, analityka, fonty i menu są wszędzie
+takie same i czy zaproszenie na Discorda stoi dokładnie w jednym miejscu.
+
+## Rzeczy, które zaskakują
+
+- **`alphago.html` to szkic.** Nie linkuje go nic, ma `noindex` i własną, czwartą
+  pozycję w menu — dlatego jest wyłączony z testu nawigacji. Wyłączenie znika razem
+  z dokończeniem artykułu.
+- **Zaproszenie na Discorda jest w jednym miejscu**, w sekcji „Między spotkaniami" na
+  `index.html`. Reszta strony linkuje do tej sekcji, bo zaproszenia wygasają.
+- **Zdjęcia są w WebP**, bez zapasowego `<picture>`.
+- **Baner strony głównej sam zmienia się na Bachusa** w sezonie Winobrania.
+- **`img/hikaru/` i `img/alphago/` to cudze materiały** — źródła podane w stopkach tych
+  stron. Nie są nasze do rozdawania.

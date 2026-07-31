@@ -4,9 +4,11 @@
  * co stoi w kalendarzu. Dzieki temu osoba prowadzaca ogloszenia nie musi ruszac
  * HTML-a ani gita: przenosi wydarzenie albo dopisuje opis i strona nadaza.
  *
- * Klucz API jest widoczny w zrodle strony i to jest w porzadku - ograniczyliśmy
- * go w konsoli Google do jednego API (Calendar) i jednej domeny (zg-go.pl),
- * a dane sa publiczne i tylko do odczytu.
+ * Klucz API jest widoczny w zrodle strony i to jest w porzadku - dane sa
+ * publiczne i tylko do odczytu, a w konsoli Google klucz jest ograniczony do
+ * samego Calendar API. Ograniczenia po adresie strony celowo nie ma: odcinalo
+ * odwiedzajacych, ktorych przegladarka nie wysyla naglowka Referer, a ci
+ * zamiast terminow widzieli komunikat o awarii.
  *
  * Wartosci porownawcze (domyslny tytul i miejsce) siedza w atrybutach data-
  * kontenera w index.html, zeby staly obok widocznego adresu, a nie w drugim pliku.

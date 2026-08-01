@@ -51,8 +51,6 @@
 
 - [ ] **Bus factor** — drugi administrator na OVH, GitHubie, Google Cloud, kalendarzu
       i Discordzie. Dziś klub traci stronę razem z jedną osobą
-- [ ] **Kanały dotarcia poza stroną są puste.** Nie ma nas w Mapach Google, więc
-      zapytanie „go zielona góra" nie pokazuje klubu; nie ma Facebooka, na którym żyją
-      lokalne wydarzenia; nie ma numeru telefonu. Prawdopodobnie największy
-      nieodblokowany dopływ nowych ludzi, a żadna z tych rzeczy nie jest zmianą w repo
+- [ ] **Kanały dotarcia.** Wizytówka w Mapach i wpis na liście klubów PSG są, reszta
+      nie: Instagram, Facebook, zdjęcia, godziny i telefon na wizytówce, opinie
 - [ ] Cloudflare przed GitHub Pages, gdyby kiedyś były potrzebne nagłówki bezpieczeństwa

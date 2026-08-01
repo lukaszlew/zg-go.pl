@@ -42,8 +42,15 @@
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Al. Wojska Polskiego 9",
+        "postalCode": "65-077",
         "addressLocality": "Zielona Góra",
         "addressCountry": "PL"
+      },
+      "hasMap": "https://maps.app.goo.gl/zrGynDtGVZLG2zVd7",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 51.9401499,
+        "longitude": 15.5004711
       }
     }
   }
@@ -72,8 +79,13 @@
         <h2>Gdzie i kiedy</h2>
         <!-- Dwie linijki: najpierw dokąd się idzie, potem w jakim mieście.
              Bez pogrubień — sekcja ma jeden krój na wszystkim, co w niej stoi. -->
+        <!-- Link prowadzi do wizytowki klubu, nie do wyszukiwania Mediateki: ten sam
+             adres i ta sama nawigacja, ale klikniecie podnosi klub w lokalnych wynikach.
+             Skrot rozwija sie na "Klub Semedori - Gramy w Go w Zielonej Gorze",
+             51.9401499 / 15.5004711. Nie zamieniac go na postac po `cid` — wyglada
+             czysciej, ale nie da sie sprawdzic, dokad wiedzie. -->
         <p class="adres">Mediateka Góra Mediów ("Norwid"), 1 piętro<br>
-          Zielona Góra, <a href="https://www.google.com/maps/search/?api=1&amp;query=Mediateka+G%C3%B3ra+Medi%C3%B3w+Al.+Wojska+Polskiego+9+Zielona+G%C3%B3ra" target="_blank" rel="noopener">Google mapa</a></p>
+          Zielona Góra, <a href="https://maps.app.goo.gl/zrGynDtGVZLG2zVd7" target="_blank" rel="noopener">Google mapa</a></p>
 
         <div class="kiedy">
           <!-- Terminy wstawia spotkania.js z publicznego Kalendarza Google. Kontener

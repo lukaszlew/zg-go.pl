@@ -27,6 +27,7 @@ LOKALNY_ZASOB = re.compile(r'(?:src|href)="((?!https?:|mailto:|webcal:|#|//)[^"]
 KOTWICA = re.compile(r'href="([a-z0-9-]*\.html)?#([a-z0-9-]+)"')
 IDENTYFIKATOR = re.compile(r'id="([^"]+)"')
 ZAPROSZENIE = re.compile(r'https://discord\.gg/[A-Za-z0-9]+')
+WIZYTOWKA = re.compile(r'https://maps\.app\.goo\.gl/[A-Za-z0-9]+')
 ZEWNETRZNY_SKRYPT = re.compile(r'<script[^>]*src=[\'"]https?:[^\'"]*')
 
 
@@ -83,6 +84,20 @@ class TestDiscord(unittest.TestCase):
         """
         adresy = set(ZAPROSZENIE.findall(tresc("index.html")))
         self.assertEqual(len(adresy), 1, f"rozne adresy Discorda na index.html: {adresy}")
+
+
+class TestWizytowka(unittest.TestCase):
+    """Adres wizytowki w Mapach stoi w kilku miejscach naraz: przy adresie klubu,
+    w prosbie o opinie i w danych strukturalnych.
+
+    Skrot nie mowi, dokad prowadzi, wiec kopia z literowka nie rzuca sie w oczy
+    ani w kodzie, ani na stronie — prowadzi po prostu donikad. Stad test na to,
+    ze wszystkie kopie sa jednym adresem.
+    """
+
+    def test_wszystkie_kopie_to_ten_sam_adres(self) -> None:
+        adresy = {a for s in STRONY for a in WIZYTOWKA.findall(tresc(s))}
+        self.assertEqual(len(adresy), 1, f"rozne adresy wizytowki w serwisie: {adresy}")
 
 
 class TestAnalityka(unittest.TestCase):

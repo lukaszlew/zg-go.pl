@@ -106,7 +106,7 @@
             <li><a href="#zasada-1">Policzcie <span class="ps">różnicę PS</span>: <span class="ps">PS</span> silniejszego minus <span class="ps">PS</span> słabszego.</a></li>
             <li><a href="#zasada-2"><span class="ps">Różnica PS</span> 0–5 to gra równa: kolory przez nigiri, Czarny daje Białemu 6 jeńców i wygraną przy równym wyniku — razem komi 6,5.</a></li>
             <li><a href="#zasada-3"><span class="ps">Różnica PS</span> 6 i więcej to gra z wyrównaniem: silniejszy gra Białymi, a Czarny bierze z tabeli pierwsze ruchy i dodatkowych jeńców — liczonych na koniec jak zbite w grze.</a></li>
-            <li><a href="#zasada-4">W kolumnie <span class="kol">kalibracja</span> wpisujecie oboje numer gry kalibracyjnej nowego gracza — od 1 do 5 — a w każdej innej grze myślnik.</a></li>
+            <li><a href="#zasada-4">W kolumnie <span class="kol">kalibracja</span> nowy gracz odlicza swój mnożnik — ×4, ×3, ×2 w trzech pierwszych grach — jego przeciwnik wpisuje K, a w każdej innej grze oboje stawiają myślnik.</a></li>
           </ol>
 
           <table class="sila komp" id="tabela-wyrownania">
@@ -136,10 +136,10 @@
 
           <h3><a href="#zmiana-ps">Zmiana PS</a></h3>
           <ol class="zasady" start="7">
-            <li><a href="#zasada-7">Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>; remis nie zmienia nic.</a></li>
-            <li><a href="#zasada-8">Wygrana o 13 punktów lub więcej albo przez poddanie: <span class="ps">±2 PS</span>.</a></li>
-            <li><a href="#zasada-9">Trzecia wygrana z rzędu na danej planszy i każda kolejna podwaja <span class="ps">zmianę PS</span> zwycięzcy.</a></li>
-            <li><a href="#zasada-10">Gra kalibracyjna: nowy gracz zmienia <span class="ps">PS</span> o wynik podzielony przez numer z kolumny <span class="kol">kalibracja</span>, a przeciwnik dokładnie o <span class="ps">±1 PS</span> — bez <span class="ps">±2</span>, bez podwojeń i poza serią.</a></li>
+            <li><a href="#zasada-7">Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>, remis 0.</a></li>
+            <li><a href="#zasada-8">Wygrana o 13 punktów lub więcej albo przez poddanie mnoży <span class="ps">zmianę PS</span> obu graczy ×2.</a></li>
+            <li><a href="#zasada-9">Seria, czyli trzecia wygrana z rzędu na danej planszy i każda kolejna, mnoży <span class="ps">zmianę PS</span> zwycięzcy ×2.</a></li>
+            <li><a href="#zasada-10">Gra kalibracyjna działa jak zwykła, tylko stoi poza serią: nowy gracz mnoży swoją <span class="ps">zmianę PS</span> jeszcze przez mnożnik z kolumny <span class="kol">kalibracja</span>, a przeciwnik przy K dostaje dokładnie <span class="ps">±1 PS</span>.</a></li>
           </ol>
         </div>
       </section>
@@ -162,9 +162,9 @@
         To zarazem czwarta z rzędu wygrana Czarka na 9×9, więc <span class="kol">zmiana <span class="ps">PS</span></span> zwycięzcy jest podwojona: <span class="ps">+2 × 2 = +4 PS</span> dla Czarka, <span class="ps">−2 PS</span> dla Bianki.
         <span class="kol">Nowe <span class="ps">PS</span></span>: Czarek <span class="ps">60 → 64</span>, Bianka <span class="ps">84 → 82</span>.</p>
         <p><strong>A gdyby to była kalibracja.</strong>
-        Załóżmy, że to druga gra kalibracyjna Czarka — wtedy zamiast myślnika w kolumnie <span class="kol">kalibracja</span> stoi 2, na obu kartach.
-        Czarek dzieli swój <span class="kol">wynik</span> przez dwa: <span class="ps">+15 / 2 = +7 PS</span>, czyli <span class="ps">60 → 67</span>, i seria go tu nie dotyczy.
-        Bianka traci dokładnie <span class="ps">1 PS</span> zamiast dwóch: <span class="ps">84 → 83</span>.</p>
+        Załóżmy, że to druga gra kalibracyjna Czarka — wtedy zamiast myślnika w kolumnie <span class="kol">kalibracja</span> Czarek ma mnożnik ×3, a Bianka literę K.
+        Czarek mnoży swoją <span class="ps">zmianę PS</span> przez trzy: <span class="ps">+2 × 3 = +6 PS</span>, czyli <span class="ps">60 → 66</span> — dwójka za wygraną o 13 punktów lub więcej zostaje, a seria go tu nie dotyczy.
+        Bianka przy K traci dokładnie <span class="ps">1 PS</span> zamiast dwóch: <span class="ps">84 → 83</span>.</p>
       </div>
       </section>
 
@@ -209,18 +209,14 @@
                   <select id="k-kalibracja">
                     <option value="">—</option>
                     <optgroup label="nowy jestem ja">
-                      <option value="ja:1">1</option>
-                      <option value="ja:2">2</option>
-                      <option value="ja:3">3</option>
-                      <option value="ja:4">4</option>
-                      <option value="ja:5">5</option>
+                      <option value="ja:4">×4</option>
+                      <option value="ja:3">×3</option>
+                      <option value="ja:2">×2</option>
                     </optgroup>
                     <optgroup label="nowy jest przeciwnik">
-                      <option value="on:1">1</option>
-                      <option value="on:2">2</option>
-                      <option value="on:3">3</option>
-                      <option value="on:4">4</option>
-                      <option value="on:5">5</option>
+                      <option value="on:4">K — u niego ×4</option>
+                      <option value="on:3">K — u niego ×3</option>
+                      <option value="on:2">K — u niego ×2</option>
                     </optgroup>
                   </select>
                 </td>
@@ -276,10 +272,11 @@
           Jeniec to jeniec: dodatkowi leżą obok planszy do końca gry, a przy liczeniu każdy z nich jest wart punkt — tak samo jak kamień zbity w grze.
           Wyrównanie z tabeli to całe ruchy i całych jeńców, bez żadnej połówki — dlatego tutaj, w odróżnieniu od gry równej, wynik może wyjść dokładnie równy, czyli remisem.</p>
 
-          <p class="zasada" id="zasada-4"><span class="nr">4.</span><strong>W kolumnie <span class="kol">kalibracja</span> wpisujecie oboje numer gry kalibracyjnej nowego gracza — od 1 do 5 — a w każdej innej grze myślnik.</strong>
-          To ostatnia rubryka wypełniana przed pierwszym ruchem, a w zdecydowanej większości gier wpada w nią myślnik: kalibracja dotyczy tylko pierwszych pięciu gier kogoś zupełnie nowego.
-          Numer stoi na obu kartach ten sam, bo jest cechą gry, nie gracza — i tak samo jak <span class="kol">różnica PS</span> daje się potem sprawdzić przez porównanie kart.
-          Co ten numer robi z <span class="ps">PS</span> i skąd się bierze, mówi <a href="#kalibracja">ostatnia zasada</a>.</p>
+          <p class="zasada" id="zasada-4"><span class="nr">4.</span><strong>W kolumnie <span class="kol">kalibracja</span> nowy gracz odlicza swój mnożnik — ×4, ×3, ×2 w trzech pierwszych grach — jego przeciwnik wpisuje K, a w każdej innej grze oboje stawiają myślnik.</strong>
+          To ostatnia rubryka wypełniana przed pierwszym ruchem, a w zdecydowanej większości gier wpada w nią myślnik: kalibracja dotyczy tylko trzech pierwszych gier kogoś zupełnie nowego.
+          Mnożnik odlicza się sam: pierwsza gra ×4, druga ×3, trzecia ×2 — i kalibracja skończona.
+          To jedyna rubryka zapisywana na obu kartach inaczej — mnożnik u nowego, K u przeciwnika — i przy porównaniu kart jedno musi stać naprzeciw drugiego.
+          Co ten mnożnik robi ze <span class="ps">zmianą PS</span>, mówi <a href="#kalibracja">ostatnia zasada</a>.</p>
 
           <p>Przy różnicy powyżej <span class="ps">70 PS</span> odejmujcie po <span class="ps">13 PS</span>, aż wynik znajdzie się w <a href="#tabela-wyrownania">tabeli</a>; potem doczytajcie z niej pierwsze ruchy i dodatkowych jeńców, a do ruchów dodajcie tyle, ile razy odejmowaliście.
           To ta sama arytmetyka, którą robi sama tabela: każda następna kolumna stoi o <span class="ps">13 PS</span> dalej i daje Czarnemu jeden ruch więcej — wy tylko przedłużacie ją w prawo.</p>
@@ -303,29 +300,30 @@
           <h3>Zmiana PS</h3>
           <p>Na koniec każdy liczy swoje nowe <span class="ps">PS</span>: najpierw <span class="kol">zmiana PS</span>, potem <span class="kol">nowe PS</span>.</p>
 
-          <p class="zasada" id="zasada-7"><span class="nr">7.</span><strong>Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>; remis nie zmienia nic.</strong>
+          <p class="zasada" id="zasada-7"><span class="nr">7.</span><strong>Zwycięzca <span class="ps">+1 PS</span>, przegrany <span class="ps">−1 PS</span>, remis 0.</strong>
           <span class="kol">Nowe PS</span> to <span class="kol">moje PS</span> plus <span class="kol">zmiana PS</span> — i od nich zaczyna się następny wiersz karty.</p>
 
-          <p class="zasada" id="zasada-8"><span class="nr">8.</span><strong>Wygrana o 13 punktów lub więcej albo przez poddanie: <span class="ps">±2 PS</span>.</strong>
+          <p class="zasada" id="zasada-8"><span class="nr">8.</span><strong>Wygrana o 13 punktów lub więcej albo przez poddanie mnoży <span class="ps">zmianę PS</span> obu graczy ×2.</strong>
+          Z <span class="ps">±1</span> robi się <span class="ps">±2</span>: zwycięzca dostaje dwa, przegrany traci dwa.
           Trzynaście punktów to równowartość jednego ruchu, czyli wygrana na tyle wyraźna, że starczyłoby jej nawet o ruch mniej.</p>
 
-          <p class="zasada" id="zasada-9"><span class="nr">9.</span><strong>Trzecia wygrana z rzędu na danej planszy i każda kolejna podwaja <span class="ps">zmianę PS</span> zwycięzcy.</strong>
+          <p class="zasada" id="zasada-9"><span class="nr">9.</span><strong>Seria, czyli trzecia wygrana z rzędu na danej planszy i każda kolejna, mnoży <span class="ps">zmianę PS</span> zwycięzcy ×2.</strong>
           Liczy się seria z kimkolwiek, nie z jednym przeciwnikiem.
           Przerywa ją każda gra, która nie kończy się wygraną — przegrana i remis tak samo.
-          Podwojenie dotyczy tylko zwycięzcy: przegrany traci tyle, ile zwykle.
-          Podwaja się to, co wyszło z wcześniejszych zasad — także <span class="ps">+2 PS</span> za <a href="#zasada-8">wygraną o 13 punktów lub przez poddanie</a>, co w serii daje <span class="ps">+4 PS</span>.
+          Mnożnik serii dostaje tylko zwycięzca: przegrany traci tyle, ile zwykle.
+          Mnożniki się kumulują: razem z ×2 za <a href="#zasada-8">wygraną o 13 punktów lub przez poddanie</a> seria daje <span class="ps">+4 PS</span>.
           Tak właśnie wychodzą <span class="ps">+4 PS</span> Czarka w <a href="#przykladowa-gra">przykładzie</a>: wygrana o 15 punktów w czwartej grze z rzędu.
-          Podwojenie się nie nawarstwia: piąta i każda następna wygrana z rzędu liczy się tak samo jak trzecia.</p>
+          Sama seria się nie nawarstwia: piąta i każda następna wygrana z rzędu mnoży ×2 tak samo jak trzecia.</p>
 
         </section>
 
         <section id="kalibracja">
           <h3>Kalibracja nowego gracza</h3>
           <p>Nowy gracz musi skądś wziąć swoje pierwsze <span class="ps">PS</span> — i nikt nie musi trafnie ocenić, ile jest wart.
-          Wystarczy strzelić, a pięć pierwszych gier samo sprowadzi tę liczbę tam, gdzie trzeba.
+          Wystarczy strzelić, a trzy pierwsze gry same sprowadzą tę liczbę tam, gdzie trzeba.
           Dlatego do kalibracji nie jest potrzebny nauczyciel: rachunek robi to za was.</p>
 
-          <p class="zasada" id="zasada-10"><span class="nr">10.</span><strong>Gra kalibracyjna: nowy gracz zmienia <span class="ps">PS</span> o wynik podzielony przez numer z kolumny <span class="kol">kalibracja</span>, a przeciwnik dokładnie o <span class="ps">±1 PS</span> — bez <span class="ps">±2</span>, bez podwojeń i poza serią.</strong>
+          <p class="zasada" id="zasada-10"><span class="nr">10.</span><strong>Gra kalibracyjna działa jak zwykła, tylko stoi poza serią: nowy gracz mnoży swoją <span class="ps">zmianę PS</span> jeszcze przez mnożnik z kolumny <span class="kol">kalibracja</span>, a przeciwnik przy K dostaje dokładnie <span class="ps">±1 PS</span>.</strong>
           Zacznijcie od wartości wstępnej i strzelajcie z grubsza: ta liczba ma tylko nie dopuścić do pogromu w pierwszej grze.
           Zupełnie początkującemu dajcie na 9×9 <span class="ps">PS</span> z przedziału <span class="ps">10–30</span> — dzieci bliżej dolnej granicy, dorośli bliżej górnej.
           Kto zna swój poziom w kyu albo dan, startuje z tabeli; jeden stopień to w tej skali mniej więcej <span class="ps">2 PS</span> na 9×9, <span class="ps">5 PS</span> na 13×13 i <span class="ps">13 PS</span> na 19×19.</p>
@@ -340,14 +338,15 @@
 
           <p class="zasada-cd">Startowe <span class="ps">PS</span> da się też przeliczyć z planszy, na której gracz już jest skalibrowany — mają się do siebie jak <span class="ps">2 : 5 : 13</span> — ale siła na różnych planszach nie musi iść w parze.</p>
 
-          <p class="zasada-cd">Potem nowy gracz gra pięć razy zwyczajnie, z wyrównaniem z aktualnych <span class="ps">PS</span>, i po każdej grze dopisuje sobie <span class="kol">wynik</span> podzielony przez numer gry: po pierwszej cały, po drugiej połowę, po piątej jedną piątą — zaokrąglony w stronę zera, więc <span class="ps">+15 / 2</span> to <span class="ps">+7</span>, a <span class="ps">−15 / 2</span> to <span class="ps">−7</span>.
-          Poprawkę nanoście od razu, bo następna gra ma mieć wyrównanie liczone już z nowych <span class="ps">PS</span>: pierwsza poprawka jest pełna, każda następna waży mniej, więc <span class="ps">PS</span> osiadają na średniej z tych pięciu gier szybciej, niż gdyby liczyć ją dopiero na końcu.</p>
+          <p class="zasada-cd">Potem nowy gracz gra trzy razy zwyczajnie, z wyrównaniem z aktualnych <span class="ps">PS</span>, i po każdej grze mnoży swoją <span class="ps">zmianę PS</span> przez mnożnik z kolumny <span class="kol">kalibracja</span> — mnożniki się kumulują, więc wyraźna wygrana w pierwszej grze to <span class="ps">+2 × 4 = +8 PS</span>, a poddanie liczy się jak zawsze.
+          Poprawkę nanoście od razu, bo następna gra ma mieć wyrównanie liczone już z nowych <span class="ps">PS</span>: mnożniki 4 + 3 + 2 znaczą, że trzy gry kalibracyjne ważą tyle, co dziewięć zwykłych — a najcięższa jest pierwsza.</p>
 
           <p class="zasada-cd">Dobierzcie do nich dwóch albo trzech różnych przeciwników, możliwie najbliższych siłą — blisko dobrany przeciwnik to małe wyrównanie, a małe wyrównanie to najmniej zgadywania w całym rachunku.
-          „Poza serią” znaczy jedno i drugie: taka gra ani nie wchodzi przeciwnikowi do serii, ani mu jej nie przerywa.
-          Gry zakończonej poddaniem nie ma czym dzielić — nie liczcie jej jako kalibracyjnej i rozegrajcie następną, a przeciwnik i tak dostaje swoje <span class="ps">±1 PS</span>.</p>
+          „Stoi poza serią” znaczy jedno i drugie: taka gra ani nie wchodzi do serii żadnemu z graczy, ani żadnemu jej nie przerywa.</p>
 
-          <p class="zasada-cd">Po piątej grze gracz jest skalibrowany i obowiązują go zwykłe zasady.</p>
+          <p class="zasada-cd">Mnożniki ×4, ×3, ×2 są dobrane do 9×9 — dla większych plansz są za małe: na 13×13 powinny być 2–4 razy większe, ale jeszcze ich nie ustaliliśmy.</p>
+
+          <p class="zasada-cd">Po trzeciej grze gracz jest skalibrowany i obowiązują go zwykłe zasady.</p>
 
         </section>
 
@@ -358,7 +357,7 @@
           Kto czuje, że wygrywa albo przegrywa zbyt wiele gier z rzędu, może w każdej chwili poprosić o korektę najsilniejszego gracza w klubie — i to on decyduje.
           Zwykle jest to szybki awans w górę, rzadziej cofnięcie w dół.</p>
 
-          <p>Zamiast ruszać <span class="ps">PS</span> ręcznie można też przepuścić gracza przez <a href="#kalibracja">kalibrację</a> jeszcze raz — pięć gier, dokładnie jak przy wejściu do klubu.
+          <p>Zamiast ruszać <span class="ps">PS</span> ręcznie można też przepuścić gracza przez <a href="#kalibracja">kalibrację</a> jeszcze raz — trzy gry, dokładnie jak przy wejściu do klubu.
           Działa to w obie strony: równie dobrze prostuje <span class="ps">PS</span> komuś, kto nagle skoczył naprzód, jak komuś, kto wraca po długiej przerwie i gra słabiej, niż go pamięta karta.
           W tym drugim wypadku przerwa musi być liczona raczej w półroczach niż w tygodniach.</p>
         </section>
@@ -451,7 +450,8 @@
         <h3 id="wady">Wady i ograniczenia</h3>
         <p><strong>Największe ryzyko to źle ustawiony start nowego gracza.</strong>
         Za wysokie startowe <span class="ps">PS</span> oznaczają serię przegranych i zniechęcenie, zanim gracz zdąży cokolwiek zbudować — łatwo w ten sposób sparzyć kogoś na dobre.
-        Dlatego pięć gier kalibracyjnych rozgrywa się od razu, na samym początku: pierwsza poprawka jest pełna, więc nawet mocno chybiony start prostuje się po jednej grze.
+        Dlatego trzy gry kalibracyjne rozgrywa się od razu, na samym początku, z mnożnikami 4, 3 i 2: kalibracja jest w stanie naprawić start chybiony o <span class="ps">9 PS</span>, a gdy wygrane albo przegrane są wyraźne — o <span class="ps">18 PS</span>, czyli na 9×9 od czterech do dziewięciu stopni.
+        Grubszy błąd prostuje <a href="#korekta">szybka korekta</a>.
         Procedura stoi wyżej, w sekcji <a href="#kalibracja">Kalibracja nowego gracza</a>.</p>
         <p><strong>Wszystko opiera się na zaufaniu — ale karta ma wbudowany audyt.</strong>
         Wyniku nie weryfikuje nikt poza dwójką graczy przy stoliku, a dzieci bywają pomysłowe.

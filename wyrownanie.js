@@ -42,11 +42,9 @@ export function parsujWynik(tekst) {
   return { poddanie: false, znak: Math.sign(punkty), punkty };
 }
 
-const doZera = (x) => Math.trunc(x);   // "+15 / 2 to +7, a −15 / 2 to −7"
-
 /* Zwraca zmiane PS obu graczy z perspektywy tego, kto wpisal swoj wynik.
- * kalibracja: null albo { kto: 'ja' | 'on', numer: 1..5 } — numer jest wspolny
- * dla obu kart, bo jest cecha gry, a nie gracza. */
+ * kalibracja: null albo { kto: 'ja' | 'on', mnoznik: 4 | 3 | 2 } — mnoznik stoi
+ * na karcie nowego gracza, na karcie przeciwnika stoi K. */
 export function zmianaPS(wynik, { seria = false, kalibracja = null } = {}) {
   if (!wynik) return null;
   const uwagi = [];
@@ -56,30 +54,30 @@ export function zmianaPS(wynik, { seria = false, kalibracja = null } = {}) {
     return { moja: 0, przeciwnika: 0, uwagi };
   }
 
-  if (kalibracja && wynik.poddanie) {
-    uwagi.push('Gry zakończonej poddaniem nie ma czym dzielić — nie liczcie jej jako kalibracyjnej i rozegrajcie następną.');
-    kalibracja = null;
-  }
+  const wyrazna = wynik.poddanie || Math.abs(wynik.punkty) >= WYRAZNA;
+  const podstawa = wyrazna ? 2 : 1;
 
+  /* Gra kalibracyjna dziala jak zwykla, tylko stoi poza seria: mnoznik z kolumny
+   * kalibracja kumuluje sie z ×2 za wyrazna wygrana, a przeciwnik przy K dostaje
+   * doslownie ±1 — jego zmiany nie mnozy nic. */
   if (kalibracja) {
-    const nowyZnak = kalibracja.kto === 'ja' ? wynik.znak : -wynik.znak;
-    const nowego = doZera((nowyZnak * Math.abs(wynik.punkty)) / kalibracja.numer);
-    const drugiego = -nowyZnak;
     if (seria) uwagi.push('Gra kalibracyjna stoi poza serią: ani do niej nie wchodzi, ani jej nie przerywa.');
+    if (wyrazna) uwagi.push('Wygrana o 13 punktów lub więcej albo przez poddanie mnoży zmianę PS nowego gracza ×2 — kumuluje się z mnożnikiem kalibracji; przeciwnik przy K i tak dostaje dokładnie ±1 PS.');
+    const nowyZnak = kalibracja.kto === 'ja' ? wynik.znak : -wynik.znak;
+    const nowego = nowyZnak * podstawa * kalibracja.mnoznik;
+    const drugiego = -nowyZnak;
     return kalibracja.kto === 'ja'
       ? { moja: nowego, przeciwnika: drugiego, uwagi }
       : { moja: drugiego, przeciwnika: nowego, uwagi };
   }
 
-  const wyrazna = wynik.poddanie || Math.abs(wynik.punkty) >= WYRAZNA;
-  const podstawa = wyrazna ? 2 : 1;
   if (wyrazna) {
     uwagi.push(wynik.poddanie
-      ? 'Poddanie liczy się tak samo jak wygrana o 13 punktów: ±2 PS.'
-      : 'Wygrana o 13 punktów lub więcej: ±2 PS zamiast ±1.');
+      ? 'Poddanie liczy się tak samo jak wygrana o 13 punktów: mnoży zmianę PS obu graczy ×2.'
+      : 'Wygrana o 13 punktów lub więcej mnoży zmianę PS obu graczy ×2.');
   }
   const zwyciezcy = podstawa * (seria ? 2 : 1);
-  if (seria) uwagi.push('Trzecia wygrana z rzędu i każda kolejna podwaja zmianę zwycięzcy; podwojenie się nie nawarstwia.');
+  if (seria) uwagi.push('Seria — trzecia wygrana z rzędu i każda kolejna — mnoży zmianę zwycięzcy ×2; sama się nie nawarstwia.');
   return wynik.znak > 0
     ? { moja: zwyciezcy, przeciwnika: -podstawa, uwagi }
     : { moja: -podstawa, przeciwnika: zwyciezcy, uwagi };
@@ -158,14 +156,14 @@ function start() {
     pole('k-kolory').textContent = opisKolorow(w, a, b);
 
     const wpisany = parsujWynik(wynik.value);
-    // Wartosc to "kto:numer" — kto dzieli swoj wynik, a kto dostaje ±1.
-    const [kto, numer] = kalib.value ? kalib.value.split(':') : [];
+    // Wartosc to "kto:mnoznik" — kto mnozy swoja zmiane PS, a kto przy K dostaje ±1.
+    const [kto, mnoznik] = kalib.value ? kalib.value.split(':') : [];
     const z = zmianaPS(wpisany, {
       seria: seria.checked,
-      kalibracja: numer ? { kto, numer: Number(numer) } : null,
+      kalibracja: mnoznik ? { kto, mnoznik: Number(mnoznik) } : null,
     });
-    // Ten sam numer stoi na obu kartach — jest cecha gry, nie gracza.
-    pole('k-o-kalibracja').textContent = numer || '—';
+    // Mnoznik stoi na karcie nowego gracza, K na karcie jego przeciwnika.
+    pole('k-o-kalibracja').textContent = !mnoznik ? '—' : (kto === 'ja' ? 'K' : `×${mnoznik}`);
 
     if (!z) {
       wpisz({ zmiana: [PUSTO, PUSTO], nowe: [PUSTO, PUSTO] });

@@ -115,27 +115,28 @@ test('seria podwaja zmiane zwyciezcy i tylko jego', () => {
   assert.equal(przegrana.przeciwnika, 4);
 });
 
-test('gra kalibracyjna dzieli wynik nowego gracza, w strone zera', () => {
-  const moja = zmiana('+15', { kalibracja: { kto: 'ja', numer: 2 } });
-  assert.equal(moja.moja, 7, '+15 / 2 to +7');
-  assert.equal(moja.przeciwnika, -1, 'przeciwnik dokladnie ±1, bez ±2');
-  const jego = zmiana('-15', { kalibracja: { kto: 'on', numer: 2 } });
-  assert.equal(jego.przeciwnika, 7, 'to on jest nowy i to on dzieli');
+test('gra kalibracyjna mnozy zmiane nowego gracza, przeciwnik przy K dostaje ±1', () => {
+  const moja = zmiana('+5', { kalibracja: { kto: 'ja', mnoznik: 3 } });
+  assert.equal(moja.moja, 3, '+1 razy mnoznik 3');
+  assert.equal(moja.przeciwnika, -1, 'przeciwnik przy K dokladnie ±1');
+  const jego = zmiana('-5', { kalibracja: { kto: 'on', mnoznik: 3 } });
+  assert.equal(jego.przeciwnika, 3, 'to on jest nowy i to on mnozy');
   assert.equal(jego.moja, -1);
-  assert.equal(zmiana('-15', { kalibracja: { kto: 'ja', numer: 2 } }).moja, -7, '−15 / 2 to −7');
+  assert.equal(zmiana('-5', { kalibracja: { kto: 'ja', mnoznik: 3 } }).moja, -3, 'przegrana tez razy mnoznik');
 });
 
-test('kalibracja nie zna podwojen ani serii', () => {
-  const z = zmiana('+15', { seria: true, kalibracja: { kto: 'ja', numer: 1 } });
-  assert.equal(z.moja, 15, 'pierwsza poprawka jest pelna');
+test('mnoznik kalibracji kumuluje sie z ×2 za wyrazna wygrana i poddanie', () => {
+  assert.equal(zmiana('+15', { kalibracja: { kto: 'ja', mnoznik: 4 } }).moja, 8, '+2 razy 4');
+  assert.equal(zmiana('R', { kalibracja: { kto: 'ja', mnoznik: 2 } }).moja, 4, 'poddanie liczy sie jak zawsze');
+  assert.equal(zmiana('+15', { kalibracja: { kto: 'ja', mnoznik: 4 } }).przeciwnika, -1,
+    'przeciwnika nie mnozy nic, nawet ×2');
+});
+
+test('gra kalibracyjna stoi poza seria', () => {
+  const z = zmiana('+5', { seria: true, kalibracja: { kto: 'ja', mnoznik: 4 } });
+  assert.equal(z.moja, 4, 'seria nie mnozy w kalibracji');
   assert.equal(z.przeciwnika, -1);
   assert.ok(z.uwagi.some((u) => u.includes('poza serią')));
-});
-
-test('poddanej gry nie ma czym dzielic, wiec nie jest kalibracyjna', () => {
-  const z = zmiana('R', { kalibracja: { kto: 'ja', numer: 3 } });
-  assert.equal(z.moja, 2, 'liczy sie jak zwykla wygrana przez poddanie');
-  assert.ok(z.uwagi.some((u) => u.includes('poddaniem')));
 });
 
 test('znak wypisuje sie tak, jak stoi na karcie', () => {

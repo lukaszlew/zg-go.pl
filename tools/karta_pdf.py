@@ -46,7 +46,7 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "30.07.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
+WERSJA = "06.08.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
 
 # Obcy klub: jedyne, co jest w karcie lokalne, to nazwa w naglowku (draw_title)
 # i adres w stopce oraz w kodzie QR (draw_sciaga). Gdy zglosi sie pierwszy klub,
@@ -70,8 +70,9 @@ COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("przeciwnik", [("nick", 0.0), ("PS", 8 * mm), ("różnica PS", 15 * mm)]),
     # "dla Czarnego" raz, w naglowku grupy — podkolumny zostaja krotkie
     ("wyrównanie dla Czarnego", [("pierwsze\nruchy", 17 * mm), ("dodatkowi\njeńcy", 19 * mm)]),
-    # numer gry kalibracyjnej (1-5) albo myslnik; ostatnia rubryka wypelniana
-    # przed pierwszym ruchem, wiec zamyka srodkowa sekcje karty
+    # mnoznik nowego gracza (×4/×3/×2), K u przeciwnika, w zwyklej grze myslnik;
+    # ostatnia rubryka wypelniana przed pierwszym ruchem, wiec zamyka srodkowa
+    # sekcje karty
     ("kalibracja", [("", 15 * mm)]),
     ("wynik", [("", 12 * mm)]),
     ("zmiana PS", [("", 13 * mm)]),
@@ -96,7 +97,7 @@ class Wiersz:
     roznica_ps: str
     ruchy: str              # pierwsze ruchy Czarnego (1 = gra rowna)
     jency: str              # dodatkowi jency dla Czarnego (liczba ujemna = dla Bialego)
-    kalibracja: str         # numer gry kalibracyjnej nowego gracza (1-5) albo myslnik
+    kalibracja: str         # mnoznik nowego gracza (×4/×3/×2), K u przeciwnika, albo myslnik
     wynik: str
     zmiana: str
     nowe_pkt: str
@@ -114,8 +115,8 @@ class KartaDane:
 PS_LEAFS = {1, 3, 4, 9, 10}   # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
 
 # sciaga na dole karty: (tytul kolumny, [(numer, zasada)]); kolumny w rytmie
-# wypelniania karty (wyrownanie -> wynik -> zmiana PS); w kolumnie "wyrownanie"
-# pod zasadami rysowana jest mini-tabela KOMP_TABELA.
+# wypelniania karty (wyrownanie -> wynik -> zmiana PS); mini-tabela KOMP_TABELA
+# stoi w srodkowej kolumnie "wynik", bo ta ma najmniej zasad i najwiecej luzu.
 # Tresc pochodzi w calosci z zasady.py — sciaga to dokladnie zasady ze strony,
 # nic wiecej i nic mniej.
 SCIAGA: list[tuple[str, list[tuple[int, str]]]] = [
@@ -440,7 +441,7 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
                 c.drawString(x + 4.2 * mm, y, line)
                 y -= line_h
             y -= 0.7 * mm
-        if title == "wyrównanie":                   # dane pod zasadami, ktorych dotycza
+        if title == "wynik":                        # srodkowa kolumna: najkrotsza, wiec tabela tu
             y = draw_komp_tabela(c, x, y + 1.0 * mm, col_w) - 1.0 * mm
         bottoms.append(y)
     y = min(bottoms) - 1.5 * mm

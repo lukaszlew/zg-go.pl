@@ -29,13 +29,13 @@ ZASADY: list[tuple[str, str]] = [
     ("wyrównanie", "Policzcie różnicę PS: PS silniejszego minus PS słabszego."),
     ("wyrównanie", "Różnica PS 0–5 to gra równa: kolory przez nigiri, Czarny daje Białemu 6 jeńców i wygraną przy równym wyniku — razem komi 6,5."),
     ("wyrównanie", "Różnica PS 6 i więcej to gra z wyrównaniem: silniejszy gra Białymi, a Czarny bierze z tabeli pierwsze ruchy i dodatkowych jeńców — liczonych na koniec jak zbite w grze."),
-    ("wyrównanie", "W kolumnie kalibracja wpisujecie oboje numer gry kalibracyjnej nowego gracza — od 1 do 5 — a w każdej innej grze myślnik."),
+    ("wyrównanie", "W kolumnie kalibracja nowy gracz odlicza swój mnożnik — ×4, ×3, ×2 w trzech pierwszych grach — jego przeciwnik wpisuje K, a w każdej innej grze oboje stawiają myślnik."),
     ("wynik", "Wynik wpisujecie w punktach ze znakiem: plus u zwycięzcy, minus u przegranego, remis jako zero; po poddaniu +R i −R."),
     ("wynik", "Ta sama gra stoi na dwóch kartach: różnica PS jednakowa, wynik z przeciwnymi znakami."),
-    ("zmiana PS", "Zwycięzca +1 PS, przegrany −1 PS; remis nie zmienia nic."),
-    ("zmiana PS", "Wygrana o 13 punktów lub więcej albo przez poddanie: ±2 PS."),
-    ("zmiana PS", "Trzecia wygrana z rzędu na danej planszy i każda kolejna podwaja zmianę PS zwycięzcy."),
-    ("zmiana PS", "Gra kalibracyjna: nowy gracz zmienia PS o wynik podzielony przez numer z kolumny kalibracja, a przeciwnik dokładnie o ±1 PS — bez ±2, bez podwojeń i poza serią."),
+    ("zmiana PS", "Zwycięzca +1 PS, przegrany −1 PS, remis 0."),
+    ("zmiana PS", "Wygrana o 13 punktów lub więcej albo przez poddanie mnoży zmianę PS obu graczy ×2."),
+    ("zmiana PS", "Seria, czyli trzecia wygrana z rzędu na danej planszy i każda kolejna, mnoży zmianę PS zwycięzcy ×2."),
+    ("zmiana PS", "Gra kalibracyjna działa jak zwykła, tylko stoi poza serią: nowy gracz mnoży swoją zmianę PS jeszcze przez mnożnik z kolumny kalibracja, a przeciwnik przy K dostaje dokładnie ±1 PS."),
 ]
 
 assert [k for k, _ in ZASADY] == sorted(

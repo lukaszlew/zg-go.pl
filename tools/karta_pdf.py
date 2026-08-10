@@ -601,18 +601,7 @@ def ustaw_styl(selected_style: str):
     }[selected_style]
 
 
-def main(cli_args: Namespace) -> None:
-    ustaw_styl(cli_args.style)
-    generuj_karte(
-        out=KORZEN / "karta.pdf",
-        karty=[None],
-        fonts_dir=Path(cli_args.fonts_dir) if cli_args.fonts_dir else None,
-        club = ClubInfo(name=cli_args.club, website=cli_args.website),
-    )
-    zapisz_zamek()
-
-
-if __name__ == "__main__":
+def get_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Generator karty gracza w formacie PDF")
     parser.add_argument(
         "-s",
@@ -641,5 +630,20 @@ if __name__ == "__main__":
         default="zg-go.pl",
         help="Strona www klubu",
     )
-    cli_args = parser.parse_args()
-    main(cli_args)
+    return parser
+
+
+def main(cli_args: Namespace) -> None:
+    ustaw_styl(cli_args.style)
+    generuj_karte(
+        out=KORZEN / "karta.pdf",
+        karty=[None],
+        fonts_dir=Path(cli_args.fonts_dir) if cli_args.fonts_dir else None,
+        club = ClubInfo(name=cli_args.club, website=cli_args.website),
+    )
+    zapisz_zamek()
+
+
+if __name__ == "__main__":
+    parser = get_argument_parser()
+    main(cli_args=parser.parse_args())

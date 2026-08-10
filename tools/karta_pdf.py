@@ -639,7 +639,7 @@ def main(cli_args: argparse.Namespace) -> None:
         out=KORZEN / "karta.pdf",
         karty=[None],
         fonts_dir=Path(cli_args.fonts_dir) if cli_args.fonts_dir else None,
-        club = ClubInfo(name=cli_args.club, website=cli_args.website),
+        club=ClubInfo(name=cli_args.club, website=cli_args.website),
     )
     zapisz_zamek()
 

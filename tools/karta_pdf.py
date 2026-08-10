@@ -10,7 +10,6 @@ Wymaga: reportlab, czcionki DejaVu (pakiet fonts-dejavu).
 import argparse
 import hashlib
 import json
-from argparse import Namespace
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -634,7 +633,7 @@ def get_argument_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(cli_args: Namespace) -> None:
+def main(cli_args: argparse.Namespace) -> None:
     ustaw_styl(cli_args.style)
     generuj_karte(
         out=KORZEN / "karta.pdf",

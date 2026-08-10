@@ -7,6 +7,7 @@ z wypelnionym naglowkiem i wierszami gier (np. karty przykladowe).
 Wymaga: reportlab, czcionki DejaVu (pakiet fonts-dejavu).
 """
 
+import argparse
 import hashlib
 import json
 from dataclasses import dataclass
@@ -15,7 +16,7 @@ from pathlib import Path
 from reportlab.graphics import renderPDF
 from reportlab.graphics.barcode.qr import QrCodeWidget
 from reportlab.graphics.shapes import Drawing
-from reportlab.lib.colors import HexColor
+from reportlab.lib.colors import HexColor, Color
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib.utils import simpleSplit
@@ -28,16 +29,42 @@ from zasady import KOLUMNY, ZASADY, w_kolumnie
 PAGE_W, PAGE_H = A4                     # 210 x 297 mm, pion
 MARGIN = 10 * mm                        # margines zewnetrzny strony
 
-INK = HexColor("#1a1a1a")
-MUTED = HexColor("#555555")
-GRID = HexColor("#9a9a9a")              # wewnetrzne linie siatki (jasniejsze od krawedzi)
-TITLE_GRAY = HexColor("#6b6b6b")        # --muted ze style.css (kolor tytulow strony)
-HEADER_BG = HexColor("#d9c896")         # --rule ze style.css
-PKT_SILY = HexColor("#2e7d32")          # --pkt-sily ze style.css (zielone punkty sily)
-# tlo rubryki "wynik": ten sam zloty co naglowek, rozcienczony do 45% na bialym.
-# Na drukarce czarno-bialej zostaje z tego okolo 10% szarosci — rubryka dalej
-# odstaje, a wpis olowkiem jest czytelny.
-WYNIK_BG = HexColor("#f0e6cd")
+
+@dataclass(frozen=True)
+class Style:
+    ink: Color
+    muted: Color
+    grid: Color
+    title_gray: Color
+    header_bg: Color
+    pkt_sily: Color
+    wynik_bg: Color
+
+
+ZG_STYLE = Style(
+    ink=HexColor("#1a1a1a"),
+    muted=HexColor("#555555"),
+    grid=HexColor("#9a9a9a"),  # wewnetrzne linie siatki (jasniejsze od krawedzi)
+    title_gray=HexColor("#6b6b6b"),  # --muted ze style.css (kolor tytulow strony)
+    header_bg=HexColor("#d9c896"),  # --rule ze style.css
+    pkt_sily=HexColor("#2e7d32"),  # --pkt-sily ze style.css (zielone punkty sily)
+    # tlo rubryki "wynik": ten sam zloty co naglowek, rozcienczony do 45% na bialym.
+    # Na drukarce czarno-bialej zostaje z tego okolo 10% szarosci — rubryka dalej
+    # odstaje, a wpis olowkiem jest czytelny.
+    wynik_bg=HexColor("#f0e6cd"),
+)
+
+BW_STYLE = Style(
+    ink=HexColor("#1a1a1a"),
+    muted=HexColor("#1a1a1a"),
+    grid=HexColor("#1a1a1a"),
+    title_gray=HexColor("#1a1a1a"),
+    header_bg=HexColor("#eaeaea"),
+    pkt_sily=HexColor("#1a1a1a"),
+    wynik_bg=HexColor("#eaeaea"),
+)
+
+STYLE = ZG_STYLE
 
 FONT = "DejaVu"
 FONT_BOLD = "DejaVu-Bold"
@@ -111,6 +138,12 @@ class KartaDane:
     wiersze: list[Wiersz]
 
 
+@dataclass(frozen=True)
+class ClubInfo:
+    name: str
+    website: str
+
+
 # indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze PS
 PS_LEAFS = {1, 3, 4, 9, 10}   # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
 
@@ -136,8 +169,8 @@ KOMP_TABELA: list[tuple[str, str, str]] = [
 ]
 
 
-def register_fonts() -> None:
-    dejavu = Path("/usr/share/fonts/truetype/dejavu")
+def register_fonts(fonts_dir: Path | None = None) -> None:
+    dejavu = fonts_dir or Path("/usr/share/fonts/truetype/dejavu")
     assert dejavu.is_dir(), f"brak katalogu czcionek DejaVu: {dejavu}"
     pdfmetrics.registerFont(TTFont(FONT, str(dejavu / "DejaVuSans.ttf")))
     pdfmetrics.registerFont(TTFont(FONT_BOLD, str(dejavu / "DejaVuSans-Bold.ttf")))
@@ -147,15 +180,15 @@ def register_fonts() -> None:
     pdfmetrics.registerFont(TTFont(FONT_HAND, str(hand)))
 
 
-def draw_title(c: Canvas, x0: float, top: float, card_w: float) -> float:
+def draw_title(c: Canvas, x0: float, top: float, card_w: float, club: ClubInfo) -> float:
     """Tytul karty jak naglowek strony zg-go.pl; zwraca y pod nim."""
     y = top - 6 * mm
-    c.setFillColor(TITLE_GRAY)
+    c.setFillColor(STYLE.title_gray)
     c.setFont(FONT_SERIF, 14)
     c.drawString(x0, y, "Karta gracza")
     c.setFont(FONT, 7)
-    c.drawRightString(x0 + card_w, y, "Ranking Semedori · zg-go.pl")
-    c.setStrokeColor(HEADER_BG)
+    c.drawRightString(x0 + card_w, y, f"{club.name} · {club.website}")
+    c.setStrokeColor(STYLE.header_bg)
     c.setLineWidth(0.8)
     c.line(x0, y - 3 * mm, x0 + card_w, y - 3 * mm)
     return y - 6 * mm
@@ -180,25 +213,25 @@ def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
     values = ["", ""] if dane is None else [dane.nick, ""]
 
     bottom = top - FIELD_H
-    c.setStrokeColor(INK)
+    c.setStrokeColor(STYLE.ink)
     c.setLineWidth(0.6)
     c.rect(x0, bottom, card_w, FIELD_H, stroke=1, fill=0)
     x = x0
     for (label, _), w, value in zip(FIELDS, widths, values):
         c.line(x, top, x, bottom)
-        c.setFillColor(MUTED)
+        c.setFillColor(STYLE.muted)
         c.setFont(FONT, 5.5)
         c.drawString(x + 1.5 * mm, top - 3 * mm, label)
         if label.startswith("PLANSZA"):
             assert pdfmetrics.stringWidth(PLANSZA_PREPRINT, FONT_BOLD, PLANSZA_FS) <= w - 6 * mm, \
                 "nadruk planszy za szeroki na rubryke"
-            c.setFillColor(INK)
+            c.setFillColor(STYLE.ink)
             c.setFont(FONT_BOLD, PLANSZA_FS)
             c.drawCentredString(x + w / 2, bottom + 3 * mm, PLANSZA_PREPRINT)
             if dane is not None:
                 draw_plansza_kolko(c, x, w, bottom + 3 * mm, dane.plansza)
         else:
-            c.setFillColor(INK)
+            c.setFillColor(STYLE.ink)
             c.setFont(FONT_HAND, HAND_FS_FIELDS)
             c.drawString(x + 2 * mm, bottom + 2.5 * mm, value)
         x += w
@@ -222,7 +255,7 @@ def draw_header_text(c: Canvas, cx: float, y: float, text: str, fs: float, max_w
     text = text.upper()
     text_w = pdfmetrics.stringWidth(text, FONT_BOLD, fs)
     assert text_w <= max_w - 1 * mm, f"naglowek '{text}' za szeroki na kolumne {max_w / mm:.1f} mm"
-    c.setFillColor(PKT_SILY if "PS" in text.split() else INK)
+    c.setFillColor(STYLE.pkt_sily if "PS" in text.split() else STYLE.ink)
     c.setFont(FONT_BOLD, fs)
     c.drawCentredString(cx, y, text)
 
@@ -265,22 +298,22 @@ def draw_grid(c: Canvas, x0: float, top: float, card_w: float, widths: list[list
     for row in range(last + 1):
         y = top - min(row, 1) * HEAD_H - max(row - 1, 0) * ROW_H
         edge = row <= 1 or (row == last and n_rows == int(n_rows))
-        c.setStrokeColor(INK if edge else GRID)
+        c.setStrokeColor(STYLE.ink if edge else STYLE.grid)
         c.setLineWidth(0.6 if edge else 0.4)
         c.line(x0, y, x0 + card_w, y)
     x = x0
     for i, ((label, _), sub_ws) in enumerate(zip(COLUMNS, widths)):
         if label in THICK_BEFORE:                     # granica sekcji karty
-            c.setStrokeColor(INK)
+            c.setStrokeColor(STYLE.ink)
             c.setLineWidth(1.8)
         elif i == 0:                                  # lewa krawedz tabeli
-            c.setStrokeColor(INK)
+            c.setStrokeColor(STYLE.ink)
             c.setLineWidth(0.6)
         else:
-            c.setStrokeColor(GRID)
+            c.setStrokeColor(STYLE.grid)
             c.setLineWidth(0.5)
         c.line(x, top, x, bottom)                     # granica grupy: pelna wysokosc
-        c.setStrokeColor(GRID)
+        c.setStrokeColor(STYLE.grid)
         c.setLineWidth(0.4)
         sx = x
         for sub_w in sub_ws[:-1]:
@@ -289,7 +322,7 @@ def draw_grid(c: Canvas, x0: float, top: float, card_w: float, widths: list[list
         if len(sub_ws) > 1:                           # kreska miedzy etykieta grupy a podkolumnami
             c.line(x, top - HEAD_H / 2, x + sum(sub_ws), top - HEAD_H / 2)
         x += sum(sub_ws)
-    c.setStrokeColor(INK)
+    c.setStrokeColor(STYLE.ink)
     c.setLineWidth(0.6)
     c.line(x0 + card_w, top, x0 + card_w, bottom)     # prawa krawedz tabeli
 
@@ -318,7 +351,7 @@ def draw_plansza_kolko(c: Canvas, x: float, w: float, y: float, plansza: str) ->
     num_w = pdfmetrics.stringWidth(plansza, FONT_BOLD, PLANSZA_FS)
     cx, cy = x1 + num_w / 2, y + 1.4 * mm
     rx, ry = num_w / 2 + 1.6 * mm, 3.1 * mm
-    c.setStrokeColor(INK)
+    c.setStrokeColor(STYLE.ink)
     c.setLineWidth(1.5)
     c.ellipse(cx - rx, cy - ry, cx + rx, cy + ry, stroke=1, fill=0)
 
@@ -335,7 +368,7 @@ def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
         for li, ((lx, lw), value) in enumerate(zip(leaves, values)):
             if not value:
                 continue
-            c.setFillColor(PKT_SILY if li in PS_LEAFS else INK)
+            c.setFillColor(STYLE.pkt_sily if li in PS_LEAFS else STYLE.ink)
             c.setFont(FONT_HAND, HAND_FS)
             c.drawCentredString(lx + lw / 2, y, value)
 
@@ -351,7 +384,7 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
     widths = group_widths(card_w)
     bottom = top - HEAD_H - n_rows * ROW_H
 
-    c.setFillColor(HEADER_BG)
+    c.setFillColor(STYLE.header_bg)
     c.rect(x0, top - HEAD_H, card_w, HEAD_H, stroke=0, fill=1)
 
     # Rubryka "wynik" dostaje wlasne tlo na calej wysokosci tabeli: to jedyna
@@ -361,7 +394,7 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
     for (label, _), sub_ws in zip(COLUMNS, widths):
         szerokosc = sum(sub_ws)
         if label == "wynik":
-            c.setFillColor(WYNIK_BG)
+            c.setFillColor(STYLE.wynik_bg)
             c.rect(x, bottom, szerokosc, top - HEAD_H - bottom, stroke=0, fill=1)
         x += szerokosc
 
@@ -387,7 +420,7 @@ def draw_komp_tabela(c: Canvas, x: float, top: float, col_w: float) -> float:
     assert abs(sum(ws) - col_w) < 0.01 * mm, f"szerokosci podkolumn != {col_w / mm:.1f} mm"
     head_h, row_h = 3.8 * mm, 3.4 * mm
     bottom = top - head_h - len(KOMP_TABELA) * row_h
-    c.setFillColor(HEADER_BG)
+    c.setFillColor(STYLE.header_bg)
     c.rect(x, top - head_h, col_w, head_h, stroke=0, fill=1)
     hx = x
     for head, w in zip(KOMP_TABELA_HEAD, ws):
@@ -397,11 +430,11 @@ def draw_komp_tabela(c: Canvas, x: float, top: float, col_w: float) -> float:
         y = top - head_h - (r + 1) * row_h + 1.0 * mm
         vx = x
         for i, (value, w) in enumerate(zip(row, ws)):
-            c.setFillColor(PKT_SILY if i == 0 else INK)
+            c.setFillColor(STYLE.pkt_sily if i == 0 else STYLE.ink)
             c.setFont(FONT, 6)
             c.drawCentredString(vx + w / 2, y, value)
             vx += w
-    c.setStrokeColor(GRID)
+    c.setStrokeColor(STYLE.grid)
     c.setLineWidth(0.4)
     for r in range(len(KOMP_TABELA)):
         ly = top - head_h - r * row_h
@@ -425,18 +458,18 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
         x = x0 + i * (col_w + gap)
         t = title.upper()
         c.setFont(FONT_BOLD, 6)
-        c.setFillColor(PKT_SILY if "PS" in t.split() else INK)
+        c.setFillColor(STYLE.pkt_sily if "PS" in t.split() else STYLE.ink)
         c.drawString(x, y0, t)
-        c.setStrokeColor(HEADER_BG)
+        c.setStrokeColor(STYLE.header_bg)
         c.setLineWidth(0.8)
         c.line(x, y0 - 1.6 * mm, x + col_w, y0 - 1.6 * mm)
         y = y0 - 5 * mm
         for numer, zasada in items:
             c.setFont(FONT_BOLD, 6)
-            c.setFillColor(MUTED)
+            c.setFillColor(STYLE.muted)
             c.drawString(x, y, f"{numer}.")          # numer zamiast punktora: zasady sa numerowane
             c.setFont(FONT, 6)
-            c.setFillColor(INK)
+            c.setFillColor(STYLE.ink)
             for line in simpleSplit(zasada, FONT, 6, col_w - 4.2 * mm):
                 c.drawString(x + 4.2 * mm, y, line)
                 y -= line_h
@@ -448,15 +481,15 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
     qr_size = 14 * mm
     draw_qr(c, x0 + card_w - qr_size, y, qr_size, "https://zg-go.pl/ranking.html")
     c.setFont(FONT, 6)
-    c.setFillColor(MUTED)
+    c.setFillColor(STYLE.muted)
     c.drawString(x0, y, "PS = punkty siły · Pełne zasady: zg-go.pl/ranking.html")
     c.drawRightString(x0 + card_w - qr_size - 2 * mm, y, f"wersja karty {WERSJA}")
     return y
 
 
-def draw_card(c: Canvas, x0: float, card_w: float, dane: KartaDane | None) -> None:
+def draw_card(c: Canvas, x0: float, card_w: float, dane: KartaDane | None, club: ClubInfo) -> None:
     top = PAGE_H - MARGIN
-    y = draw_title(c, x0, top, card_w)
+    y = draw_title(c, x0, top, card_w, club)
     y = draw_fields(c, x0, y, card_w, dane)
     y = draw_table(c, x0, y, card_w, [] if dane is None else dane.wiersze, ROWS)
     y = draw_sciaga(c, x0, y, card_w)
@@ -486,14 +519,19 @@ def generuj_wycinek(out: Path, karty: list[KartaDane], n_rows: float) -> None:
     print(f"OK: {out} ({out.stat().st_size} B)")
 
 
-def generuj_karte(out: Path, karty: list[KartaDane | None]) -> None:
+def generuj_karte(
+        out: Path,
+        karty: list[KartaDane | None],
+        fonts_dir: Path | None,
+        club: ClubInfo,
+) -> None:
     """Zapisuje PDF: jedna karta na strone; None = pusta karta do druku."""
     assert karty, "co najmniej jedna karta"
-    register_fonts()
+    register_fonts(fonts_dir)
     c = Canvas(str(out), pagesize=(PAGE_W, PAGE_H))
     c.setTitle("Karta gracza — Klub Go Semedori")
     for dane in karty:
-        draw_card(c, MARGIN, PAGE_W - 2 * MARGIN, dane)
+        draw_card(c, MARGIN, PAGE_W - 2 * MARGIN, dane, club)
         c.showPage()
     c.save()
     print(f"OK: {out} ({out.stat().st_size} B)")
@@ -555,10 +593,58 @@ def zapisz_zamek() -> None:
     )
 
 
-def main() -> None:
-    generuj_karte(KORZEN / "karta.pdf", [None])
+def ustaw_styl(selected_style: str):
+    global STYLE
+    STYLE = {
+        'zg': ZG_STYLE,
+        'bw': BW_STYLE,
+    }[selected_style]
+
+
+def get_argument_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Generator karty gracza w formacie PDF")
+    parser.add_argument(
+        "-s",
+        "--style",
+        choices=["zg", "bw"],
+        default="zg",
+        help="Styl karty",
+    )
+    parser.add_argument(
+        "-f",
+        "--fonts",
+        dest="fonts_dir",
+        type=str,
+        default=None,
+        help="Ścieżka do katalogu z fontami"
+    )
+    parser.add_argument(
+        "--club",
+        type=str,
+        dest="club_name",
+        default="Semedori",
+        help="Nazwa klubu",
+    )
+    parser.add_argument(
+        "--website",
+        type=str,
+        default="zg-go.pl",
+        help="Strona www klubu",
+    )
+    return parser
+
+
+def main(cli_args: argparse.Namespace) -> None:
+    ustaw_styl(cli_args.style)
+    generuj_karte(
+        out=KORZEN / "karta.pdf",
+        karty=[None],
+        fonts_dir=Path(cli_args.fonts_dir) if cli_args.fonts_dir else None,
+        club=ClubInfo(name=cli_args.club_name, website=cli_args.website),
+    )
     zapisz_zamek()
 
 
 if __name__ == "__main__":
-    main()
+    parser = get_argument_parser()
+    main(cli_args=parser.parse_args())

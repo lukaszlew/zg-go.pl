@@ -6,6 +6,7 @@ Jako biblioteka: generuj_karte(sciezka, [KartaDane(...), ...]) — karta na stro
 z wypelnionym naglowkiem i wierszami gier (np. karty przykladowe).
 Wymaga: reportlab, czcionki DejaVu (pakiet fonts-dejavu).
 """
+
 import argparse
 import hashlib
 import json
@@ -474,7 +475,7 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
                 c.drawString(x + 4.2 * mm, y, line)
                 y -= line_h
             y -= 0.7 * mm
-        if title == "wynik":                             # srodkowa kolumna: najkrotsza, wiec tabela tu
+        if title == "wynik":                        # srodkowa kolumna: najkrotsza, wiec tabela tu
             y = draw_komp_tabela(c, x, y + 1.0 * mm, col_w) - 1.0 * mm
         bottoms.append(y)
     y = min(bottoms) - 1.5 * mm

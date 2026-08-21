@@ -6,7 +6,7 @@ Odpala sie tez jako pre-commit hook (tools/githooks/pre-commit).
 
 Same liczby sa przepisane recznie ze zrodel, wiec zaden test nie udowodni, ze sa
 prawdziwe — moze za to zlapac literowke. Sluzy do tego arytmetyka tabeli:
-w regularnym zrodle jeden stopien roznicy to zawsze tyle samo punktow, wiec
+w regularnym zrodle jedna jednostka roznicy to zawsze tyle samo punktow, wiec
 przestawiona cyfra od razu wychodzi z rytmu. Tabele, ktore rytmu nie trzymaja,
 maja tu wlasny test opisujacy dokladnie, gdzie i o ile sie lamia — zeby dziwactwo
 zrodla dalo sie odroznic od naszego bledu.
@@ -174,7 +174,7 @@ class Arytmetyka(unittest.TestCase):
                     if kamienie_a == kamienie_b:
                         self.assertLess(komi_b, komi_a, f"roznica {roznica}: komi ma malec")
                     else:
-                        # Na granicy komi odbija w gore — chyba ze stopien wart jest
+                        # Na granicy komi odbija w gore — chyba ze jednostka warta jest
                         # dokladnie jeden ruch (19x19 Semedori), bo wtedy reszta z
                         # dzielenia sie nie zmienia i komi stoi w miejscu.
                         self.assertGreaterEqual(
@@ -193,7 +193,7 @@ class Dziwactwa(unittest.TestCase):
                 punkty[roznica], punkty[roznica + 1],
                 f"roznice {roznica} i {roznica + 1} daja u BGA to samo wyrownanie",
             )
-        # Pierwsze cztery stopnie schodza po 1,5 punktu komi, dalsze po 2.
+        # Pierwsze cztery kratki schodza po 1,5 punktu komi, dalsze po 2.
         komi = [k for _, _, k in bga.TABELA_9X9[:8]]
         self.assertEqual([a - b for a, b in zip(komi, komi[1:])], [1.5] * 4 + [2] * 3)
 
@@ -242,8 +242,8 @@ class Semedori(unittest.TestCase):
             with self.subTest(plansza=plansza):
                 self.assertEqual(tabela[0], (0, 1, -zg.ROWNA))
 
-    def test_stopien_wart_jest_tyle_punktow_ile_mowi_stosunek(self):
-        """13 i 2 punkty na stopien — 13x13 schodzi z drabinki, patrz klasa Drabinka."""
+    def test_jednostka_sily_warta_jest_tyle_punktow_ile_mowi_stosunek(self):
+        """13 i 2 punkty na jednostke — 13x13 schodzi z drabinki, patrz klasa Drabinka."""
         for plansza in zg.ARYTMETYKA:
             with self.subTest(plansza=plansza):
                 punkty = przewaga(zg.TABELE[plansza], zg.RUCH)
@@ -252,14 +252,14 @@ class Semedori(unittest.TestCase):
                     {b - a for a, b in zip(punkty, punkty[1:])}, {zg.KROK[plansza]},
                 )
 
-    def test_19x19_ma_stale_komi_bo_stopien_to_dokladnie_jeden_ruch(self):
+    def test_19x19_ma_stale_komi_bo_jednostka_to_dokladnie_jeden_ruch(self):
         """Nie dziwactwo, tylko skutek KROK == RUCH: reszta z dzielenia nie drgnie."""
         self.assertEqual(zg.KROK["19x19"], zg.RUCH)
         _, _, komi = zip(*zg.TABELE["19x19"])
-        self.assertEqual(set(komi[1:]), {-(zg.ROWNA % zg.RUCH)}, "od pierwszego stopnia stale -7")
+        self.assertEqual(set(komi[1:]), {-(zg.ROWNA % zg.RUCH)}, "od pierwszej kratki stale -7")
         self.assertEqual(komi[1:], tuple([-7]) * (zg.DLUGOSC - 1))
         ruchy_19 = [r for _, r, _ in zg.TABELE["19x19"]]
-        self.assertEqual(ruchy_19[2:], list(range(2, len(ruchy_19))), "stopien to ruch wiecej")
+        self.assertEqual(ruchy_19[2:], list(range(2, len(ruchy_19))), "jednostka roznicy to ruch wiecej")
 
     def test_zasieg_siega_najdluzszej_z_przepisanych_tabel(self):
         """Kolumna Semedori nie ma sie konczyc przed cudzymi."""
@@ -282,7 +282,7 @@ class TabelaHtml(unittest.TestCase):
 
     @classmethod
     def _liczba(cls, tekst: str) -> float:
-        """Odwrotnosc _stopien: "3" -> 3.0, "3.5" -> 3.5, ".5" -> 0.5."""
+        """Odwrotnosc _kratka_sily: "3" -> 3.0, "3.5" -> 3.5, ".5" -> 0.5."""
         return float(tekst if tekst[0].isdigit() else "0" + tekst)
 
     @classmethod
@@ -310,7 +310,7 @@ class TabelaHtml(unittest.TestCase):
         self.assertEqual(list(tabela_html.PLANSZE), ["19x19", "13x13", "9x9"], "od najwiekszej")
 
     def test_siatka_czyta_sie_z_brzegow(self):
-        """Prawy brzeg daje ruchy, gorny punkty, a w kratkach stoi roznica stopni.
+        """Prawy brzeg daje ruchy, gorny punkty, a w kratkach stoi roznica sily.
 
         Po drabince 13x13 kazda z trzech plansz trafia w siatke rowno, wiec ten
         jeden test opisuje wszystkie trzy tabele.
@@ -333,8 +333,8 @@ class TabelaHtml(unittest.TestCase):
                     for p, (_, tresc) in zip(punkty, wiersz):
                         with self.subTest(ruchy=numer, punkty=p):
                             self.assertTrue(tresc, "siatka ma byc pelna, bez dziur")
-                            stopien = self._liczba(tresc)
-                            self.assertEqual(zg.wiersz(plansza, stopien), (stopien, numer, -p))
+                            roznica_sily = self._liczba(tresc)
+                            self.assertEqual(zg.wiersz(plansza, roznica_sily), (roznica_sily, numer, -p))
 
     def test_czapka_niesie_nazwe_planszy(self):
         """Pas nad siatka — jedyne miejsce, gdzie nazwa nie kosztuje ani kratki."""
@@ -399,7 +399,7 @@ class TabelaHtml(unittest.TestCase):
         self.assertEqual(html.count(tabela_html.OPIS), 1)
         self.assertEqual(html.count('<p class="opis">'), 1)
         self.assertNotIn("<caption>", html, "podpisy tabel zlaly sie w jeden opis")
-        for slowo in ("różnica stopni", "równa"):
+        for slowo in ("różnica siły", "równa"):
             with self.subTest(slowo=slowo):
                 self.assertIn(slowo, tabela_html.OPIS)
 
@@ -459,19 +459,19 @@ class Drabinka(unittest.TestCase):
     """13x13 schodzi z drabinki, a nie z krok razy roznica — i to ma konsekwencje."""
 
     def test_petla_powtarza_sie_co_do_pozycji(self):
-        """Co pol stopnia jedna pozycja nizej, co pieta — caly ruch wiecej."""
+        """Co pol jedna pozycja nizej, co pieta — caly ruch wiecej."""
         for pozycja in range(len(zg.PETLA_13X13) * 4):
-            stopien = zg.PIERWSZY_STOPIEN_13X13 + pozycja * zg.POLOWKA
-            with self.subTest(stopien=stopien):
-                _, ruchy, komi = zg.wiersz("13x13", stopien)
+            roznica_sily = zg.PIERWSZA_KRATKA_13X13 + pozycja * zg.POLOWKA
+            with self.subTest(roznica_sily=roznica_sily):
+                _, ruchy, komi = zg.wiersz("13x13", roznica_sily)
                 self.assertEqual(ruchy, 1 + pozycja // len(zg.PETLA_13X13))
                 self.assertEqual(-komi, zg.PETLA_13X13[pozycja % len(zg.PETLA_13X13)])
 
     def test_drabinka_zaczyna_sie_dokladnie_za_grami_rownymi(self):
         """Nizej nie siega, bo nie umie trafic w gre rowna — patrz komentarz w zg."""
-        tuz_przed = zg.PIERWSZY_STOPIEN_13X13 - zg.POLOWKA
+        tuz_przed = zg.PIERWSZA_KRATKA_13X13 - zg.POLOWKA
         self.assertLess(-zg.wiersz("13x13", tuz_przed)[2], 0, "tuz przed drabinka gra jest rowna")
-        self.assertGreaterEqual(-zg.wiersz("13x13", zg.PIERWSZY_STOPIEN_13X13)[2], 0)
+        self.assertGreaterEqual(-zg.wiersz("13x13", zg.PIERWSZA_KRATKA_13X13)[2], 0)
         self.assertEqual(zg.wiersz("13x13", 0)[1:], (1, -zg.ROWNA), "gra rowna zostaje przy ROWNA")
         self.assertNotIn(
             -zg.ROWNA, [-p for p in zg.PETLA_13X13],
@@ -479,35 +479,35 @@ class Drabinka(unittest.TestCase):
         )
 
     def test_drabinka_kosztuje_ulamek_ruchu_na_dalekim_koncu(self):
-        """5,2 punktu na stopien zamiast 5 — nadwyzka ma zostac ponizej jednego ruchu."""
-        for stopien, nadwyzka in ((10, 0), (20, 2), (39, 6)):
-            with self.subTest(stopien=stopien):
-                _, ruchy, komi = zg.wiersz("13x13", stopien)
+        """5,2 punktu na jednostke zamiast 5 — nadwyzka ma zostac ponizej jednego ruchu."""
+        for roznica_sily, nadwyzka in ((10, 0), (20, 2), (39, 6)):
+            with self.subTest(roznica_sily=roznica_sily):
+                _, ruchy, komi = zg.wiersz("13x13", roznica_sily)
                 z_drabinki = (ruchy - 1) * zg.RUCH - komi
-                ze_stosunku = zg.ROWNA + zg.KROK["13x13"] * stopien
+                ze_stosunku = zg.ROWNA + zg.KROK["13x13"] * roznica_sily
                 self.assertEqual(z_drabinki - ze_stosunku, nadwyzka)
                 self.assertLess(abs(z_drabinki - ze_stosunku), zg.RUCH, "mniej niz caly ruch")
 
     def test_13x13_nie_deklaruje_juz_stalego_kroku(self):
-        """Na drabince pol stopnia to raz 3, raz 2 punkty — arytmetyki tam nie ma."""
+        """Na drabince pol to raz 3, raz 2 punkty — arytmetyki tam nie ma."""
         self.assertNotIn("13x13", zg.ARYTMETYKA)
         self.assertEqual(set(zg.ARYTMETYKA), {"9x9", "19x19"})
         kroki = [b - a for a, b in zip(zg.PETLA_13X13, zg.PETLA_13X13[1:])]
         # Ostatni krok petli przeskakuje na kolejny ruch, wiec liczy sie przez RUCH.
         zawiniecie = zg.RUCH - zg.PETLA_13X13[-1] + zg.PETLA_13X13[0]
-        self.assertEqual(set(kroki + [zawiniecie]), {2, 3}, "pol stopnia to raz 2, raz 3 punkty")
+        self.assertEqual(set(kroki + [zawiniecie]), {2, 3}, "pol to raz 2, raz 3 punkty")
         self.assertEqual(sum(kroki) + zawiniecie, zg.RUCH, "cala petla to dokladnie jeden ruch")
 
 
 class Polowki(unittest.TestCase):
-    """Polowka stopnia to jeden znak, bo od niej zalezy szerokosc calej kolumny."""
+    """Polowka to jeden znak, bo od niej zalezy szerokosc calej kolumny."""
 
-    def test_stopien_pisze_sie_najkrocej_jak_sie_da(self):
+    def test_kratka_pisze_sie_najkrocej_jak_sie_da(self):
         pol = tabela_html.POLOWKA
-        self.assertEqual(tabela_html._stopien(0.5), pol, "bez zera z przodu")
-        self.assertEqual(tabela_html._stopien(3), "3")
-        self.assertEqual(tabela_html._stopien(3.5), "3" + pol)
-        self.assertEqual(tabela_html._stopien(41.5), "41" + pol)
+        self.assertEqual(tabela_html._kratka_sily(0.5), pol, "bez zera z przodu")
+        self.assertEqual(tabela_html._kratka_sily(3), "3")
+        self.assertEqual(tabela_html._kratka_sily(3.5), "3" + pol)
+        self.assertEqual(tabela_html._kratka_sily(41.5), "41" + pol)
 
     def test_polowka_jest_pionowa_i_waska_jak_cyfra(self):
         """1 nad 2 z kreska — dlatego kolumna moze byc waska na jedna liczbe."""
@@ -521,7 +521,7 @@ class Polowki(unittest.TestCase):
         for plansza in tabela_html.PLANSZE:
             with self.subTest(plansza=plansza):
                 najdluzsza = max(
-                    len(tabela_html._stopien(r).replace(tabela_html.POLOWKA, "x"))
+                    len(tabela_html._kratka_sily(r).replace(tabela_html.POLOWKA, "x"))
                     for r in tabela_html.siatka(plansza).values()
                 )
                 self.assertLessEqual(najdluzsza, 3)
@@ -539,7 +539,7 @@ class BezPierwszegoRuchu(unittest.TestCase):
         self.assertEqual(min(tabela_html.siatka("19x19").values()), 1.5)
 
     def test_male_plansze_zatrzymuja_swoj_pierwszy_wiersz(self):
-        """Tam ten sam wiersz obejmuje kilka stopni i do 12 jencow — jest za co grac."""
+        """Tam ten sam wiersz obejmuje kilka jednostek i do 12 jencow — jest za co grac."""
         for plansza in ("13x13", "9x9"):
             with self.subTest(plansza=plansza):
                 self.assertEqual(tabela_html.PIERWSZY_RUCH[plansza], 1)
@@ -596,7 +596,7 @@ class SiatkiNaKarcie(unittest.TestCase):
 
     def test_polowka_pisze_sie_tak_samo_jak_na_stronie(self):
         import karta_pdf
-        for stopien in (0.5, 3.0, 12.5):
-            with self.subTest(stopien=stopien):
-                ze_strony = tabela_html._stopien(stopien).replace(tabela_html.POLOWKA, "½")
-                self.assertEqual(karta_pdf._stopien(stopien), ze_strony)
+        for roznica_sily in (0.5, 3.0, 12.5):
+            with self.subTest(roznica_sily=roznica_sily):
+                ze_strony = tabela_html._kratka_sily(roznica_sily).replace(tabela_html.POLOWKA, "½")
+                self.assertEqual(karta_pdf._kratka_sily(roznica_sily), ze_strony)

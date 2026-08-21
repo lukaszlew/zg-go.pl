@@ -2,20 +2,20 @@
 """Trzy zwiezle tabele HTML z wyrownaniem Semedori — po jednej na plansze.
 
 Uklad jest ten sam, co tabeli wyrownania na ranking.html: w kratkach stoi roznica
-stopni, a to, co z niej wynika, czyta sie z brzegow — z ostatniej kolumny punkty,
+sily, a to, co z niej wynika, czyta sie z brzegow — z ostatniej kolumny punkty,
 z ostatniego wiersza ruchy. Dzieki temu jedna kratka niesie caly wiersz tabeli
-liniowej i nie trzeba powtarzac ruchow ani punktow przy kazdym stopniu.
+liniowej i nie trzeba powtarzac ruchow ani punktow przy kazdej kratce.
 
 Siatka
 ------
-Wiersz to punkty, kolumna to ruchy, w srodku roznica stopni. Wszystkie trzy
+Wiersz to punkty, kolumna to ruchy, w srodku roznica sily. Wszystkie trzy
 plansze trafiaja w nia rowno, bo na kazdej ruch przypada po calej liczbie
-polowek stopnia: na 19x19 po dwoch, na 13x13 po pieciu (drabinka w zg.py), na
+polowek: na 19x19 po dwoch, na 13x13 po pieciu (drabinka w zg.py), na
 9x9 po trzynastu. Zadna siatka nie ma przez to ani jednej dziury.
 
 Tyle samo mowi liczba wierszy: ile roznych koncowek punktowych da sie dostac na
 danej planszy. 19x19 ma ich dwie (0 i 7) i zapada sie do dwoch wierszy — dalej
-nie ma czego pokazywac, bo stopien to ruch, a polowka stopnia to ruch bez
+nie ma czego pokazywac, bo jednostka sily to ruch, a polowka to ruch bez
 punktow. 13x13 ma piec, 9x9 wszystkie trzynascie.
 
 Gry rowne
@@ -36,7 +36,7 @@ from .tabela import KATALOG_PAKIETU
 
 PLIK = KATALOG_PAKIETU / "tabela-zg.html"
 
-SKOK = 0.5              # o tyle stopni rosnie kolejny wiersz
+SKOK = 0.5              # o tyle rosnie roznica w kolejnym wierszu
 # Polowka pisana pionowo: 1 nad 2, kreska miedzy. Wezsza od "½" po przekatnej,
 # bo zajmuje szerokosc jednej cyfry zamiast poltorej, i czytelniejsza w malym
 # piśmie. Skladana recznie, bo zaden znak Unicode tego nie daje.
@@ -52,9 +52,9 @@ JENCY = "← jeńcy"
 
 # Od ktorego ruchu zaczyna sie tabela. Ruch nr 1 to nie wyrownanie, tylko zwykle
 # prawo Czarnego do pierwszego ruchu — na 19x19 caly ten wiersz miesci sie w
-# jednym stopniu roznicy, wiec zamiast rozdawac za niego 7 jencow klub gra po
+# jednej jednostce roznicy, wiec zamiast rozdawac za niego 7 jencow klub gra po
 # prostu rowno, a tabela zaczyna sie od pierwszego prawdziwie darmowego ruchu.
-# Na 13x13 i 9x9 ten sam wiersz obejmuje kilka stopni i do 12 jencow, wiec stoi.
+# Na 13x13 i 9x9 ten sam wiersz obejmuje kilka jednostek i do 12 jencow, wiec stoi.
 PIERWSZY_RUCH: dict[str, int] = {"19x19": 2, "13x13": 1, "9x9": 1}
 
 # Plansza -> do ilu ruchow siega tabela, czyli ile ma wierszy. Dalej rachunek
@@ -67,7 +67,7 @@ RUCHOW: dict[str, int] = {"19x19": 8, "13x13": 7, "9x9": 5}
 # prostokat: kazda tabela zaczyna sie na tej samej linii.
 #
 # Odstep jest maly, ale jest — siatki maja stac osobno, bo kazda ma wlasne brzegi
-# i wlasna miare stopnia.
+# i wlasna miare sily.
 PLANSZE: tuple[str, ...] = ("19x19", "13x13", "9x9")
 
 
@@ -112,7 +112,7 @@ STYL = """\
   span.pol span + span { border-top: 1px solid currentColor; }"""
 
 
-def _stopien(roznica: float) -> str:
+def _kratka_sily(roznica: float) -> str:
     """Polowka jednym znakiem: 3, 3½, 41½ — o caly znak wezej niz "3,5".
 
     Przy polowce bez calosci zostaje samo ½: zero z przodu nic nie wnosi, a
@@ -129,14 +129,14 @@ def rowne(plansza: str) -> list[float]:
 
     Zawsze poczatkowy kawalek zakresu, wiec wystarczy je wypisac raz pod tabela.
     """
-    stopnie, roznica = [], 0.0
+    roznice, roznica = [], 0.0
     while True:
         _, ruchy, komi = zg.wiersz(plansza, roznica)
         # Rowne z rachunku (Czarny nic nie dostaje) albo z decyzji klubu
         # (jeszcze zaden darmowy ruch — patrz PIERWSZY_RUCH).
         if -komi >= 0 and ruchy >= PIERWSZY_RUCH[plansza]:
-            return stopnie
-        stopnie.append(roznica)
+            return roznice
+        roznice.append(roznica)
         roznica += SKOK
 
 
@@ -167,7 +167,7 @@ def _kratka(roznica: float) -> str:
 
 
 def _tabela_siatki(plansza: str) -> str:
-    """Wiersz to ruchy, kolumna to punkty, w kratkach roznica stopni.
+    """Wiersz to ruchy, kolumna to punkty, w kratkach roznica sily.
 
     Ruchy stoja w wierszach, bo to one biegna bez konca — i tylko wtedy urwanie
     tabeli da sie pokazac jednym wierszem z wielokropkiem na dole. Punktow jest
@@ -214,11 +214,11 @@ def _tabela_siatki(plansza: str) -> str:
 # rownych, wiec mowi sie o tym raz, nad calym prostokatem. Zdanie o grze rownej
 # nie potrzebuje przy tym zadnej liczby: kazda siatka zaczyna sie dokladnie tam,
 # gdzie koncza sie gry rowne, wiec "mniejsza niz pierwsza kratka" trafia w co do
-# polowki stopnia na kazdej planszy. Pilnuje tego test.
+# polowki na kazdej planszy. Pilnuje tego test.
 # Rogi nazywaja juz oba brzegi i pokazuja strzalkami, gdzie patrzec, wiec opisowi
 # zostaje tylko to, czego z samej tabeli odczytac sie nie da: co znaczy kratka
 # i co dzieje sie przed pierwsza z nich.
-OPIS = "W kratkach różnica stopni. Mniejsza niż pierwsza kratka to gra równa."
+OPIS = "W kratkach różnica siły. Mniejsza niż pierwsza kratka to gra równa."
 
 
 def tabela(plansza: str) -> str:

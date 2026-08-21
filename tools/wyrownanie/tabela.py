@@ -5,7 +5,7 @@ Zrodlo tabel (BGA, LSG, Ishikura, Hunt) trzyma u siebie same liczby; sklada je i
 zapisuje generuj.py. Dzieki temu pliki JSON roznia sie wylacznie
 trescia, nigdy ukladem, i strona czyta je jednym kodem.
 
-Wiersz to (roznica stopni, kamienie wyrownania, komi dla Bialego). Komi ujemne
+Wiersz to (roznica sily, kamienie wyrownania, komi dla Bialego). Komi ujemne
 oznacza, ze to Bialy daje komi Czarnemu — ponad kamienie wyrownania.
 
 JSON sklada sie tu recznie, bo json.dumps nie umie dosunac liczb do kolumny, a
@@ -42,8 +42,8 @@ class Arytmetyka(NamedTuple):
     deklaruje, a jej dziwactwa opisuje wlasny test.
     """
     wartosc_kamienia: float
-    krok: float             # o ile rosnie wyrownanie na jeden stopien roznicy
-    od: int = 0             # od ktorej roznicy stopni ciag jest regularny
+    krok: float             # o ile rosnie wyrownanie na jednostke roznicy
+    od: int = 0             # od ktorej roznicy sily ciag jest regularny
 
 
 def przewaga(tabela: Tabela, wartosc_kamienia: float) -> list[float]:
@@ -65,13 +65,13 @@ def sprawdz(tabele: dict[str, Tabela]) -> None:
     assert tabele, "zrodlo musi miec przynajmniej jedna tabele"
     for plansza, tabela in tabele.items():
         assert [r for r, _, _ in tabela] == list(range(len(tabela))), \
-            f"tabela {plansza} musi pokrywac roznice stopni od 0 bez dziur"
+            f"tabela {plansza} musi pokrywac roznice sily od 0 bez dziur"
         assert all(len(w) == len(KOLUMNY) for w in tabela), \
             f"wiersz tabeli {plansza} musi miec kolumny {KOLUMNY}"
         kamienie = [k for _, k, _ in tabela]
         assert all(k >= 0 for k in kamienie), f"tabela {plansza}: kamieni nie moze byc ujemnie"
         assert kamienie == sorted(kamienie), \
-            f"tabela {plansza}: kamieni nie ubywa, gdy roznica stopni rosnie"
+            f"tabela {plansza}: kamieni nie ubywa, gdy roznica sily rosnie"
 
 
 # --- zapis do JSON -----------------------------------------------------------

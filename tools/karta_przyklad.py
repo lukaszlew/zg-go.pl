@@ -16,25 +16,25 @@ from PIL import Image
 
 from karta_pdf import KartaDane, Wiersz, generuj_karte, generuj_wycinek
 
-# Gra z przykladu: 9x9, Bianka 42 St vs Czarek 30 St.
-# Roznica 12 St -> 9x9 daje 2 ruchy i 5 jencow dla Czarnego.
-# Czarek wygrywa o 21 punktow — wyrazna wygrana, wiec dostaje caly stopien, a Bianka
+# Gra z przykladu: 9x9, sila Bianki 42, sila Czarka 30.
+# Roznica 12 -> 9x9 daje 2 ruchy i 5 jencow dla Czarnego.
+# Czarek wygrywa o 21 punktow — wyrazna wygrana, wiec dostaje cale 1, a Bianka
 # traci pol: przyklad ma pokazywac wlasnie te niesymetrie, a nie najczestszy wypadek.
 CZAREK = KartaDane(
     nick="Czarek", plansza="9×9",
     wiersze=[Wiersz(
-        data="15.07", moje_pkt="30",
-        przeciwnik_nick="Bianka", przeciwnik_pkt="42", roznica_st="12",
-        ruchy="2", jency="5", kalibracja="—", wynik="+21", zmiana="+1", nowe_pkt="31",
+        data="15.07", moja_sila="30",
+        przeciwnik_nick="Bianka", sila_przeciwnika="42", roznica="12",
+        ruchy="2", jency="5", typ_gry="—", wynik="+21", zmiana="+1", nowa_sila="31",
     )],
 )
 
 BIANKA = KartaDane(
     nick="Bianka", plansza="9×9",
     wiersze=[Wiersz(
-        data="15.07", moje_pkt="42",
-        przeciwnik_nick="Czarek", przeciwnik_pkt="30", roznica_st="12",
-        ruchy="2", jency="5", kalibracja="—", wynik="−21", zmiana="−½", nowe_pkt="41½",
+        data="15.07", moja_sila="42",
+        przeciwnik_nick="Czarek", sila_przeciwnika="30", roznica="12",
+        ruchy="2", jency="5", typ_gry="—", wynik="−21", zmiana="−½", nowa_sila="41½",
     )],
 )
 

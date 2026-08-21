@@ -11,19 +11,19 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-import { KROK, POLOWKA, ROWNA_JENCY, parsujWynik, stopnie, wyrownanie, zapisJencow, zeZnakiem, zmianaStopni } from '../wyrownanie.js';
+import { KROK, POLOWKA, ROWNA_JENCY, parsujWynik, wyrownanie, zapisJencow, zapisSily, zeZnakiem, zmianaSily } from '../wyrownanie.js';
 
 const STRONA = new URL('../ranking.html', import.meta.url);
 
 /* Kalkulator i tools/wyrownanie/zg.py to dwa kody w dwoch jezykach liczace jedna
- * zasade. Test karmi oba tymi samymi stopniami i zada tych samych jencow — na
+ * zasade. Test karmi oba ta sama roznica sily i zada tych samych jencow — na
  * kazdej z trzech plansz, bo zasada jest jedna, a krok planszy inny. */
 test('kalkulator zgadza sie z zg.py na kazdej planszy, wiersz po wierszu', () => {
   const dane = JSON.parse(readFileSync(new URL('./wyrownanie/wyrownanie-zg.json', import.meta.url), 'utf8'));
   assert.deepEqual(Object.keys(dane.tabele).sort(), Object.keys(KROK).sort(),
     'kalkulator zna dokladnie te plansze, co modul');
   for (const [plansza, tabela] of Object.entries(dane.tabele)) {
-    assert.ok(tabela.length >= 15, `${plansza}: tabela ma siegac przynajmniej pietnastu stopni`);
+    assert.ok(tabela.length >= 15, `${plansza}: tabela ma siegac przynajmniej pietnastu`);
     for (const [roznica, ruchy, komi] of tabela) {
       // "|| 0", bo -komi przy komi === 0 daje w JS -0, a deepStrictEqual odroznia
       // -0 od 0. Bez tego test pada na kazdej kratce z zerem jencow.
@@ -36,14 +36,14 @@ test('kalkulator zgadza sie z zg.py na kazdej planszy, wiersz po wierszu', () =>
         continue;
       }
       assert.deepEqual({ ruchy: w.ruchy, jency: w.jency }, { ruchy, jency },
-        `${plansza}, roznica ${roznica} stopni`);
+        `${plansza}, roznica ${roznica}`);
     }
   }
 });
 
 test('gra rowna siega tam, gdzie na danej planszy nie ma jeszcze czego dac', () => {
-  // Na 9x9 stopien wart jest dwa punkty, wiec szesc jencow gry rownej starcza na
-  // dwa i pol stopnia; na 19x19 stopien to caly ruch i pas konczy sie znacznie wczesniej.
+  // Na 9x9 jednostka sily warta jest dwa punkty, wiec szesc jencow gry rownej starcza
+  // na dwa i pol; na 19x19 jednostka to caly ruch i pas konczy sie znacznie wczesniej.
   for (const [plansza, ostatnia] of [['9x9', 2.5], ['13x13', 1], ['19x19', 0]]) {
     for (const w of [wyrownanie(60 + ostatnia, 60, plansza), wyrownanie(60, 60 + ostatnia, plansza)]) {
       assert.equal(w.rowna, true, `${plansza}: roznica ${ostatnia} to jeszcze gra rowna`);
@@ -51,7 +51,7 @@ test('gra rowna siega tam, gdzie na danej planszy nie ma jeszcze czego dac', () 
       assert.equal(w.jency, ROWNA_JENCY, 'na karcie stoi jedna liczba: −6,5');
     }
     assert.equal(wyrownanie(60 + ostatnia + POLOWKA, 60, plansza).rowna, false,
-      `${plansza}: pol stopnia dalej to juz wyrownanie`);
+      `${plansza}: pol dalej to juz wyrownanie`);
   }
 });
 
@@ -59,7 +59,7 @@ test('rachunek biegnie dalej, kiedy tabela sie konczy', () => {
   const daleko = wyrownanie(100, 0, '9x9');
   assert.equal(daleko.ruchy, 1 + Math.floor((KROK['9x9'] * 100 - 6) / 13));
   assert.ok(daleko.jency >= 0 && daleko.jency < 13, 'jency to zawsze reszta z dzielenia');
-  // Ta sama roznica stopni na wiekszej planszy to wiecej ruchow, nie wiecej jencow.
+  // Ta sama roznica sily na wiekszej planszy to wiecej ruchow, nie wiecej jencow.
   assert.ok(wyrownanie(10, 0, '19x19').ruchy > wyrownanie(10, 0, '9x9').ruchy);
 });
 
@@ -76,11 +76,11 @@ test('wynik czyta sie tak, jak wpisuje sie go na karte', () => {
   assert.equal(parsujWynik(''), null);
 });
 
-// --- zmiana stopni ---------------------------------------------------------------
+// --- zmiana sily ---------------------------------------------------------------
 
-const zmiana = (tekst, opcje) => zmianaStopni(parsujWynik(tekst), opcje);
+const zmiana = (tekst, opcje) => zmianaSily(parsujWynik(tekst), opcje);
 
-test('zwykla wygrana to pol stopnia w gore i pol w dol', () => {
+test('zwykla wygrana to pol w gore i pol w dol', () => {
   assert.equal(zmiana('+5').moja, POLOWKA);
   assert.equal(zmiana('+5').przeciwnika, -POLOWKA);
   assert.equal(zmiana('-5').moja, -POLOWKA);
@@ -93,14 +93,14 @@ test('remis nie zmienia nic', () => {
   );
 });
 
-test('wyrazna wygrana daje caly stopien zwyciezcy, ale nie zabiera przegranemu wiecej', () => {
+test('wyrazna wygrana daje cala jedynke zwyciezcy, ale nie zabiera przegranemu wiecej', () => {
   assert.equal(zmiana('+19').moja, POLOWKA, 'dziewietnascie to jeszcze zwykla wygrana');
   assert.equal(zmiana('+20').moja, 1);
-  assert.equal(zmiana('+20').przeciwnika, -POLOWKA, 'przegrany traci pol stopnia zawsze');
+  assert.equal(zmiana('+20').przeciwnika, -POLOWKA, 'przegrany traci pol zawsze');
   assert.equal(zmiana('R').moja, 1);
-  assert.equal(zmiana('-R').moja, -POLOWKA, 'to ja sie poddalem: pol stopnia w dol');
+  assert.equal(zmiana('-R').moja, -POLOWKA, 'to ja sie poddalem: pol w dol');
   assert.equal(zmiana('-R').przeciwnika, 1);
-  // Ranking przestaje byc zerowy: wyrazna wygrana dodaje klubowi pol stopnia.
+  // Ranking przestaje byc zerowy: wyrazna wygrana dodaje klubowi pol jednostki sily.
   const wyrazna = zmiana('+20');
   assert.equal(wyrazna.moja + wyrazna.przeciwnika, POLOWKA);
 });
@@ -108,7 +108,7 @@ test('wyrazna wygrana daje caly stopien zwyciezcy, ale nie zabiera przegranemu w
 test('gra kalibracyjna liczy sie nowemu graczowi podwojnie, przeciwnikowi wcale', () => {
   const moja = zmiana('+5', { kalibracja: { kto: 'ja' } });
   assert.equal(moja.moja, 1, 'dwa razy tyle, co zwykla wygrana');
-  assert.equal(moja.przeciwnika, 0, 'przeciwnik przy P nie zmienia swoich stopni');
+  assert.equal(moja.przeciwnika, 0, 'przeciwnik przy P nie zmienia swojej sily');
   const jego = zmiana('-5', { kalibracja: { kto: 'on' } });
   assert.equal(jego.przeciwnika, 1, 'to on jest kalibrowany i to jemu sie liczy');
   assert.equal(jego.moja, 0);
@@ -124,12 +124,12 @@ test('wyrazny wynik w grze kalibracyjnej to ±2, po obu stronach tak samo', () =
   assert.equal(zmiana('+25', { kalibracja: { kto: 'ja' } }).przeciwnika, 0, 'przeciwnika nie rusza nic');
 });
 
-test('stopnie pisze sie polowkami, tak jak stawia sie je na karcie', () => {
-  assert.equal(stopnie(0), '0');
-  assert.equal(stopnie(0.5), '½');
-  assert.equal(stopnie(1), '1');
-  assert.equal(stopnie(1.5), '1½');
-  assert.equal(stopnie(-0.5), '−½');
+test('sile pisze sie polowkami, tak jak stawia sie ja na karcie', () => {
+  assert.equal(zapisSily(0), '0');
+  assert.equal(zapisSily(0.5), '½');
+  assert.equal(zapisSily(1), '1');
+  assert.equal(zapisSily(1.5), '1½');
+  assert.equal(zapisSily(-0.5), '−½');
   assert.equal(zeZnakiem(POLOWKA), '+½', 'typowa zmiana po grze');
   assert.equal(zeZnakiem(-2), '−2');
   assert.equal(zeZnakiem(0), '0');

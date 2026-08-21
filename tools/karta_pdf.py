@@ -37,7 +37,7 @@ HEADER_BG = HexColor("#d9c896")         # --rule ze style.css
 # Brzegi siatek wyrownania: na stronie to --rule zmieszane w 45% z tlem, wiec i tu
 # ta sama, jasniejsza wersja — pelna sila przygniatala liczby.
 BRZEG_BG = HexColor("#eee6d0")
-PKT_SILY = HexColor("#2e7d32")          # --pkt-sily ze style.css (zielone punkty sily)
+KOLOR_SILY = HexColor("#2e7d32")        # --kolor-sily ze style.css
 # tlo rubryki "wynik": ten sam zloty co naglowek, rozcienczony do 45% na bialym.
 # Na drukarce czarno-bialej zostaje z tego okolo 10% szarosci — rubryka dalej
 # odstaje, a wpis olowkiem jest czytelny.
@@ -50,61 +50,72 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "21.08.2026t"                   # stopka karty; podbij przy zmianie zasad/ukladu
+WERSJA = "21.08.2026z"                   # stopka karty; podbij przy zmianie zasad/ukladu
 
 # Obcy klub: jedyne, co jest w karcie lokalne, to nazwa w naglowku (draw_title)
 # i adres w stopce oraz w kodzie QR (draw_sciaga). Gdy zglosi sie pierwszy klub,
 # wyciagnac te trzy napisy do parametru wiersza polecen zamiast kopiowac plik.
-ROWS = 20                               # trzy siatki wyrownania i 10 zasad w sciadze kosztuja reszte strony
-ROW_H = 8 * mm
+ROWS = 20                               # trzy siatki wyrownania i 11 zasad w sciadze kosztuja reszte strony
+# 7,8 mm zamiast 8: jedenasta zasada wypchnela stopke poza strone, a wiersz nizszy
+# o 0,2 mm dalej z zapasem miesci odreczny wpis (Caveat 14 pt to okolo 4,9 mm).
+ROW_H = 7.8 * mm
 HEAD_H = 13 * mm
 NICK_MAX = 40 * mm                      # nick nie zabiera calej reszty szerokosci
 HEAD_FS = 6.0                           # naglowki kolumn (wersaliki)
 SUB_FS = 5.2                            # naglowki podkolumn (wersaliki)
 
 # INWARIANT: nazwy rubryk/kolumn (FIELDS, COLUMNS) musza byc zgodne z terminologia
-# przykladu i zasad na ranking.html — sprawdzaj przy kazdej edycji.
+# przykladu i zasad na ranking.html — sprawdzaj przy kazdej edycji. Karta moze
+# nazwe skrocic, gdy grupa daje kontekst ("roznica" pod "przeciwnik"), ale nie
+# moze jej zmienic.
 # (Tresc sciagi nie wymaga juz czujnosci: idzie z zasady.py, pilnuje jej test_zasady.py.)
 #
 # (naglowek grupy, [(podkolumna, szerokosc)]) — pojedyncza podkolumna "" = kolumna
 # bez podzialu; szerokosc 0.0 = reszta szerokosci karty (nick przeciwnika)
 COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("data", [("", 9 * mm)]),
-    ("moje St", [("", 12 * mm)]),
-    ("przeciwnik", [("nick", 0.0), ("St", 8 * mm), ("różnica St", 15 * mm)]),
+    ("moja\nsiła", [("", 11 * mm)]),
+    # "różnica" bez dopowiedzenia: stoi w grupie "przeciwnik", tuż obok jego siły,
+    # więc nie ma czego mylić, a kolumna schodzi o jedno słowo węziej
+    ("przeciwnik", [("nick", 0.0), ("siła", 8 * mm), ("różnica", 11 * mm)]),
     # "dla Czarnego" raz, w naglowku grupy — podkolumny zostaja krotkie
     ("wyrównanie dla Czarnego", [("pierwsze\nruchy", 17 * mm), ("dodatkowi\njeńcy", 19 * mm)]),
-    # K u kalibrowanego, P u jego przeciwnika, w zwyklej grze myslnik;
-    # ostatnia rubryka wypelniana przed pierwszym ruchem, wiec zamyka srodkowa
-    # sekcje karty
-    ("kalibracja", [("", 15 * mm)]),
+    # K u kalibrowanego, P u jego przeciwnika, rozmiar planszy przy grze poza
+    # wlasna glowna, w zwyklej grze myslnik; ostatnia rubryka wypelniana przed
+    # pierwszym ruchem, wiec zamyka srodkowa sekcje karty
+    ("typ gry", [("", 15 * mm)]),
     ("wynik", [("", 12 * mm)]),
-    ("zmiana St", [("", 13 * mm)]),
-    ("nowe St", [("", 12.5 * mm)]),
+    ("zmiana\nsiły", [("", 12 * mm)]),
+    ("nowa\nsiła", [("", 12 * mm)]),
 ]
 
 # przed tymi grupami biegnie gruba kreska — sekcje jak w przykladzie na stronie:
 # przed gra | przeciwnik, roznica i wyrownanie | po grze
 THICK_BEFORE = {"przeciwnik", "wynik"}
 
-# nadruk planszy w naglowku karty — zakresla sie jedna z trzech
-PLANSZA_PREPRINT = "9×9 · 13×13 · 19×19"
+# Nadruk planszy w naglowku karty: kazda w swojej kratce, zakresla sie jedna.
+# Trzy kratki zamiast jednego napisu, bo kolko wokol nazwy w ciagu bylo mylace —
+# przy "13×13 · 19×19" nie bylo widac, gdzie konczy sie jedna nazwa, a zaczyna druga.
+PLANSZE_KARTY: tuple[str, ...] = ("9×9", "13×13", "19×19")
 PLANSZA_FS = 9                          # nadruk wyraznie wiekszy od etykiet rubryk
+KRATKA_PLANSZY_H = 5.4 * mm
+KRATKA_PLANSZY_GAP = 2.0 * mm           # tyle, zeby kolko nie dotykalo sasiadki
+KRATKA_PLANSZY_MARGINES = 1.5 * mm
 
 @dataclass(frozen=True)
 class Wiersz:
     """Jedna gra na karcie; wartosci jako napisy, dokladnie jak wpisalby je gracz."""
     data: str
-    moje_pkt: str
+    moja_sila: str
     przeciwnik_nick: str
-    przeciwnik_pkt: str
-    roznica_st: str
+    sila_przeciwnika: str
+    roznica: str
     ruchy: str              # pierwsze ruchy Czarnego (1 = gra rowna)
     jency: str              # dodatkowi jency dla Czarnego (liczba ujemna = dla Bialego)
-    kalibracja: str         # K u kalibrowanego, P u jego przeciwnika, albo myslnik
+    typ_gry: str            # K, P, rozmiar planszy albo myslnik
     wynik: str
     zmiana: str
-    nowe_pkt: str
+    nowa_sila: str
 
 
 @dataclass(frozen=True)
@@ -115,15 +126,20 @@ class KartaDane:
     wiersze: list[Wiersz]
 
 
-# indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze stopni
-ST_LEAFS = {1, 3, 4, 9, 10}   # moje St, St przeciwnika, roznica St, zmiana, nowe
+# Tytul kolumny sciagi dostaje kolor sily, gdy o niej mowi. Wersaliki, bo tak sie
+# je rysuje; formy odmienione, bo nazwy kolumn sa po polsku.
+SILA_W_NAZWIE = {"SIŁA", "SIŁY"}
 
-# sciaga na dole karty: (tytul kolumny, [(numer, zasada)]); kolumny w rytmie
-# wypelniania karty (wyrownanie -> wynik -> zmiana stopni); siatki rysuje draw_siatki
+# indeksy podkolumn (w kolejnosci COLUMNS) niosace sile — one, ich naglowki i
+# wpisy w nich ida kolorem sily
+SILA_W_RUBRYCE = {1, 3, 4, 9, 10}   # moja sila, sila przeciwnika, roznica, zmiana, nowa
+
+# sciaga na dole karty: (tytul kolumny, [zasada, ...]); kolumny w rytmie
+# wypelniania karty (wyrownanie -> wynik -> zmiana sily); siatki rysuje draw_siatki
 # stoi w srodkowej kolumnie "wynik", bo ta ma najmniej zasad i najwiecej luzu.
 # Tresc pochodzi w calosci z zasady.py — sciaga to dokladnie zasady ze strony,
 # nic wiecej i nic mniej.
-SCIAGA: list[tuple[str, list[tuple[int, str]]]] = [
+SCIAGA: list[tuple[str, list[str]]] = [
     (kolumna, w_kolumnie(kolumna)) for kolumna in KOLUMNY
 ]
 
@@ -157,10 +173,20 @@ def draw_title(c: Canvas, x0: float, top: float, card_w: float) -> float:
 FIELD_H = 11 * mm
 
 # (etykieta rubryki, szerokosc) — nick dostaje reszte szerokosci karty
+POLE_PLANSZY = "GŁÓWNA PLANSZA (ZAKREŚL JEDNĄ)"
+
 FIELDS: list[tuple[str, float]] = [
     ("NICK", 0.0),
-    ("PLANSZA (ZAKREŚL JEDNĄ)", 50 * mm),
+    (POLE_PLANSZY, 50 * mm),
 ]
+
+
+def plansza_kratki(x: float, w: float) -> list[tuple[float, float]]:
+    """(lewa krawedz, szerokosc) kolejnych kratek plansz w rubryce naglowka."""
+    ile = len(PLANSZE_KARTY)
+    kratka_w = (w - 2 * KRATKA_PLANSZY_MARGINES - (ile - 1) * KRATKA_PLANSZY_GAP) / ile
+    return [(x + KRATKA_PLANSZY_MARGINES + i * (kratka_w + KRATKA_PLANSZY_GAP), kratka_w)
+            for i in range(ile)]
 
 
 def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
@@ -182,14 +208,19 @@ def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
         c.setFillColor(MUTED)
         c.setFont(FONT, 5.5)
         c.drawString(x + 1.5 * mm, top - 3 * mm, label)
-        if label.startswith("PLANSZA"):
-            assert pdfmetrics.stringWidth(PLANSZA_PREPRINT, FONT_BOLD, PLANSZA_FS) <= w - 6 * mm, \
-                "nadruk planszy za szeroki na rubryke"
-            c.setFillColor(INK)
+        if label == POLE_PLANSZY:
+            y_kratek = bottom + 1.2 * mm
             c.setFont(FONT_BOLD, PLANSZA_FS)
-            c.drawCentredString(x + w / 2, bottom + 3 * mm, PLANSZA_PREPRINT)
+            for (kx, kw), plansza in zip(plansza_kratki(x, w), PLANSZE_KARTY):
+                assert pdfmetrics.stringWidth(plansza, FONT_BOLD, PLANSZA_FS) <= kw - 1.5 * mm, \
+                    f"nazwa planszy {plansza} za szeroka na kratke {kw / mm:.1f} mm"
+                c.setStrokeColor(GRID)
+                c.setLineWidth(0.6)
+                c.rect(kx, y_kratek, kw, KRATKA_PLANSZY_H, stroke=1, fill=0)
+                c.setFillColor(INK)
+                c.drawCentredString(kx + kw / 2, y_kratek + 1.6 * mm, plansza)
             if dane is not None:
-                draw_plansza_kolko(c, x, w, bottom + 3 * mm, dane.plansza)
+                draw_plansza_kolko(c, x, w, y_kratek, dane.plansza)
         else:
             c.setFillColor(INK)
             c.setFont(FONT_HAND, HAND_FS_FIELDS)
@@ -210,12 +241,18 @@ def group_widths(card_w: float) -> list[list[float]]:
     return [[w + extra if w > 0 else nick_w for _, w in subs] for _, subs in COLUMNS]
 
 
-def draw_header_text(c: Canvas, cx: float, y: float, text: str, fs: float, max_w: float) -> None:
-    """Jedna linia naglowka: wersaliki, niebieskie gdy dotyczy pkt sily."""
+def draw_header_text(c: Canvas, cx: float, y: float, text: str, fs: float, max_w: float,
+                     sila: bool) -> None:
+    """Jedna linia naglowka, wersalikami; `sila` decyduje o kolorze.
+
+    Kolor bierze sie z tego, ktora rubryka niesie sile (SILA_W_RUBRYCE), a nie z
+    tego, czy slowo "sila" pada w nazwie: naglowek dwuwierszowy inaczej wyszedlby
+    dwukolorowy, a "roznica" zostalaby czarna nad zielonymi liczbami.
+    """
     text = text.upper()
     text_w = pdfmetrics.stringWidth(text, FONT_BOLD, fs)
     assert text_w <= max_w - 1 * mm, f"naglowek '{text}' za szeroki na kolumne {max_w / mm:.1f} mm"
-    c.setFillColor(PKT_SILY if "St" in text.split() else INK)
+    c.setFillColor(KOLOR_SILY if sila else INK)
     c.setFont(FONT_BOLD, fs)
     c.drawCentredString(cx, y, text)
 
@@ -223,26 +260,34 @@ def draw_header_text(c: Canvas, cx: float, y: float, text: str, fs: float, max_w
 def draw_header_labels(c: Canvas, x0: float, top: float, widths: list[list[float]]) -> None:
     line_h = 3.5 * mm
     x = x0
+    leaf = 0
     for (label, subs), sub_ws in zip(COLUMNS, widths):
         group_w = sum(sub_ws)
         lines = label.split("\n")
         if len(subs) == 1:
             y = top - (HEAD_H - (len(lines) - 1) * line_h) / 2 - 0.8 * mm
             for line in lines:
-                draw_header_text(c, x + group_w / 2, y, line, HEAD_FS, group_w)
+                draw_header_text(c, x + group_w / 2, y, line, HEAD_FS, group_w,
+                                 leaf in SILA_W_RUBRYCE)
                 y -= line_h
+            leaf += 1
         else:
             assert "\n" not in label, "naglowek grupy z podkolumnami musi byc jednoliniowy"
-            draw_header_text(c, x + group_w / 2, top - HEAD_H / 4 - 0.8 * mm, label, HEAD_FS, group_w)
+            # Naglowek grupy zbiera rubryki rozne co do tresci, wiec zostaje czarny;
+            # kolor niosa podkolumny, kazda za siebie.
+            draw_header_text(c, x + group_w / 2, top - HEAD_H / 4 - 0.8 * mm, label, HEAD_FS,
+                             group_w, False)
             sx = x
             sub_line_h = 2.9 * mm
             for (sub_label, _), sub_w in zip(subs, sub_ws):
                 sub_lines = sub_label.split("\n")
                 y = top - HEAD_H / 2 - (HEAD_H / 2 - (len(sub_lines) - 1) * sub_line_h) / 2 - 0.8 * mm
                 for line in sub_lines:
-                    draw_header_text(c, sx + sub_w / 2, y, line, SUB_FS, sub_w)
+                    draw_header_text(c, sx + sub_w / 2, y, line, SUB_FS, sub_w,
+                                     leaf in SILA_W_RUBRYCE)
                     y -= sub_line_h
                 sx += sub_w
+                leaf += 1
         x += group_w
 
 
@@ -303,14 +348,11 @@ def row_baseline(top: float, row: int) -> float:
 
 
 def draw_plansza_kolko(c: Canvas, x: float, w: float, y: float, plansza: str) -> None:
-    """Zakresla wybrana plansze w nadruku PLANSZA_PREPRINT (naglowek karty)."""
-    assert plansza in PLANSZA_PREPRINT.split(" · "), f"nieznana plansza: {plansza}"
-    start = x + w / 2 - pdfmetrics.stringWidth(PLANSZA_PREPRINT, FONT_BOLD, PLANSZA_FS) / 2
-    prefix = PLANSZA_PREPRINT[: PLANSZA_PREPRINT.index(plansza)]
-    x1 = start + pdfmetrics.stringWidth(prefix, FONT_BOLD, PLANSZA_FS)
-    num_w = pdfmetrics.stringWidth(plansza, FONT_BOLD, PLANSZA_FS)
-    cx, cy = x1 + num_w / 2, y + 1.4 * mm
-    rx, ry = num_w / 2 + 1.6 * mm, 3.1 * mm
+    """Zakresla kratke wybranej planszy — tak, jak zrobilby to gracz olowkiem."""
+    assert plansza in PLANSZE_KARTY, f"nieznana plansza: {plansza}"
+    kx, kw = plansza_kratki(x, w)[PLANSZE_KARTY.index(plansza)]
+    cx, cy = kx + kw / 2, y + KRATKA_PLANSZY_H / 2
+    rx, ry = kw / 2 + 0.6 * mm, KRATKA_PLANSZY_H / 2 + 0.9 * mm
     c.setStrokeColor(INK)
     c.setLineWidth(1.5)
     c.ellipse(cx - rx, cy - ry, cx + rx, cy + ry, stroke=1, fill=0)
@@ -323,12 +365,12 @@ def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
     assert len(leaves) == 11, len(leaves)
     for row, w in enumerate(wiersze):
         y = row_baseline(top, row)
-        values = [w.data, w.moje_pkt, w.przeciwnik_nick, w.przeciwnik_pkt, w.roznica_st,
-                  w.ruchy, w.jency, w.kalibracja, w.wynik, w.zmiana, w.nowe_pkt]
+        values = [w.data, w.moja_sila, w.przeciwnik_nick, w.sila_przeciwnika, w.roznica,
+                  w.ruchy, w.jency, w.typ_gry, w.wynik, w.zmiana, w.nowa_sila]
         for li, ((lx, lw), value) in enumerate(zip(leaves, values)):
             if not value:
                 continue
-            c.setFillColor(PKT_SILY if li in ST_LEAFS else INK)
+            c.setFillColor(KOLOR_SILY if li in SILA_W_RUBRYCE else INK)
             c.setFont(FONT_HAND, HAND_FS)
             c.drawCentredString(lx + lw / 2, y, value)
 
@@ -348,7 +390,7 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
     c.rect(x0, top - HEAD_H, card_w, HEAD_H, stroke=0, fill=1)
 
     # Rubryka "wynik" dostaje wlasne tlo na calej wysokosci tabeli: to jedyna
-    # liczba wpisywana z pamieci zaraz po grze i ona rozstrzyga o zmianie stopni,
+    # liczba wpisywana z pamieci zaraz po grze i ona rozstrzyga o zmianie sily,
     # wiec ma sie rzucac w oczy takze przy porownywaniu dwoch kart.
     x = x0
     for (label, _), sub_ws in zip(COLUMNS, widths):
@@ -380,7 +422,7 @@ KRATKA_W, BRZEG_W, WIERSZ_H = 6.0 * mm, 8.4 * mm, 2.8 * mm
 SIATKA_GAP = 6 * mm
 
 
-def _stopien(roznica: float) -> str:
+def _kratka_sily(roznica: float) -> str:
     """Polowka jednym znakiem, tak jak w tabeli na stronie."""
     calosc = int(roznica)
     if roznica == calosc:
@@ -388,7 +430,7 @@ def _stopien(roznica: float) -> str:
     return f"{calosc}½" if calosc else "½"
 
 
-def _rysuj_stopien(c: Canvas, srodek: float, y: float, roznica: float) -> None:
+def _rysuj_kratke(c: Canvas, srodek: float, y: float, roznica: float) -> None:
     """Roznica w kratce: cyfry zawsze koncza sie w tym samym miejscu.
 
     Gdyby napis byl po prostu wysrodkowany, "3" i "3½" mialyby cyfre w innym
@@ -423,10 +465,10 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
     # Nazwa planszy jako plakietka: ciemne tlo obejmuje sam napis, a nie cala
     # szerokosc siatki. Belka na cala szerokosc przygniatala liczby pod soba.
     # Wysokosc pisma dobrana tak, zeby wersaliki miescily sie w plakietce —
-    # przy wiekszym stopniu napis wychodzil ponad jej gorna krawedz.
-    PLANSZA_FS = 5.6
-    c.setFont(FONT_BOLD, PLANSZA_FS)
-    plakietka_w = c.stringWidth(plansza, FONT_BOLD, PLANSZA_FS) + 3.0 * mm
+    # przy wiekszej roznicy napis wychodzil ponad jej gorna krawedz.
+    PLAKIETKA_FS = 5.6
+    c.setFont(FONT_BOLD, PLAKIETKA_FS)
+    plakietka_w = c.stringWidth(plansza, FONT_BOLD, PLAKIETKA_FS) + 3.0 * mm
     c.setFillColor(INK)
     c.roundRect(
         x + (len(jency) * KRATKA_W - plakietka_w) / 2, top - WIERSZ_H + 0.35 * mm,
@@ -441,9 +483,9 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
     for numer, r in enumerate(ruchy):
         y = top - (numer + 2) * WIERSZ_H + 1.0 * mm
         for kolumna, j in enumerate(jency):
-            c.setFillColor(PKT_SILY)
+            c.setFillColor(KOLOR_SILY)
             c.setFont(FONT, 5.4)
-            _rysuj_stopien(c, x + (kolumna + 0.5) * KRATKA_W, y, pola[(j, r)])
+            _rysuj_kratke(c, x + (kolumna + 0.5) * KRATKA_W, y, pola[(j, r)])
         c.setFillColor(INK)
         c.setFont(FONT_BOLD, 5.4)
         c.drawCentredString(x + szer - BRZEG_W / 2, y, str(r))
@@ -503,7 +545,7 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
         x = x0 + i * (col_w + gap)
         t = title.upper()
         c.setFont(FONT_BOLD, 6)
-        c.setFillColor(PKT_SILY if "St" in t.split() else INK)
+        c.setFillColor(KOLOR_SILY if SILA_W_NAZWIE & set(t.split()) else INK)
         c.drawString(x, y0, t)
         c.setStrokeColor(HEADER_BG)
         c.setLineWidth(0.8)
@@ -530,7 +572,7 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
     draw_qr(c, x0 + card_w - qr_size, y, qr_size, "https://zg-go.pl/ranking.html")
     c.setFont(FONT, 6)
     c.setFillColor(MUTED)
-    c.drawString(x0, y, "St = stopnie siły · Pełne zasady: zg-go.pl/ranking.html")
+    c.drawString(x0, y, "Pełne zasady: zg-go.pl/ranking.html")
     c.drawRightString(x0 + card_w - qr_size - 2 * mm, y, f"wersja karty {WERSJA}")
     return y
 
@@ -599,7 +641,7 @@ def odcisk() -> str:
         "fields": [[etykieta, round(w, 3)] for etykieta, w in FIELDS],
         # Siatki wyrownania: same liczby, bo to one moga sie rozjechac z zasada.
         "siatki": {p: {f"{j}/{r}": d for (j, r), d in sorted(siatka(p).items())} for p in PLANSZE},
-        "plansza": PLANSZA_PREPRINT,
+        "plansza": list(PLANSZE_KARTY),
     }
     kanoniczne = json.dumps(dane, ensure_ascii=False, sort_keys=True)
     return hashlib.sha256(kanoniczne.encode()).hexdigest()

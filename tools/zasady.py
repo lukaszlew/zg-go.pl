@@ -4,7 +4,7 @@
 Kazda zasada to jedno zdanie. Te same zdania, co do slowa, stoja w trzech
 miejscach:
 - ranking.html, sekcja "Zasady" (lista, w tej kolejnosci),
-- ranking.html, rozdzialy Wyrownanie / Wynik / Zmiana St (jako <strong> nad
+- ranking.html, rozdzialy Wyrownanie / Wynik / Zmiana sily (jako <strong> nad
   akapitem ze szczegolami),
 - sciaga na dole karty gracza (SCIAGA w karta_pdf.py, budowana stad).
 
@@ -12,37 +12,41 @@ Zasada: na karcie sa dokladnie te zdania — nic wiecej i nic mniej. Co jest za
 drobne na zasade, idzie do szczegolow pod nia na stronie i na karte nie trafia.
 Zgodnosci pilnuje tools/test_zasady.py (pre-commit hook w tools/githooks).
 
-Sila gracza stoi w stopniach (St), po polowce — pol stopnia to typowa zmiana po grze.
-Stopien znaczy tyle samo na kazdej planszy, ale w punktach wychodzi rozne: 2 na
-9x9, 5 na 13x13, 13 na 19x19. Dlatego wyrownanie czyta sie z tabeli swojej
-planszy (tools/wyrownanie/), a nie z jednej dla wszystkich.
+Sila gracza to jedna liczba, skaczaca po polowce — pol to typowa zmiana po grze.
+Jednostki nie nazywamy: rubryka mowi, ze chodzi o sile, wiec przy liczbie nic nie
+stoi. Roznica 1 znaczy tyle samo na kazdej planszy, ale w punktach gry wychodzi
+rozne: 2 na 9x9, 5 na 13x13, 13 na 19x19. Dlatego wyrownanie czyta sie z tabeli
+swojej planszy (tools/wyrownanie/), a nie z jednej dla wszystkich.
 
-Kalibracja ma wlasna kolumne, a nie doklejone zasady w cudzych: dotyczy trzech
-pierwszych gier nowego gracza i nikogo poza nim, wiec reszta stolika moze ja
-przeczytac raz i wiecej do niej nie wracac.
+Kolumna "typ gry" zbiera gry, ktore licza sie inaczej niz zwykla: kalibracyjne i
+te poza wlasna glowna plansza. Kazda z nich dotyczy tylko czesci stolika, wiec
+reszta moze przeczytac te kolumne raz i wiecej do niej nie wracac.
 
 Podzial na kolumny odpowiada kolejnosci wypelniania wiersza karty:
-wyrownanie -> wynik -> zmiana St. Rozdzialy strony ida tak samo.
+wyrownanie -> typ gry -> wynik -> zmiana sily. Rozdzialy strony ida
+kolumnami, a nie wierszem karty: typ gry stoi na koncu, bo w wiekszosci gier
+nie ma w nim nic do czytania.
 """
 
-KOLUMNY: tuple[str, ...] = ("wyrównanie", "wynik", "zmiana St", "kalibracja")
+KOLUMNY: tuple[str, ...] = ("wyrównanie", "wynik", "zmiana siły", "typ gry")
 
 ZASADY: list[tuple[str, str]] = [
-    ("wyrównanie", "Różnica St to St silniejszego minus St słabszego; silniejszy gra Białymi."),
+    ("wyrównanie", "Różnica siły to siła silniejszego minus siła słabszego; silniejszy gra Białymi."),
     ("wyrównanie", "Ruchy Czarnego i dodatkowych jeńców, liczonych na koniec jak zbite w grze, odczytajcie z tabeli swojej planszy i przepiszcie na obie karty."),
-    ("wyrównanie", "Jeżeli różnica St jest mniejsza niż w tabeli, gra jest równa: zapisujecie 1 ruch i −6,5 jeńca, czyli Biały dostaje 6 jeńców i wygrywa remisy, a kolory rozstrzyga nigiri."),
+    ("wyrównanie", "Jeżeli różnica siły jest mniejsza niż w tabeli, gra jest równa: zapisujecie 1 ruch i −6,5 jeńca, czyli Biały dostaje 6 jeńców i wygrywa remisy, a kolory rozstrzyga nigiri."),
     ("wynik", "Wynik wpisujecie w punktach ze znakiem: + u zwycięzcy, − u przegranego, remis jako 0; po poddaniu +R i −R."),
-    ("wynik", "Ta sama gra stoi na dwóch kartach: różnica St jednakowa, wynik z przeciwnymi znakami."),
-    ("zmiana St", "Zwycięzca +½ St, przegrany −½ St, remis 0 — w grze równej remisu nie ma, bo wyklucza go połówka komi."),
-    ("zmiana St", "Wygrana o 20 punktów lub więcej albo przez poddanie daje zwycięzcy +1 St; przegrany traci ½ St jak zawsze."),
-    ("zmiana St", "Szybką korektę St przyznaje najsilniejszy gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce moje St następnej gry."),
-    ("kalibracja", "W kolumnie kalibracja nowy gracz wpisuje K przez swoje trzy pierwsze gry, jego przeciwnik P, a w każdej innej grze oboje stawiają myślnik."),
-    ("kalibracja", "W grze kalibracyjnej nowy gracz dostaje ±1 St, a po wyraźnej wygranej lub przegranej ±2 St; przeciwnik przy P nie zmienia swoich St."),
+    ("wynik", "Ta sama gra stoi na dwóch kartach: różnica siły jednakowa, wynik z przeciwnymi znakami."),
+    ("zmiana siły", "Zwycięzca +½, przegrany −½, remis 0 — w grze równej remisu nie ma, bo wyklucza go połówka komi."),
+    ("zmiana siły", "Wygrana o 20 punktów lub więcej albo przez poddanie daje zwycięzcy +1; przegrany traci ½ jak zawsze."),
+    ("zmiana siły", "Szybką korektę siły przyznaje najsilniejszy gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce moja siła następnej gry."),
+    ("typ gry", "Siła zmienia się tylko po grach na waszej głównej planszy; na każdej innej gracie swoją siłą, ale wasz ranking stoi w miejscu, a w kolumnie typ gry wpisujecie rozmiar tej planszy."),
+    ("typ gry", "W trzech pierwszych grach nowego gracza w kolumnie typ gry stoi K u niego i P u jego przeciwnika; w zwyczajnej grze — myślnik."),
+    ("typ gry", "W grze kalibracyjnej nowy gracz dostaje ±1, a po wyraźnej wygranej lub przegranej ±2; przeciwnik przy P nie zmienia swojej siły."),
 ]
 
 assert [k for k, _ in ZASADY] == sorted(
     (k for k, _ in ZASADY), key=KOLUMNY.index
-), "zasady musza byc pogrupowane w kolejnosci KOLUMNY — numeracja rosnie od lewej kolumny"
+), "zasady musza byc pogrupowane w kolejnosci KOLUMNY — tak ida kolumny sciagi"
 assert len({z for _, z in ZASADY}) == len(ZASADY), "zdania zasad musza byc unikalne"
 assert {k for k, _ in ZASADY} == set(KOLUMNY), "kazda kolumna musi miec przynajmniej jedna zasade"
 

@@ -15,7 +15,7 @@
   --fg: #1a1a1a;
   --muted: #666666;         /* najjasniejsza szarosc dajaca 4,5:1 na tle strony (WCAG AA) */
   --accent: #9c2a2a;
-  --pkt-sily: #2e7d32;
+  --kolor-sily: #2e7d32;
   --rule: #d9c896;
   --card: #ffffff;
   --pole: #fbf6ea;            /* tlo rubryki do wypelnienia: blizej bieli niz karta */
@@ -345,7 +345,7 @@ img.wycinek {
 ul.zasady { margin: 0.15rem 0 0.5rem; padding-left: 1.9rem; }
 ul.zasady li { margin: 0.2rem 0; font-weight: 700; }
 /* zasada w bloku ma wygladac jak jej naglowek nizej: to ten sam tekst,
-   wiec bez koloru linku — zielen .ps ma dzialac tak samo w obu miejscach */
+   wiec bez koloru linku — zielen sily ma dzialac tak samo w obu miejscach */
 ul.zasady a { color: inherit; }
 ul.zasady a:hover { text-decoration: underline; }
 
@@ -369,8 +369,8 @@ ul.zasady a:hover { text-decoration: underline; }
 }
 
 /* punkty sily: zawsze na zielono — slowo i liczby */
-.ps { color: var(--pkt-sily); }
-table.sila td + td { color: var(--pkt-sily); }
+span.sila { color: var(--kolor-sily); }
+table.sila td + td { color: var(--kolor-sily); }
 
 table.sila { border-collapse: collapse; margin: 0.6rem 0; }
 /* Podpis tabeli mowi, jak ja czytac — nagłowki stoja tu i u gory, i na dole,
@@ -393,7 +393,7 @@ table.sila th { background: var(--rule); font-weight: 600; }
    Stoi za table.sila, bo tamta regula ma ta sama wage i wlasny margin. */
 p.zasada-cd, table.zasada-cd { margin-left: 1.9rem; }
 
-/* Siatka wyrownania: roznica stopni w kratkach (zielona), a znaczenie na brzegach —
+/* Siatka wyrownania: roznica sily w kratkach (zielona), a znaczenie na brzegach —
    ruchy w prawej kolumnie, jency w dolnym wierszu. Markup generuje
    tools/wyrownanie/tabela_html.py i pilnuje go test; tu stoi sam wyglad.
 
@@ -409,7 +409,7 @@ table.komp col { width: 2.1em; }
 table.komp col.brzeg { width: 3.6em; }
 table.komp td, table.komp th { padding: 0.15rem 0.1rem; text-align: center; white-space: nowrap; }
 table.komp th { border-color: color-mix(in srgb, var(--rule) 85%, black); }
-table.komp td { color: var(--pkt-sily); }
+table.komp td { color: var(--kolor-sily); }
 
 /* Brzegi: to z nich czyta sie, co kratka znaczy. Kreska ledwie grubsza od zwyklej. */
 table.komp th.komp-jency,
@@ -425,7 +425,7 @@ table.komp th.plansza span { display: inline-block; background: var(--fg); color
                              font-size: 0.8rem; letter-spacing: 0.06em; border-radius: 2px;
                              padding: 0.05rem 0.55rem; }
 
-/* Polowka stopnia: 1 nad 2 z kreska. Wyzsza od cyfry obok, wiec rownanie do
+/* Polowka: 1 nad 2 z kreska. Wyzsza od cyfry obok, wiec rownanie do
    srodka, a nie do linii pisma — inaczej ulamek wisi nad wierszem. */
 /* Stala szerokosc, takze gdy pusta: kratka bez ulamka ma trzymac cyfre w tym
    samym miejscu, co kratka z ulamkiem — inaczej kolumna jest poszarpana. */
@@ -502,7 +502,7 @@ figcaption {
 /* Kalkulator jest wierszem karty gracza: te same rubryki, w tej samej kolejnosci,
    z tymi samymi grubymi kreskami miedzy sekcjami (przed gra | przeciwnik
    i wyrownanie | po grze). Dwa wiersze, bo ta sama gra stoi na dwoch kartach —
-   widac wtedy, ze roznica PS jest jednakowa, a wynik ma przeciwne znaki. */
+   widac wtedy, ze roznica sily jest jednakowa, a wynik ma przeciwne znaki. */
 /* Ramka obejmuje kartę, a nie cala kolumne tekstu, wiec stoi wysrodkowana.
    Mierzy sie do zawartosci zamiast do policzonej sumy rubryk: dziesiec kolumn
    podanych w milimetrach zaokragla sie kazda z osobna i roznica ulamka piksela
@@ -527,15 +527,15 @@ figcaption {
    jak na papierze, a nie rozciagnieta na rowne czesci strony. */
 table.kalk-karta { font-size: 0.8rem; table-layout: fixed; }
 table.kalk-karta col:nth-child(1) { width: 24mm; }     /* ktora karta */
-table.kalk-karta col:nth-child(2) { width: 12mm; }     /* moje PS */
-table.kalk-karta col:nth-child(3) { width: 12mm; }     /* PS przeciwnika — na karcie 8 mm, tu musi zmiescic trzy cyfry */
-table.kalk-karta col:nth-child(4) { width: 15mm; }     /* roznica PS */
+table.kalk-karta col:nth-child(2) { width: 14mm; }     /* moja sila */
+table.kalk-karta col:nth-child(3) { width: 12mm; }     /* sila przeciwnika — na karcie 8 mm, tu musi zmiescic trzy cyfry */
+table.kalk-karta col:nth-child(4) { width: 16mm; }     /* roznica sily */
 table.kalk-karta col:nth-child(5) { width: 17mm; }     /* pierwsze ruchy */
 table.kalk-karta col:nth-child(6) { width: 19mm; }     /* dodatkowi jency */
-table.kalk-karta col:nth-child(7) { width: 11mm; }     /* kalibracja — cyfra albo myslnik */
+table.kalk-karta col:nth-child(7) { width: 13mm; }     /* typ gry — litera, rozmiar planszy albo myslnik */
 table.kalk-karta col:nth-child(8) { width: 13mm; }     /* wynik */
-table.kalk-karta col:nth-child(9) { width: 13mm; }     /* zmiana PS */
-table.kalk-karta col:nth-child(10) { width: 12.5mm; }  /* nowe PS */
+table.kalk-karta col:nth-child(9) { width: 15mm; }     /* zmiana sily */
+table.kalk-karta col:nth-child(10) { width: 14mm; }    /* nowa sila */
 table.kalk-karta th, table.kalk-karta td { text-align: center; padding: 0.25rem 0.4rem; }
 table.kalk-karta th {
   font-size: 0.68rem;
@@ -549,9 +549,9 @@ table.kalk-karta th[scope="row"] {
   text-align: left; font-weight: 600;
 }
 /* `table.sila td + td` maluje wszystko na zielono; tutaj zielone sa tylko te
-   rubryki, ktore i na karcie drukuja sie kolorem punktow sily. */
+   rubryki, ktore i na karcie drukuja sie kolorem sily. */
 table.kalk-karta td { color: var(--fg); }
-table.kalk-karta td.ps { color: var(--pkt-sily); font-weight: 600; }
+table.kalk-karta td.sila { color: var(--kolor-sily); font-weight: 600; }
 .kalk-sekcja { border-left: 2px solid var(--fg) !important; }
 /* Pole bierze tlo z rubryki, w ktorej stoi — takze z szarej rubryki wyniku —
    ale zachowuje wlasna ramke i strzalki. Bez nich rubryka do wpisania niczym
@@ -569,8 +569,8 @@ table.kalk-karta input, table.kalk-karta select {
   width: 100%;                 /* pole wypelnia rubryke, a nie odwrotnie */
 }
 /* Strzalki wylatuja: w Chrome pokazywaly sie dopiero po najechaniu myszka, na
-   dotyku nigdy, a zjadaly szerokosc rubryki. Nikt zreszta nie szuka swoich PS
-   klikaniem — przepisuje je z karty. To, ze rubryke sie wypelnia, mowi jasne
+   dotyku nigdy, a zjadaly szerokosc rubryki. Nikt zreszta nie szuka swojej sily
+   klikaniem — przepisuje ja z karty. To, ze rubryke sie wypelnia, mowi jasne
    tlo i ramka, tak jak puste kratki na papierowym formularzu. */
 table.kalk-karta input[type="number"] { -moz-appearance: textfield; }
 table.kalk-karta input[type="number"]::-webkit-inner-spin-button,

@@ -1,8 +1,8 @@
-/* Kalkulator wyrownania i zmiany stopni na ranking.html.
+/* Kalkulator wyrownania i zmiany sily na ranking.html.
  *
  * Liczy dokladnie to, co mowia zasady stojace wyzej na stronie — i nic ponadto.
- * Ma dwie przewagi nad tabela: dziala dla dowolnej roznicy stopni, takze poza tabela,
- * i zna pulapki zmiany stopni (wyrazna wygrana, kalibracja), o ktore
+ * Ma dwie przewagi nad tabela: dziala dla dowolnej roznicy sily, takze poza tabela,
+ * i zna pulapki zmiany sily (wyrazna wygrana, kalibracja), o ktore
  * ludzie pytaja najczesciej.
  *
  * Rachunek siedzi w czystych funkcjach, bo to jedyne miejsce w repo, gdzie zasady
@@ -13,22 +13,22 @@
 export const RUCH = 13;        // punktow warty jest jeden darmowy ruch — na kazdej planszy
 export const KOMI_JENCY = 6;   // gra rowna: Czarny odklada Bialemu 6 jencow
 export const WYRAZNA = 20;     // wygrana o tyle punktow lub wiecej liczy sie jak poddanie
-export const POLOWKA = 0.5;    // rozdzielczosc stopni i typowa zmiana po grze
+export const POLOWKA = 0.5;    // rozdzielczosc sily i typowa zmiana po grze
 
 /* Gra rowna idzie na karte jedna liczba: szesc odlozonych jencow plus pol punktu
  * za wygrana Bialego przy rownym wyniku. Rachunek wyrownania trzyma sie calych
  * szesciu (KOMI_JENCY) — polowka rozstrzyga wynik, a nie wyrownanie. */
 export const ROWNA_JENCY = -6.5;
 
-/* Ile punktow wyrownania dokłada jeden stopien roznicy — zalezy od planszy, bo
- * stopien znaczy wszedzie to samo, ale na mniejszej planszy jest wart mniej.
+/* Ile punktow wyrownania dokłada jednostka roznicy sily — zalezy od planszy, bo
+ * sila znaczy wszedzie to samo, ale na mniejszej planszy jest warta mniej.
  * Stosunek i cala tabela stoja w tools/wyrownanie/ (SPEC.md tlumaczy, skad). */
 export const KROK = { '9x9': 2, '13x13': 5, '19x19': 13 };
 export const DOMYSLNA_PLANSZA = '9x9';
 
 /* 13x13 nie schodzi z samego wzoru, tylko z drabinki: 5 nie dzieli 13, wiec
  * koncowki jencow plynelyby z bloku na blok i tabela nie mialaby powtarzalnego
- * ksztaltu. Po pieciu polowkach stopnia Czarny ma caly ruch wiecej. Wyprowadzenie
+ * ksztaltu. Po pieciu polowkach sily Czarny ma caly ruch wiecej. Wyprowadzenie
  * i cena tego wyboru stoja w tools/wyrownanie/SPEC.md. */
 export const PETLA_13X13 = [0, 3, 5, 8, 10];
 export const PIERWSZY_13X13 = 1.5;   // drabinka zaczyna sie za grami rownymi
@@ -36,14 +36,14 @@ export const PIERWSZY_13X13 = 1.5;   // drabinka zaczyna sie za grami rownymi
 // --- wyrownanie (przed gra) --------------------------------------------------
 
 /* Ten sam rachunek, co w tools/wyrownanie/zg.py — jedna zasada na trzy plansze.
- * Roznica stopni idzie na punkty krokiem planszy, potem trzynasty punkt kupuje
+ * Roznica sily idzie na punkty krokiem planszy, potem trzynasty punkt kupuje
  * Czarnemu caly ruch, a reszta zostaje jencami. Rachunek nie ma konca, wiec
  * tabela na stronie urywa sie tylko dlatego, ze papier sie konczy.
  *
  * Gra rowna trzyma plaskie 6 jencow, a nie to, co wyszloby z samego
  * wzoru — ponizej pierwszego wyrownania klub nie stopniuje komi. */
-export function wyrownanie(mojeSt, jegoSt, plansza = DOMYSLNA_PLANSZA) {
-  const roznica = Math.abs(mojeSt - jegoSt);
+export function wyrownanie(mojaSila, jegoSila, plansza = DOMYSLNA_PLANSZA) {
+  const roznica = Math.abs(mojaSila - jegoSila);
   if (plansza === '13x13' && roznica >= PIERWSZY_13X13) {
     const pozycja = Math.round((roznica - PIERWSZY_13X13) / POLOWKA);
     const ruchy = 1 + Math.floor(pozycja / PETLA_13X13.length);
@@ -57,7 +57,7 @@ export function wyrownanie(mojeSt, jegoSt, plansza = DOMYSLNA_PLANSZA) {
   return { roznica, rowna: false, ruchy, jency: punkty - (ruchy - 1) * RUCH };
 }
 
-// --- zmiana stopni (po grze) -----------------------------------------------------
+// --- zmiana sily (po grze) -----------------------------------------------------
 
 /* Wynik tak, jak wpisuje sie go na karte: liczba ze znakiem albo R po poddaniu. */
 export function parsujWynik(tekst) {
@@ -70,10 +70,10 @@ export function parsujWynik(tekst) {
   return { poddanie: false, znak: Math.sign(punkty), punkty };
 }
 
-/* Zwraca zmiane stopni obu graczy z perspektywy tego, kto wpisal swoj wynik.
+/* Zwraca zmiane sily obu graczy z perspektywy tego, kto wpisal swoj wynik.
  * kalibracja: null albo { kto: 'ja' | 'on' } — na karcie kalibrowanego stoi K,
  * na karcie jego przeciwnika P. */
-export function zmianaStopni(wynik, { kalibracja = null } = {}) {
+export function zmianaSily(wynik, { kalibracja = null } = {}) {
   if (!wynik) return null;
   const uwagi = [];
 
@@ -91,29 +91,29 @@ export function zmianaStopni(wynik, { kalibracja = null } = {}) {
    * dopiero jest zgadywana, nic o jego wlasnej nie mowi. */
   if (kalibracja) {
     uwagi.push(wyrazna
-      ? 'Gra kalibracyjna po wyraźnej wygranej lub przegranej: nowy gracz ±2 St, przeciwnik przy P bez zmian.'
-      : 'Gra kalibracyjna: nowy gracz ±1 St, przeciwnik przy P bez zmian.');
+      ? 'Gra kalibracyjna po wyraźnej wygranej lub przegranej: nowy gracz ±2, przeciwnik przy P bez zmian.'
+      : 'Gra kalibracyjna: nowy gracz ±1, przeciwnik przy P bez zmian.');
     const nowego = (kalibracja.kto === 'ja' ? wynik.znak : -wynik.znak) * (wyrazna ? 2 : 1);
     return kalibracja.kto === 'ja'
       ? { moja: nowego, przeciwnika: 0, uwagi }
       : { moja: 0, przeciwnika: nowego, uwagi };
   }
 
-  /* Wyrazna wygrana daje zwyciezcy caly stopien, ale przegranemu zabiera dalej pol:
+  /* Wyrazna wygrana daje zwyciezcy cala jedynke, ale przegranemu zabiera dalej pol:
    * nagradza sie przewage, a nie karze podwojnie tego, kto ja przyjal. */
   const zwyciezcy = wyrazna ? 1 : POLOWKA;
   if (wyrazna) {
     uwagi.push(wynik.poddanie
-      ? 'Poddanie liczy się tak samo jak wygrana o 20 punktów: zwycięzca +1 St, przegrany −½ St.'
-      : 'Wygrana o 20 punktów lub więcej daje zwycięzcy +1 St; przegrany traci ½ St jak zawsze.');
+      ? 'Poddanie liczy się tak samo jak wygrana o 20 punktów: zwycięzca +1, przegrany −½.'
+      : 'Wygrana o 20 punktów lub więcej daje zwycięzcy +1; przegrany traci ½ jak zawsze.');
   }
   return wynik.znak > 0
     ? { moja: zwyciezcy, przeciwnika: -POLOWKA, uwagi }
     : { moja: -POLOWKA, przeciwnika: zwyciezcy, uwagi };
 }
 
-/* Stopnie pisze sie polowkami: 0, ½, 1, 1½ — tak, jak stawia sie je na karcie. */
-export function stopnie(n) {
+/* Sile pisze sie polowkami: 0, ½, 1, 1½ — tak, jak stawia sie ja na karcie. */
+export function zapisSily(n) {
   const znak = n < 0 ? '−' : '';   // minus typograficzny, ten sam co w zasadach
   const ile = Math.abs(n);
   const calosc = Math.floor(ile);
@@ -122,22 +122,22 @@ export function stopnie(n) {
   return `${znak}${calosc || ''}${pol}`;
 }
 
-export const zeZnakiem = (n) => (n > 0 ? `+${stopnie(n)}` : stopnie(n));
+export const zeZnakiem = (n) => (n > 0 ? `+${zapisSily(n)}` : zapisSily(n));
 
-/* Jency licza sie w punktach, nie w stopniach: polowka trafia sie w nich tylko w
+/* Jency licza sie w punktach planszy, a nie w sile: polowka trafia sie w nich tylko w
  * grze rownej i pisze sie ja po polsku, przecinkiem. */
 export const zapisJencow = (n) => String(n).replace('-', '−').replace('.', ',');
 
 // --- strona ------------------------------------------------------------------
 
-/* Kolory nie maja rubryki na karcie — wynikaja z roznicy stopni, wiec stoja pod nia
+/* Kolory nie maja rubryki na karcie — wynikaja z roznicy sily, wiec stoja pod nia
  * zdaniem, tak jak na stronie wynikaja z opisu pod tabelami. */
-function opisKolorow(w, mojeSt, jegoSt) {
+function opisKolorow(w, mojaSila, jegoSila) {
   if (w.rowna) {
     return `Gra równa: kolory przez nigiri, Biały otrzyma ${KOMI_JENCY} jeńców `
       + 'i wygrywa remisy — czyli komi 6,5.';
   }
-  return mojeSt > jegoSt
+  return mojaSila > jegoSila
     ? `Grasz Białymi, przeciwnik Czarnymi — silniejszy zawsze gra Białymi.`
     : `Grasz Czarnymi, przeciwnik Białymi — silniejszy zawsze gra Białymi.`;
 }
@@ -189,12 +189,12 @@ function start() {
     }
 
     const w = wyrownanie(a, b);
-    // Wszystko, co jest w stopniach, idzie przez stopnie(): rubryka ma wygladac
+    // Wszystko, co jest sila, idzie przez zapisSily(): rubryka ma wygladac
     // tak, jak stawia sie ja na karcie, czyli "42½", a nie "42.5".
-    pole('k-o-moje').textContent = stopnie(b);
-    pole('k-o-jego').textContent = stopnie(a);
+    pole('k-o-moje').textContent = zapisSily(b);
+    pole('k-o-jego').textContent = zapisSily(a);
     wpisz({
-      roznica: [stopnie(w.roznica), stopnie(w.roznica)],
+      roznica: [zapisSily(w.roznica), zapisSily(w.roznica)],
       ruchy: [w.ruchy, w.ruchy],
       jency: [zapisJencow(w.jency), zapisJencow(w.jency)],
     });
@@ -203,7 +203,7 @@ function start() {
     const wpisany = parsujWynik(wynik.value);
     // Wartosc pola to "ja" albo "on" — kto z dwojga jest kalibrowany.
     const kto = kalib.value;
-    const z = zmianaStopni(wpisany, { kalibracja: kto ? { kto } : null });
+    const z = zmianaSily(wpisany, { kalibracja: kto ? { kto } : null });
     // K stoi na karcie kalibrowanego, P na karcie jego przeciwnika.
     pole('k-o-kalibracja').textContent = !kto ? '—' : (kto === 'ja' ? 'P' : 'K');
 
@@ -223,7 +223,7 @@ function start() {
     pole('k-o-wynik').textContent = przeciwny;
     wpisz({
       zmiana: [zeZnakiem(z.moja), zeZnakiem(z.przeciwnika)],
-      nowe: [stopnie(a + z.moja), stopnie(b + z.przeciwnika)],
+      nowe: [zapisSily(a + z.moja), zapisSily(b + z.przeciwnika)],
     });
     pole('k-uwagi').replaceChildren(...z.uwagi.map(uwaga));
   }

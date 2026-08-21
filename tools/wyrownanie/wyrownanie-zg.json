@@ -4,7 +4,7 @@
     "13x13": "https://zg-go.pl/ranking.html",
     "19x19": "https://zg-go.pl/ranking.html"
   },
-  "uwaga": "Komi ujemne oznacza, że komi daje Biały Czarnemu — ponad kamienie wyrównania. Tabela jest policzona, nie przepisana: -6 punktu w grze równej i 2/5/13 punktu na stopień różnicy dla 9x9/13x13/19x19, przy ruchu wartym 13 punktów. Komi nigdy nie schodzi poniżej -12, bo trzynasty punkt kupuje cały ruch.",
+  "uwaga": "Komi ujemne oznacza, że komi daje Biały Czarnemu — ponad kamienie wyrównania. Tabela jest policzona, nie przepisana: -6 punktu w grze równej i 2/5/13 punktu na jednostkę różnicy siły dla 9x9/13x13/19x19, przy ruchu wartym 13 punktów. Komi nigdy nie schodzi poniżej -12, bo trzynasty punkt kupuje cały ruch.",
   "kolumny": ["roznica", "kamienie", "komi"],
   "tabele": {
     "9x9": [

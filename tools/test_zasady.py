@@ -5,7 +5,7 @@ Uruchomienie:  python3 -m unittest discover -s tools
 Odpala sie tez jako pre-commit hook (tools/githooks/pre-commit).
 
 Testy porownuja goly tekst, wiec strona moze dowolnie stylowac wnetrze zdania
-(<span class="ps">, <a>, ...) — liczy sie to, co widzi czytelnik.
+(<span class="sila">, <a>, ...) — liczy sie to, co widzi czytelnik.
 """
 
 import re
@@ -20,7 +20,8 @@ STRONA = Path(__file__).resolve().parent.parent / "ranking.html"
 # Podsekcje "Rozwiniecia zasad", w kolejnosci ze strony; kazda zasada stoi w nich jako
 # <strong> na poczatku akapitu. Kolejnosc musi byc ta sama, co w zasady.KOLUMNY —
 # to ona, a nie numer, mowi ktora zasada jest ktora.
-ROZDZIALY_ZASAD = ("wyrownanie", "wynik", "zmiana-st", "korekta", "kalibracja")
+ROZDZIALY_ZASAD = ("wyrownanie", "wynik", "zmiana-sily", "korekta",
+                   "glowna-plansza", "kalibracja")
 
 
 def tekst(html: str) -> str:

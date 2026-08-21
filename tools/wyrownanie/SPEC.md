@@ -16,12 +16,12 @@ na którym wszystko stoi.
 
 ## Zasada
 
-Jeden ruch jest wart **13 punktów** na każdej planszy. Ile wart jest jeden stopień
-różnicy sił — zależy od planszy:
+Jeden ruch jest wart **13 punktów** na każdej planszy. Ile warta jest jednostka
+różnicy siły — zależy od planszy:
 
 | plansza | 19x19 | 13x13 | 9x9 |
 |---------|------:|------:|----:|
-| punktów na stopień | 13 | 5 | 2 |
+| punktów na jednostkę siły | 13 | 5 | 2 |
 
 Stosunek nie jest zgadnięty. Wychodzi ten sam u każdego, kto liczył: LSG 9x9 i Hunt
 9x9 idą po 2, LSG 13x13 i Ishikura 13x13 po 5, a trzynastka na 19x19 to ta sama liczba,
@@ -39,23 +39,24 @@ Ten sam rachunek liczy `wyrownanie.js` — kalkulator na stronie i ten moduł to
 implementacje jednej zasady. Zestawia je test w drugim języku
 (`tools/test_kalkulator.mjs`), wiersz po wierszu, na każdej z trzech plansz.
 
-Ranking klubowy idzie w tych samych stopniach, o rozdzielczości pół stopnia, więc
-różnicę bierze się z kart wprost — nic się po drodze nie przelicza.
+Ranking klubowy idzie w tej samej skali, o rozdzielczości pół, więc różnicę bierze
+się z kart wprost — nic się po drodze nie przelicza. Jednostki nie nazywamy:
+rubryka mówi, że to siła, więc przy liczbie nic nie stoi.
 
 ## Decyzje, które kosztowały
 
 Każda z nich jest przybita testem — nie po to, żeby nie dało się jej zmienić, tylko
 żeby zmiana była świadoma i żeby widać było rachunek.
 
-**Pół stopnia, zaokrąglane ku zeru.** Między stopniami też się gra. Połówka daje pół
+**Połówki, zaokrąglane ku zeru.** Między całymi liczbami też się gra. Połówka daje pół
 punktu na 13x13 i 19x19; obcinamy je ku zeru, więc słabszy nigdy nie traci na
-zaokrągleniu. Dla stopni całkowitych obcięcie nie ma czego uciąć, więc pliki JSON i
+zaokrągleniu. Dla różnic całkowitych obcięcie nie ma czego uciąć, więc pliki JSON i
 zestawienia wychodzą identyczne jak bez niego.
 
 **13x13 schodzi z drabinki `0 3 5 8 10`, a nie z samego rachunku.** Bo 5 nie dzieli
 13 i końcówki punktów płynęłyby z bloku na blok — raz `1/4/6/9/11`, raz `1/3/6/8/11`.
-Tabela nie miałaby powtarzalnego kształtu. Drabinka daje 13 punktów na 2,5 stopnia,
-czyli **5,2 punktu na stopień zamiast 5**: przy różnicy 20 stopni to 2 punkty nadwyżki,
+Tabela nie miałaby powtarzalnego kształtu. Drabinka daje 13 punktów na 2,5 różnicy,
+czyli **5,2 punktu na jednostkę zamiast 5**: przy różnicy 20 to 2 punkty nadwyżki,
 przy 39 — sześć, mniej niż pół ruchu.
 
 Sama drabinka też była wybierana. Wszystkie możliwe mają te same przerwy `{2,2,3,3,3}`
@@ -66,19 +67,19 @@ podwójna trójka — nie do uniknięcia, bo trzy trójki w cyklu piątki muszą
 sąsiadować — wypada dokładnie na styku ruchów, gdzie wiersz i tak się łamie.
 
 **Drabinka nie sięga gier równych.** Nie umie trafić w −6: z jednego ruchu w dół ląduje
-na −8 albo −5. Poniżej pierwszego stopnia 13x13 liczy się więc zwykłym rachunkiem.
+na −8 albo −5. Poniżej pierwszej kratki 13x13 liczy się więc zwykłym rachunkiem.
 Reguła jest dwuczęściowa i musi taka zostać.
 
 **19x19 nie pokazuje wiersza „1 ruch".** Jeden ruch to nie wyrównanie, tylko zwykłe
 prawo Czarnego do pierwszego ruchu. Na 19x19 cały ten wiersz mieści się w jednym
-stopniu różnicy, więc zamiast rozdawać za niego jeńców klub gra po prostu równo.
+jednostce różnicy, więc zamiast rozdawać za niego jeńców klub gra po prostu równo.
 **Kosztuje to 7 jeńców przy różnicy 1.** Na 13x13 i 9x9 ten sam wiersz obejmuje kilka
-stopni i do 12 jeńców — tam zostaje.
+jednostek i do 12 jeńców — tam zostaje.
 
 ## Tabela
 
 Układ jest ten sam, co tabeli wyrównania na `ranking.html`: **w kratkach stoi różnica
-stopni**, a co z niej wynika, czyta się z brzegów. Jedna kratka niesie przez to cały
+siły**, a co z niej wynika, czyta się z brzegów. Jedna kratka niesie przez to cały
 wiersz tabeli liniowej.
 
 - **Ruchy w wierszach, jeńcy w kolumnach.** Nie odwrotnie: ruchy biegną bez końca i
@@ -97,7 +98,7 @@ wiersz tabeli liniowej.
 - **Gier równych w tabelach nie ma.** Kratka niesie to, co Czarny dostaje, a w grze
   równej nie dostaje nic. Wystarczy o tym jedno zdanie, bez żadnej liczby: każda siatka
   zaczyna się dokładnie tam, gdzie kończą się gry równe, więc „mniejsza niż pierwsza
-  kratka" trafia co do połówki stopnia na wszystkich trzech planszach.
+  kratka" trafia co do połówki na wszystkich trzech planszach.
 - **Trzy tabele w jednym rzędzie**, mały odstęp — osobne siatki, każda z własnymi
   brzegami.
 
@@ -109,7 +110,7 @@ To był stały kierunek i warto go trzymać:
   czego siatka pokazać nie może: co znaczy kratka i co dzieje się przed pierwszą z nich.
 - Co wspólne dla trzech tabel — mówi się raz. Co różne (nazwa planszy) — musi być przy
   każdej, więc dostaje jedyne miejsce, które nic nie kosztuje: róg.
-- Połówka stopnia to ułamek pionowy (1 nad 2, kreska między), a nie „,5" ani ukośne ½.
+- Połówka to ułamek pionowy (1 nad 2, kreska między), a nie „,5" ani ukośne ½.
   Zajmuje szerokość jednej cyfry — i to od niej zależy szerokość całej kolumny.
 - Kratki tak wąskie, jak pozwala treść. Szerokości idą z `<colgroup>`, bo przy
   `table-layout: fixed` pierwszy wiersz (czapka na całą siatkę) rozdzieliłby je po równo.
@@ -118,7 +119,7 @@ To był stały kierunek i warto go trzymać:
 
 Ile ruchów pokazuje która tabela — do ustawienia w `RUCHOW` i `PIERWSZY_RUCH`.
 Kolumna znaczy co innego na każdej planszy, więc te same „siedem ruchów" to różny
-zasięg w stopniach; to jest w porządku i nie ma czego wyrównywać.
+zasięg różnicy; to jest w porządku i nie ma czego wyrównywać.
 
 ## Czego pilnują testy
 
@@ -138,8 +139,6 @@ zasięg w stopniach; to jest w porządku i nie ma czego wyrównywać.
 
 - Adres źródłowy tabel Ishikury i Hunta jest zgadnięty (Sensei's Library) i oznaczony
   w obu modułach jako `TODO`. Przyszły z wklejki, nie ze strony.
-- Mnożniki kalibracji na 13x13 i 19x19 nie są ustalone: trzy gry po 1 St są dobrane
-  do 9x9, a na większych planszach skala jest dłuższa.
 - `tabela-zg.html` pokazuje wszystkie trzy naraz; jest materiałem roboczym do oglądania
   i porównywania, nie źródłem dla strony.
 

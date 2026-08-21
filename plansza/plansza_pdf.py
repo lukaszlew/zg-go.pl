@@ -5,8 +5,8 @@ Uruchomienie: python3 plansza/plansza_pdf.py   (zapisuje plansza/plansza.pdf w s
 
 Uklad: naglowek jednym pasem — nazwa klubu z logo po lewej, tytul "Ranking
 Siły", tabele wyrownania (te same co na karcie gracza, z karta_pdf.draw_siatka;
-9x9 pod para 19x19/13x13) dosuniete w prawo do trzech kodow QR (zasady
-rankingu, Discord, opinia w Mapach Google) — pod nim siatka 10x6 kratek
+9x9 pod para 19x19/13x13) dosuniete w prawo do kodow QR (zasady rankingu
+u gory, pod nimi Discord i opinia w Mapach Google) — pod nim siatka 10x6 kratek
 dla sil 1-60: wiersze po dziesiec, dolny 1-10, gorny 51-60, im wyzej tym
 silniejszy; ostatnia kratka to otwarte "60+". Na dole zaproszenie dla nowych.
 Nazwiska wisza na magnesach 80x30 mm wewnatrz kratek: kratka 90 mm szerokosci
@@ -103,6 +103,10 @@ RANKING_FS = 54                         # "Ranking Siły" na lewo od tabel
 NAZWA_WCIECIE = 28 * mm                 # blok nazwy z logo odsuniety od lewego marginesu
 NOTKA_FS = 20                           # zaproszenie dla nowych pod siatka
 QR_PODPIS_FS = 12
+QR_GAP = 14 * mm                        # odstep miedzy kodami w rzedzie
+QR_PODPIS_ODSTEP = 6 * mm               # kod -> jego podpis
+QR_RZAD_H = QR + 12 * mm                # kod z podpisem
+ADRES_ODSTEP = 22 * mm                  # adres -> gorna krawedz pierwszego kodu
 LOGO = 80 * mm
 TABELA_GAP = 12 * mm                    # tabele wyrownania stoja kolo siebie
 
@@ -211,7 +215,7 @@ def rysuj_qr(c: Canvas, srodek_x: float, gora_y: float, url: str, podpis: str) -
     karta_pdf.draw_qr(c, srodek_x - QR / 2, gora_y - QR, QR, url)
     c.setFillColor(MUTED)
     c.setFont(FONT, QR_PODPIS_FS)
-    c.drawCentredString(srodek_x, gora_y - QR - 6 * mm, podpis)
+    c.drawCentredString(srodek_x, gora_y - QR - QR_PODPIS_ODSTEP, podpis)
 
 
 def rysuj_naglowek(c: Canvas, gora_y: float) -> None:
@@ -227,18 +231,26 @@ def rysuj_naglowek(c: Canvas, gora_y: float) -> None:
     grupa_h = max(h19, h13) + TABELA_GAP + h9
     assert grupa_h <= NAGLOWEK_H, f"tabele wyzsze niz naglowek: {grupa_h / mm:.0f} mm"
 
-    # kody QR z adresem nad nimi, dosuniete do prawej
-    qr_w = len(KODY_QR) * QR + (len(KODY_QR) - 1) * 14 * mm
-    qr_blok_h = 20 * mm + QR + 12 * mm  # adres + kod + podpis
+    # Kody QR dosuniete do prawej, w dwoch rzedach: zasady rankingu same u gory,
+    # bo po to plansza wisi, a Discord i Mapy pod spodem. Szerokosc bloku wyznacza
+    # szerszy, dolny rzad; gorny kod stoi na jego srodku.
+    gorny, dolny = KODY_QR[:1], KODY_QR[1:]
+    qr_w = len(dolny) * QR + (len(dolny) - 1) * QR_GAP
+    qr_blok_h = ADRES_ODSTEP + 2 * QR_RZAD_H
+    assert qr_blok_h <= NAGLOWEK_H, f"kody QR wyzsze niz naglowek: {qr_blok_h / mm:.0f} mm"
     x_qr = PAGE_W - MARGINES_BOK - qr_w
     gora_bloku = gora_y - (NAGLOWEK_H - qr_blok_h) / 2
     c.setFillColor(ACCENT)
     c.setFont(FONT_SERIF_BOLD, ADRES_FS)
     c.drawCentredString(x_qr + qr_w / 2, gora_bloku - 14 * mm, adres)
-    x = x_qr
-    for url, podpis in KODY_QR:
-        rysuj_qr(c, x + QR / 2, gora_bloku - 20 * mm, url, podpis)
-        x += QR + 14 * mm
+    y_rzedu = gora_bloku - ADRES_ODSTEP
+    for rzad in (gorny, dolny):
+        szer = len(rzad) * QR + (len(rzad) - 1) * QR_GAP
+        x = x_qr + (qr_w - szer) / 2
+        for url, podpis in rzad:
+            rysuj_qr(c, x + QR / 2, y_rzedu, url, podpis)
+            x += QR + QR_GAP
+        y_rzedu -= QR_RZAD_H
 
     # tabele wyrownania tuz na lewo od kodow QR
     x_tabel = x_qr - 24 * mm - grupa_w

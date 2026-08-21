@@ -20,7 +20,7 @@ STRONA = Path(__file__).resolve().parent.parent / "ranking.html"
 # Podsekcje "Rozwiniecia zasad", w kolejnosci ze strony; kazda zasada stoi w nich jako
 # <strong> na poczatku akapitu. Kolejnosc musi byc ta sama, co w zasady.KOLUMNY —
 # to ona, a nie numer, mowi ktora zasada jest ktora.
-ROZDZIALY_ZASAD = ("wyrownanie", "wynik", "zmiana-st", "kalibracja")
+ROZDZIALY_ZASAD = ("wyrownanie", "wynik", "zmiana-st", "korekta", "kalibracja")
 
 
 def tekst(html: str) -> str:

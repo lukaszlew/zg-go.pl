@@ -35,6 +35,7 @@ ZASADY: list[tuple[str, str]] = [
     ("wynik", "Ta sama gra stoi na dwóch kartach: różnica St jednakowa, wynik z przeciwnymi znakami."),
     ("zmiana St", "Zwycięzca +½ St, przegrany −½ St, remis 0 — w grze równej remisu nie ma, bo wyklucza go połówka komi."),
     ("zmiana St", "Wygrana o 20 punktów lub więcej albo przez poddanie daje zwycięzcy +1 St; przegrany traci ½ St jak zawsze."),
+    ("zmiana St", "Szybką korektę St przyznaje najsilniejszy gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce moje St następnej gry."),
     ("kalibracja", "W kolumnie kalibracja nowy gracz wpisuje K przez swoje trzy pierwsze gry, jego przeciwnik P, a w każdej innej grze oboje stawiają myślnik."),
     ("kalibracja", "W grze kalibracyjnej nowy gracz dostaje ±1 St, a po wyraźnej wygranej lub przegranej ±2 St; przeciwnik przy P nie zmienia swoich St."),
 ]

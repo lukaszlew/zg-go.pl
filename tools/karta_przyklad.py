@@ -18,13 +18,14 @@ from karta_pdf import KartaDane, Wiersz, generuj_karte, generuj_wycinek
 
 # Gra z przykladu: 9x9, Bianka 42 St vs Czarek 30 St.
 # Roznica 12 St -> 9x9 daje 2 ruchy i 5 jencow dla Czarnego.
-# Czarek wygrywa o 15 punktow — zwykla wygrana, bo do podwojenia trzeba dwudziestu.
+# Czarek wygrywa o 21 punktow — wyrazna wygrana, wiec dostaje caly stopien, a Bianka
+# traci pol: przyklad ma pokazywac wlasnie te niesymetrie, a nie najczestszy wypadek.
 CZAREK = KartaDane(
     nick="Czarek", plansza="9×9",
     wiersze=[Wiersz(
         data="15.07", moje_pkt="30",
         przeciwnik_nick="Bianka", przeciwnik_pkt="42", roznica_st="12",
-        ruchy="2", jency="5", kalibracja="—", wynik="+15", zmiana="+½", nowe_pkt="30½",
+        ruchy="2", jency="5", kalibracja="—", wynik="+21", zmiana="+1", nowe_pkt="31",
     )],
 )
 
@@ -33,7 +34,7 @@ BIANKA = KartaDane(
     wiersze=[Wiersz(
         data="15.07", moje_pkt="42",
         przeciwnik_nick="Czarek", przeciwnik_pkt="30", roznica_st="12",
-        ruchy="2", jency="5", kalibracja="—", wynik="−15", zmiana="−½", nowe_pkt="41½",
+        ruchy="2", jency="5", kalibracja="—", wynik="−21", zmiana="−½", nowe_pkt="41½",
     )],
 )
 

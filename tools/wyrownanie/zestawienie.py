@@ -6,11 +6,11 @@ w oryginale. Zestawienie jest dla czlowieka: jeden wiersz na roznice sil, po
 parze kolumn na zrodlo, wszystko w jednej mierze — zeby bylo widac, gdzie zrodla sie
 zgadzaja, a gdzie rozchodza.
 
-Ta jedna miara to "ruchy": ile pierwszych ruchow z rzedu ma Czarny. Gra rowna to
+Ta jedna miara to "ruchy": ile startowych ruchow z rzedu ma Czarny. Gra rowna to
 1 ruch, bo Czarny i tak zaczyna. Zrodla licza to na dwa sposoby — BGA i LSG pisza
 gre rowna jako 0 kamieni, Ishikura i Hunt jako 1 kamien — i dopiero po
 sprowadzeniu do ruchow kolumny znacza to samo. Tak samo nazywa to reszta repo:
-wyrownanie.js zwraca "ruchy", a tabela na ranking.html ma kolumne "pierwsze ruchy".
+wyrownanie.js zwraca "ruchy", a tabela na ranking.html ma kolumne "startowe ruchy".
 
 Komi zostaje takie, jak w zrodle, bo tu przeliczac nie ma czego: dodatnie idzie
 do Bialego, ujemne do Czarnego.
@@ -38,7 +38,7 @@ def plik_zestawienia(plansza: str) -> Path:
 
 
 def ruchy(kamienie: int) -> int:
-    """Ile pierwszych ruchow z rzedu ma Czarny przy tylu kamieniach wyrownania.
+    """Ile startowych ruchow z rzedu ma Czarny przy tylu kamieniach wyrownania.
 
     Zero kamieni i jeden kamien to ta sama gra rowna — Czarny stawia jeden kamien
     i oddaje ruch. Dopiero drugi kamien jest ruchem darmowym. Dlatego max(k, 1),
@@ -122,7 +122,7 @@ def zestawienie(plansza: str, zrodla_danych: tuple) -> str:
             if len(zrodla_danych) == 1
             else f"{_zrodel(len(zrodla_danych))} obok siebie."
         ),
-        '"ruchy" to liczba pierwszych ruchow z rzedu Czarnego: 1 to gra rowna, 2 to jeden\n'
+        '"ruchy" to liczba startowych ruchow z rzedu Czarnego: 1 to gra rowna, 2 to jeden\n'
         "ruch darmowy, i tak dalej. Zrodla licza kamienie roznie — jedne pisza gre rowna\n"
         "jako 0 kamieni, inne jako 1 — wiec tutaj sa sprowadzone do jednej miary i kolumny\n"
         "znacza to samo. Komi stoi tak, jak w zrodle: dodatnie idzie do Bialego, ujemne do\n"

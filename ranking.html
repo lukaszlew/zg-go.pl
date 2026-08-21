@@ -63,7 +63,7 @@
       <span class="sila">Siła</span> nadąża za formą gracza i widać na karcie, że klubowicz idzie do przodu.
       Więcej o tym w <a href="#dlaczego">dolnej części strony</a>.</p>
 
-      <p class="karta-link" id="karta"><a href="karta.pdf">Karta gracza (PDF)</a> — dziennik gier i <span class="sila">siły</span>, który gracze wypełniają sami po każdej grze; do wydruku na A4.</p>
+      <p class="karta-link" id="karta"><a href="karta.pdf">Karta gracza (PDF)</a> — dziennik gier, który gracze wypełniają sami po każdej grze; do wydruku na A4.</p>
 
       <!-- Spis stoi nad zasadami, bo zasady sa dluzsze niz jeden ekran i bez
            niego czytelnik nie wie, ze pod nimi jest jeszcze pol strony. Dlatego
@@ -81,7 +81,7 @@
               <li><a href="#wynik">Wynik</a></li>
               <li><a href="#zmiana-sily">Zmiana siły</a></li>
               <li><a href="#korekta">Szybka korekta</a></li>
-              <li><a href="#glowna-plansza">Główna plansza</a></li>
+              <li><a href="#rozmiar-planszy">Rozmiar planszy</a></li>
               <li><a href="#kalibracja">Kalibracja nowego gracza</a></li>
             </ul>
           </li>
@@ -105,8 +105,8 @@
           <h3><a href="#wyrownanie">Wyrównanie</a></h3>
           <ul class="zasady">
             <li><a href="#zasada-1"><span class="sila">Różnica siły</span> to <span class="sila">siła</span> silniejszego minus <span class="sila">siła</span> słabszego; silniejszy gra Białymi.</a></li>
-            <li><a href="#zasada-2">Ruchy Czarnego i dodatkowych jeńców, liczonych na koniec jak zbite w grze, odczytajcie z tabeli swojej planszy i przepiszcie na obie karty.</a></li>
-            <li><a href="#zasada-3">Jeżeli <span class="sila">różnica siły</span> jest mniejsza niż w tabeli, gra jest równa: zapisujecie 1 ruch i −6,5 jeńca, czyli Biały dostaje 6 jeńców i wygrywa remisy, a kolory rozstrzyga nigiri.</a></li>
+            <li><a href="#zasada-2">Startowe ruchy Czarnego i dodatkowych jeńców, liczonych na koniec jak zbite w grze, odczytajcie z tabeli swojej planszy i przepiszcie na obie karty.</a></li>
+            <li><a href="#zasada-3">Jeżeli <span class="sila">różnica siły</span> jest mniejsza niż pierwsza kratka tabeli, gra jest równa: kolory rozstrzyga nigiri, a zapisujecie 1 ruch i −6,5 jeńca — minus, bo to Biały dostaje 6 jeńców i wygrywa remisy.</a></li>
           </ul>
 
           <div class="tabele">
@@ -154,17 +154,23 @@
 
           <h3><a href="#zmiana-sily">Zmiana siły</a></h3>
           <ul class="zasady">
-            <li><a href="#zasada-6">Zwycięzca <span class="sila">+½</span>, przegrany <span class="sila">−½</span>, remis 0 — w grze równej remisu nie ma, bo wyklucza go połówka komi.</a></li>
+            <li><a href="#zasada-6">Zwycięzca <span class="sila">+½</span>, przegrany <span class="sila">−½</span>, remis <span class="sila">0</span> — w grze równej remisu nie ma, bo wyklucza go połówka komi.</a></li>
             <li><a href="#zasada-7">Wygrana o 20 punktów lub więcej albo przez poddanie daje zwycięzcy <span class="sila">+1</span>; przegrany traci <span class="sila">½</span> jak zawsze.</a></li>
-            <li><a href="#zasada-8">Szybką korektę <span class="sila">siły</span> przyznaje najsilniejszy gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce <span class="kol">moja siła</span> następnej gry.</a></li>
+            <li><a href="#zasada-8">Szybką korektę <span class="sila">siły</span> przyznaje silny gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce <span class="kol">moja siła</span> w następnej grze.</a></li>
           </ul>
 
-          <h3><a href="#glowna-plansza">Typ gry</a></h3>
+          <h3><a href="#kalibracja">Typ gry</a></h3>
           <ul class="zasady">
-            <li><a href="#zasada-9"><span class="sila">Siła</span> zmienia się tylko po grach na waszej głównej planszy; na każdej innej gracie swoją <span class="sila">siłą</span>, ale wasz ranking stoi w miejscu, a w kolumnie <span class="kol">typ gry</span> wpisujecie rozmiar tej planszy.</a></li>
-            <li><a href="#zasada-10">W trzech pierwszych grach nowego gracza w kolumnie <span class="kol">typ gry</span> stoi K u niego i P u jego przeciwnika; w zwyczajnej grze — myślnik.</a></li>
-            <li><a href="#zasada-11">W grze kalibracyjnej nowy gracz dostaje <span class="sila">±1</span>, a po wyraźnej wygranej lub przegranej <span class="sila">±2</span>; przeciwnik przy P nie zmienia swojej <span class="sila">siły</span>.</a></li>
+            <li><a href="#zasada-9">W trzech pierwszych grach nowego gracza w kolumnie <span class="kol">typ gry</span> stoi u niego K, a jego przeciwnik wpisuje P albo pomija tę grę, bo nic mu ona nie zmienia; w zwyczajnej grze oboje stawiają myślnik.</a></li>
+            <li><a href="#zasada-10">W grze kalibracyjnej nowy gracz dostaje <span class="sila">±1</span>, a po wyraźnej wygranej lub przegranej <span class="sila">±2</span>; przeciwnik przy P nie zmienia swojej <span class="sila">siły</span>.</a></li>
           </ul>
+
+          <table class="sila typy">
+            <tr><th>Wpis</th><th>Kiedy</th><th>Zmiana siły</th></tr>
+            <tr><td>—</td><td>zwyczajna gra</td><td>jak zwykle</td></tr>
+            <tr><td>K</td><td>jedna z trzech pierwszych gier nowego gracza</td><td><span class="sila">±1</span>, po wyraźnym wyniku <span class="sila">±2</span></td></tr>
+            <tr><td>P</td><td>jego przeciwnik w tej grze — może ją też pominąć</td><td>bez zmian</td></tr>
+          </table>
         </div>
       </section>
 
@@ -176,10 +182,10 @@
         <img class="wycinek" src="karta-wycinek-bianka.svg" alt="Karta gracza Bianki z wpisaną przykładową grą">
         <p><strong>Przed grą.</strong>
         Bianka (<span class="sila">siła 42</span> na 9×9) gra z Czarkiem (<span class="sila">siła 30</span>).
-        Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi — przy różnicy siły <span class="sila">3</span> i większej kolory są ustalone.</p>
+        Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi — na 9×9 przy różnicy siły <span class="sila">3</span> i większej kolory są ustalone.</p>
         <p><strong>Wyrównanie.</strong>
         <span class="kol"><span class="sila">różnica siły</span></span>: <span class="sila">42 − 30 = 12</span> — jednakowa na obu kartach.
-        Z <a href="#wyrownanie-9x9">tabeli</a>: <span class="kol">pierwsze ruchy</span>: 2 — Czarek zagra dwa ruchy, zanim Bianka odpowie —
+        Z <a href="#wyrownanie-9x9">tabeli</a>: <span class="kol">startowe ruchy</span>: 2 — Czarek zagra dwa ruchy, zanim Bianka odpowie —
         oraz <span class="kol">dodatkowi jeńcy</span>: 5, których Bianka odkłada Czarkowi i które Czarek doliczy przy końcowym liczeniu.</p>
         <p><strong>Po grze.</strong>
         Czarek wygrywa o 21 punktów: <span class="kol">wynik</span>: +21 u niego, −21 u Bianki — to wyraźna wygrana, bo dwudziestu punktów już nie brakuje.
@@ -192,7 +198,8 @@
       </div>
       </section>
 
-      <!-- Kalkulator liczy to samo, co zasady wyzej; kod w wyrownanie.js, testy
+      <!-- Kalkulator liczy wyrownanie i zmiane sily dla 9x9; nie zna gry poza
+           glownym rozmiarem, bo nie ma w nim wyboru planszy. Kod w wyrownanie.js, testy
            w tools/test_kalkulator.mjs porownuja go z tabela na tej stronie.
            Startuje ukryty i odslania sie z JS-u: bez skryptow zostaja zasady
            i tabela, ktore i tak sa zrodlem. -->
@@ -219,7 +226,7 @@
               <tr>
                 <th class="kalk-sekcja"><span class="sila">siła</span></th>
                 <th><span class="sila">różnica siły</span></th>
-                <th>pierwsze ruchy</th>
+                <th>startowe ruchy</th>
                 <th>dodatkowi jeńcy</th>
               </tr>
               <tr>
@@ -265,29 +272,24 @@
 
         <section id="wyrownanie">
           <h3>Wyrównanie</h3>
-          <p>Słabszy dostaje od silniejszego wyrównanie — pierwsze ruchy i dodatkowych jeńców — tak, żeby obie strony miały równe szanse.</p>
+          <p>Słabszy dostaje od silniejszego wyrównanie — startowe ruchy i dodatkowych jeńców — tak, żeby obie strony miały równe szanse.</p>
 
           <p class="zasada" id="zasada-1"><strong><span class="sila">Różnica siły</span> to <span class="sila">siła</span> silniejszego minus <span class="sila">siła</span> słabszego; silniejszy gra Białymi.</strong>
-          Silniejszy to ten, kto ma większą <span class="sila">siłę</span> — kolorów w grze z wyrównaniem się nie losuje.
-          <span class="sila">Siła</span> jest osobna dla każdej planszy — 9×9, 13×13 i 19×19 to trzy niezależne rankingi — więc bierzecie tę z planszy, na której właśnie gracie.
-          Idą za tym osobne karty: jedna karta to jedna plansza, więc kto gra na wszystkich trzech, ma trzy karty.
-          Wychodzi jedna liczba i wpisujecie ją oboje: od niej zależy wszystko, co dalej.</p>
+          Kolorów w grze z wyrównaniem się nie losuje.
+          <span class="sila">Siła</span> jest osobna dla każdej planszy — 9×9, 13×13 i 19×19 to trzy niezależne rankingi — więc każdy bierze swoją, z <a href="#rozmiar-planszy">karty tego rozmiaru</a>.</p>
 
-          <p class="zasada" id="zasada-2"><strong>Ruchy Czarnego i dodatkowych jeńców, liczonych na koniec jak zbite w grze, odczytajcie z <a href="#wyrownanie-9x9">tabeli</a> swojej planszy i przepiszcie na obie karty.</strong>
+          <p class="zasada" id="zasada-2"><strong>Startowe ruchy Czarnego i dodatkowych jeńców, liczonych na koniec jak zbite w grze, odczytajcie z <a href="#wyrownanie-9x9">tabeli</a> swojej planszy i przepiszcie na obie karty.</strong>
           Kratka z waszą różnicą stoi w wierszu, który mówi, iloma ruchami zaczyna Czarny, i w kolumnie, która mówi, ilu dostaje dodatkowych jeńców.
-          Wszystko idzie tu odwrotnie niż w grze równej: ruchów Czarny ma więcej niż jeden, a jeńcy trafiają do niego, nie od niego.
           Każda plansza ma własną tabelę, bo różnica <span class="sila">1</span> jest na niej warta inaczej: 2 punkty na 9×9, 5 na 13×13, 13 na 19×19.
-          Dodatkowi jeńcy leżą obok planszy do końca gry i nikt ich po drodze nie rusza — wchodzą dopiero do liczenia, po punkcie za sztukę.
-          Idą w całych sztukach, bez połówki, więc po grze z wyrównaniem wynik może wyjść dokładnie równy, czyli remisem.</p>
+          Jeńcy leżą obok planszy do końca gry i nikt ich po drodze nie rusza — wchodzą dopiero do liczenia, po punkcie za sztukę, w całych i bez połówki.</p>
 
-          <p class="zasada" id="zasada-3"><strong>Jeżeli <span class="sila">różnica siły</span> jest mniejsza niż w tabeli, gra jest równa: zapisujecie 1 ruch i −6,5 jeńca, czyli Biały dostaje 6 jeńców i wygrywa remisy, a kolory rozstrzyga nigiri.</strong>
-          Mniejsza niż pierwsza kratka znaczy, że nie ma jeszcze czego dawać: Czarny zaczyna jednym ruchem, a minus przy jeńcach mówi, że tym razem oddaje on.
-          Połówki nie ma czym odłożyć, więc rozstrzyga sam remis — i stąd komi 6,5, znane z każdej innej odmiany go.
+          <p class="zasada" id="zasada-3"><strong>Jeżeli <span class="sila">różnica siły</span> jest mniejsza niż pierwsza kratka tabeli, gra jest równa: kolory rozstrzyga nigiri, a zapisujecie 1 ruch i −6,5 jeńca — minus, bo to Biały dostaje 6 jeńców i wygrywa remisy.</strong>
+          Mniejsza niż pierwsza kratka znaczy, że nie ma jeszcze czego dawać — tym razem to Czarny oddaje.
+          Połówki nie ma czym odłożyć, więc rozstrzyga sam remis: stąd znajome komi 6,5.
           Nigiri: jeden gracz bierze w dłoń garść białych kamieni, drugi kładzie jeden czarny (zgaduje: nieparzysta) albo dwa czarne (parzysta); jeśli zgadł, gra Czarnymi.</p>
 
-          <p class="zasada-cd">W drugą stronę tabela się nie kończy, tylko przedłuża.
-          Gdy różnica wychodzi poza ostatni wiersz, odejmujcie tyle, ile dzieli w niej sąsiednie wiersze — <span class="sila">6½</span> na 9×9, <span class="sila">2½</span> na 13×13, <span class="sila">1</span> na 19×19 — aż wynik w niej wyląduje; potem doczytajcie ruchy i jeńców, a do ruchów dodajcie tyle, ile razy odejmowaliście.
-          To ta sama arytmetyka, którą robi sama tabela: każdy następny wiersz daje Czarnemu jeden ruch więcej — wy tylko przedłużacie ją w dół.</p>
+          <p class="zasada-cd">Poza ostatnim wierszem tabela się nie kończy, tylko przedłuża: odejmujcie tyle, ile dzieli w niej sąsiednie wiersze — <span class="sila">6½</span> na 9×9, <span class="sila">2½</span> na 13×13, <span class="sila">1</span> na 19×19 — aż wynik w niej wyląduje; potem doczytajcie ruchy i jeńców, a do ruchów dodajcie tyle, ile razy odejmowaliście.
+          To ta sama arytmetyka, co w tabeli: każdy następny wiersz daje Czarnemu jeden ruch więcej.</p>
         </section>
 
         <section id="wynik">
@@ -295,39 +297,38 @@
           <p>Gra się skończyła, liczycie punkty — razem z jeńcami — i zapisujecie wynik na obu kartach.</p>
 
           <p class="zasada" id="zasada-4"><strong>Wynik wpisujecie w punktach ze znakiem: + u zwycięzcy, − u przegranego, remis jako 0; po poddaniu <span class="razem">+R i −R</span>.</strong>
-          Wygrana o 15 punktów to <span class="kol">wynik</span> +15 u jednego gracza i −15 u drugiego.
           Poddanej gry nie ma jak policzyć, a litera wystarczy: do <a href="#zmiana-sily">zmiany siły</a> poddanie liczy się jak wyraźna wygrana.</p>
 
           <p class="zasada" id="zasada-5"><strong>Ta sama gra stoi na dwóch kartach: <span class="sila">różnica siły</span> jednakowa, wynik z przeciwnymi znakami.</strong>
-          Dwa zapisy tej samej gry pilnują się nawzajem: jeśli do siebie nie pasują, ktoś się pomylił.
+          Dwa zapisy tej samej gry pilnują się nawzajem: jeśli do siebie nie pasują, ktoś się pomylił. Wyjątek jest jeden: <a href="#zasada-9">grę kalibracyjną</a> przeciwnik może pominąć, bo nic mu ona nie zmienia.
           Porównajcie je jeszcze przy stoliku — na następnym spotkaniu nikt już nie odtworzy, jak było naprawdę.</p>
         </section>
 
         <section id="zmiana-sily">
           <h3>Zmiana siły</h3>
-          <p>Na koniec każdy liczy swoją nową <span class="sila">siłę</span>: najpierw <span class="kol">zmiana siły</span>, potem <span class="kol">nowa siła</span>.</p>
+          <p>Na koniec każdy liczy swoją nową <span class="sila">siłę</span>.</p>
 
-          <p class="zasada" id="zasada-6"><strong>Zwycięzca <span class="sila">+½</span>, przegrany <span class="sila">−½</span>, remis 0 — w grze równej remisu nie ma, bo wyklucza go połówka komi.</strong>
+          <p class="zasada" id="zasada-6"><strong>Zwycięzca <span class="sila">+½</span>, przegrany <span class="sila">−½</span>, remis <span class="sila">0</span> — w grze równej remisu nie ma, bo wyklucza go połówka komi.</strong>
           <span class="kol">Nowa siła</span> to <span class="kol">moja siła</span> plus <span class="kol">zmiana siły</span> — i od niej zaczyna się następny wiersz karty.
           Typowa zmiana po grze to pół: dwie wygrane z rzędu dają <span class="sila">1</span>.
           Remis, a z nim zerowa zmiana, trafia się więc tylko po <a href="#zasada-2">grze z wyrównaniem</a>, gdzie jeńcy idą w całych sztukach.</p>
 
           <p class="zasada" id="zasada-7"><strong>Wygrana o 20 punktów lub więcej albo przez poddanie daje zwycięzcy <span class="sila">+1</span>; przegrany traci <span class="sila">½</span> jak zawsze.</strong>
           Dwadzieścia punktów to przewaga większa niż darmowy ruch — wygrana na tyle wyraźna, że starczyłoby jej nawet o ruch mniej.
-          Poddanie liczy się tak samo, bo gry poddanej nie ma jak policzyć, a kto się poddaje, ten zwykle przegrywa wyraźnie.
-          Nagradza się przewagę zwycięzcy, a nie karze podwójnie tego, kto ją przyjął: przegranemu jedna gra nigdy nie zabiera więcej niż pół.</p>
+          Poddanie też, bo kto się poddaje, ten zwykle przegrywa wyraźnie.
+          Nagradza się przewagę zwycięzcy, a nie karze podwójnie tego, kto ją przyjął: przegranemu zwyczajna gra nie zabiera więcej niż pół — podwójnie liczy się tylko <a href="#kalibracja">kalibracja</a>.</p>
         </section>
 
         <section id="korekta">
           <h3>Szybka korekta</h3>
-          <p>Ranking nadąża za graczem po jednej grze na raz, a to czasem za wolno — kto wygrywa albo przegrywa zbyt wiele gier z rzędu, siedzi na <span class="sila">sile</span>, która już nic o nim nie mówi.</p>
+          <p>Ranking nadąża za graczem po jednej grze na raz, a to czasem za wolno — bywa, że gracz siedzi na <span class="sila">sile</span>, która już nic o nim nie mówi.</p>
 
-          <p class="zasada" id="zasada-8"><strong>Szybką korektę <span class="sila">siły</span> przyznaje najsilniejszy gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce <span class="kol">moja siła</span> następnej gry.</strong>
-          To jedyna liczba w całym rankingu, która bierze się z decyzji, a nie z rachunku — dlatego ma jednego właściciela: najsilniejszego gracza w klubie.
-          Poprosić może każdy, w każdej chwili; zwykle kończy się to szybkim awansem w górę, rzadziej cofnięciem w dół.</p>
+          <p class="zasada" id="zasada-8"><strong>Szybką korektę <span class="sila">siły</span> przyznaje silny gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce <span class="kol">moja siła</span> w następnej grze.</strong>
+          To jedyna liczba w całym rankingu, która bierze się z decyzji, a nie z rachunku — dlatego nie przyznaje jej sobie sam zainteresowany.
+          Poprosić może każdy i w każdej chwili — zwłaszcza po serii wygranych albo serii porażek, albo po dłuższej nieobecności; zwykle kończy się to szybkim awansem w górę, rzadziej cofnięciem w dół.</p>
 
-          <p class="zasada-cd">Wykrzyknik stoi w rubryce <span class="kol">moja siła</span>, a nie w osobnym wierszu, bo dokładnie tam widać korektę: normalnie <span class="kol">moja siła</span> nowej gry to <span class="kol">nowa siła</span> z gry poprzedniej, a jedyne miejsce, gdzie ten łańcuch się urywa, to korekta.
-          Żaden wiersz nie przepada na tym, że nie było gry, a przy przeglądaniu karty od razu widać, że nagły skok <span class="sila">siły</span> nie wziął się ze zwycięstw.
+          <p class="zasada-cd">Wykrzyknik stoi w rubryce <span class="kol">moja siła</span>, bo dokładnie tam widać korektę: to jedyne miejsce, w którym łańcuch z poprzedniego wiersza się urywa.
+          Przy przeglądaniu karty od razu widać, że nagły skok <span class="sila">siły</span> nie wziął się ze zwycięstw.
           Korekt pod rząd może być kilka — każda dostaje swój wykrzyknik — i nic nie stoi na przeszkodzie, żeby trafiły się w środku <a href="#kalibracja">kalibracji</a>, bo wykrzyknik nie zajmuje tamtej rubryki.</p>
 
           <p class="zasada-cd">Zamiast ruszać <span class="sila">siłę</span> ręcznie można też przepuścić gracza przez <a href="#kalibracja">kalibrację</a> jeszcze raz — trzy gry, dokładnie jak przy wejściu do klubu.
@@ -335,57 +336,51 @@
           W tym drugim wypadku przerwa musi być liczona raczej w półroczach niż w tygodniach.</p>
         </section>
 
-        <section id="glowna-plansza">
-          <h3>Główna plansza</h3>
-          <p>Karta jest jedna na planszę i ta plansza jest waszą główną — ale nikt nie każe wam grać wyłącznie na niej.</p>
+        <section id="rozmiar-planszy">
+          <h3>Rozmiar planszy</h3>
+          <p>Karta jest jedna na rozmiar planszy: 9×9, 13×13 i 19×19 to trzy niezależne rankingi i trzy osobne karty, więc kto gra na wszystkich trzech, ma trzy karty. Kto chce, żeby gry na drugim rozmiarze zaczęły się liczyć, zakłada sobie na niego kartę i przechodzi <a href="#kalibracja">kalibrację</a>.</p>
 
-          <p class="zasada" id="zasada-9"><strong><span class="sila">Siła</span> zmienia się tylko po grach na waszej głównej planszy; na każdej innej gracie swoją <span class="sila">siłą</span>, ale wasz ranking stoi w miejscu, a w kolumnie <span class="kol">typ gry</span> wpisujecie rozmiar tej planszy.</strong>
-          Wyrównanie bierzecie z tabeli tej planszy, przy której siedzicie — <span class="sila">różnica siły</span> znaczy wszędzie to samo, zmienia się tylko to, ile jest warta w punktach.
-          Zdanie mówi o jednym graczu, więc czyta się je osobno z każdej karty: jeśli plansza jest główna dla przeciwnika, a dla was nie, jemu <span class="sila">siła</span> zmienia się normalnie, a wam wcale. Jeśli jest cudza dla obojga — nie zmienia się nikomu.</p>
+          <p>Gra liczy się wtedy, gdy oboje macie kartę na ten rozmiar. Jeśli któreś z was nie ma, partia jest towarzyska: nie idzie na żadną kartę i nie rusza niczyjej <span class="sila">siły</span>. Nie ma tu rubryki do wypełnienia i nie ma czego porównywać — dlatego w <span class="kol">typie gry</span> nie zapisuje się rozmiaru planszy.</p>
 
-          <p class="zasada-cd">Grę zapisujecie oboje, tak jak każdą inną: bez waszego wiersza gra przeciwnika nie miałaby pary i audyt dwóch kart by się rozjechał.
-          W <span class="kol">zmianie siły</span> stoi wtedy 0, a rozmiar planszy w <span class="kol">typie gry</span> jest po to, żeby to zero dało się po roku odróżnić od remisu i od pomyłki.</p>
-
-          <p class="zasada-cd">Po co w ogóle taka gra: ranking jednej planszy nie ma jak ocenić gry na innej, ale wyrównanie ma — i to wystarczy, żeby usiąść do sensownej partii z kimkolwiek, kto akurat jest wolny.
-          Kto chce, żeby gry na drugiej planszy zaczęły się liczyć, zakłada sobie na nią osobną kartę i przechodzi <a href="#kalibracja">kalibrację</a>.</p>
+          <p>Wyrównanie do takiej partii możecie policzyć z tego, co macie: z tabeli rozmiaru, przy którym siedzicie, i z <span class="sila">sił</span> ze swoich kart. Coś to mówi — kto gra lepiej na 19×19, zwykle gra lepiej i na 9×9, więc gra wychodzi bliżej wyrównanej niż z niczego. Wartość jest jednak ograniczona: mała plansza nagradza co innego niż duża i kolejność graczy potrafi się na niej przestawić.</p>
         </section>
 
         <section id="kalibracja">
           <h3>Kalibracja nowego gracza</h3>
-          <p>Nowy gracz musi skądś wziąć swoją pierwszą <span class="sila">siłę</span> — i nikt nie musi trafnie ocenić, ile jest wart.
-          Wystarczy strzelić, a trzy pierwsze gry same sprowadzą tę liczbę tam, gdzie trzeba.
+          <p>Nowy gracz musi skądś wziąć swoją pierwszą <span class="sila">siłę</span>.
+          Wystarczy ją zgadnąć — trzy pierwsze gry same sprowadzą tę liczbę tam, gdzie trzeba.
           Dlatego do kalibracji nie jest potrzebny nauczyciel: rachunek robi to za was.</p>
 
-          <p class="zasada" id="zasada-10"><strong>W trzech pierwszych grach nowego gracza w kolumnie <span class="kol">typ gry</span> stoi K u niego i P u jego przeciwnika; w zwyczajnej grze — myślnik.</strong>
-          To ostatnia rubryka wypełniana przed pierwszym ruchem, a w zdecydowanej większości gier wpada w nią myślnik: kalibracja dotyczy tylko trzech pierwszych gier kogoś zupełnie nowego.
+          <p class="zasada" id="zasada-9"><strong>W trzech pierwszych grach nowego gracza w kolumnie <span class="kol">typ gry</span> stoi u niego K, a jego przeciwnik wpisuje P albo pomija tę grę, bo nic mu ona nie zmienia; w zwyczajnej grze oboje stawiają myślnik.</strong>
+          To ostatnia rubryka wypełniana przed pierwszym ruchem.
           Trzy K na karcie i koniec — widać z niej wprost, ile gier kalibracyjnych zostało, a dalej gracz jest skalibrowany i obowiązują go zwykłe zasady.
-          To jedyny wpis stawiany na obu kartach inaczej — K u kalibrowanego, P u jego przeciwnika — i przy porównaniu kart jedno musi stać naprzeciw drugiego.</p>
+          Jeśli przeciwnik grę zapisze, jego P stoi naprzeciw K i tak się je czyta przy porównaniu kart; jeśli nie zapisze, nie ma czego porównywać — to jedyny wpis na karcie, który może nie mieć pary.</p>
 
-          <p class="zasada" id="zasada-11"><strong>W grze kalibracyjnej nowy gracz dostaje <span class="sila">±1</span>, a po wyraźnej wygranej lub przegranej <span class="sila">±2</span>; przeciwnik przy P nie zmienia swojej <span class="sila">siły</span>.</strong>
+          <p class="zasada" id="zasada-10"><strong>W grze kalibracyjnej nowy gracz dostaje <span class="sila">±1</span>, a po wyraźnej wygranej lub przegranej <span class="sila">±2</span>; przeciwnik przy P nie zmienia swojej <span class="sila">siły</span>.</strong>
           To dwa razy tyle, co w zwykłej grze — i w obie strony tak samo, bo strzelona liczba może być za wysoka równie dobrze jak za niska.
           Przeciwnik nie zmienia nic, bo taka gra nic o nim nie mówi: wyrównanie liczyło się z <span class="sila">siły</span>, która dopiero jest zgadywana, więc ani wygrana, ani przegrana w niej niczego o jego własnej nie dowodzi.
-          Cała informacja z takiej gry idzie do nowego gracza — i dlatego idzie do niego podwójnie.</p>
+</p>
 
-          <p class="zasada-cd">Zacznijcie od wartości wstępnej i strzelajcie z grubsza: ta liczba ma tylko nie dopuścić do pogromu w pierwszej grze.
+          <p class="zasada-cd">Dobierzcie do tych gier <strong>dwóch albo trzech różnych</strong> przeciwników, możliwie <strong>najbliższych siłą</strong> — blisko dobrany przeciwnik to małe wyrównanie, a małe wyrównanie to najmniej zgadywania w całym rachunku.</p>
+
+          <p class="zasada-cd">Ta liczba ma tylko nie dopuścić do pogromu w pierwszej grze, więc strzelajcie z grubsza.
           Zupełnie początkującemu dajcie <span class="sila">siłę</span> z przedziału <span class="sila">5–15</span> — dzieci bliżej dolnej granicy, dorośli bliżej górnej.
-          Kto zna swój poziom w kyu albo dan, startuje z tabeli: skala jest jedna dla wszystkich plansz, bo jeden stopień kyu to dokładnie <span class="sila">1</span>, a <span class="sila">0</span> wypada na 50 kyu, czyli poniżej pierwszej rozegranej partii. Różni je dopiero to, ile ta jedynka warta jest w punktach: 2 na 9×9, 5 na 13×13, 13 na 19×19.</p>
+          Kto zna swój poziom w kyu albo dan, startuje z tabeli: skala jest jedna dla wszystkich plansz, bo jeden stopień kyu to dokładnie <span class="sila">1</span>, a <span class="sila">0</span> wypada na 50 kyu, czyli poniżej kogoś, kto właśnie poznał zasady. Różni je dopiero to, ile ta jedynka warta jest w punktach na każdej z plansz.</p>
 
-          <table class="sila zasada-cd">
-            <tr><th>Poziom</th><th>Siła</th></tr>
-            <tr><td>50 kyu</td><td>0</td></tr>
-            <tr><td>40 kyu</td><td>10</td></tr>
-            <tr><td>30 kyu</td><td>20</td></tr>
-            <tr><td>20 kyu</td><td>30</td></tr>
-            <tr><td>10 kyu</td><td>40</td></tr>
-            <tr><td>1 dan</td><td>50</td></tr>
+          <table class="sila poziomy zasada-cd">
+            <tr><th>Poziom</th><td>50 kyu</td><td>40 kyu</td><td>30 kyu</td><td>20 kyu</td><td>10 kyu</td><td>1 dan</td></tr>
+            <tr><th>Siła</th><td>0</td><td>10</td><td>20</td><td>30</td><td>40</td><td>50</td></tr>
           </table>
+
+          <p class="zasada-cd">Tabela mówi, ile <span class="sila">siła</span> wynosi w skali kyu — ale wasz klub zdążył już od niej <a href="#inflacja">odjechać</a>, więc najpierw sprawdźcie o ile.
+          Weźcie kilkoro graczy, którzy mają oficjalny stopień z polskiego rankingu, i porównajcie ich <span class="sila">siłę</span> z tym, co tabela daje dla tego stopnia.
+          Jeśli w klubie wychodzą typowo o <span class="sila">6</span> wyżej, nowemu graczowi też dopiszcie <span class="sila">6</span> — inaczej wejdzie na poziom, z którego wszyscy już odeszli.</p>
 
           <p class="zasada-cd">Startową <span class="sila">siłę</span> da się też przenieść z planszy, na której gracz już jest skalibrowany — jedynka znaczy wszędzie to samo, więc nic się nie przelicza — ale siła na różnych planszach nie musi iść w parze.</p>
 
-          <p class="zasada-cd">Potem nowy gracz gra trzy razy zwyczajnie, z wyrównaniem z aktualnej <span class="sila">siły</span>.
+          <p class="zasada-cd">Same gry kalibracyjne idą zwyczajnie, z wyrównaniem z aktualnej <span class="sila">siły</span>.
           Poprawkę nanoście od razu, bo następna gra ma mieć wyrównanie liczone już z nowej <span class="sila">siły</span> — trzy gry kalibracyjne ważą tyle, co sześć zwykłych, a przy wyraźnych wynikach nawet tyle, co dwanaście.</p>
 
-          <p class="zasada-cd">Dobierzcie do nich dwóch albo trzech różnych przeciwników, możliwie najbliższych siłą — blisko dobrany przeciwnik to małe wyrównanie, a małe wyrównanie to najmniej zgadywania w całym rachunku.</p>
 
         </section>
 
@@ -407,8 +402,8 @@
         <p><strong>Ranking przesuwa charakter gier z towarzyskich w stronę rywalizacji.</strong>
         Klub bez rankingu to miłe spotkanie, po którym wynik gry zapomina się w godzinę.
         Nad grą, która się liczy, myśli się inaczej niż nad grą do zapomnienia, i właśnie stąd bierze się wzrost siły.
-        Punkty dają grze ciąg dalszy — następnym razem chce się wypaść lepiej niż dziś.
-        Dla zaskakująco wielu osób samo zbieranie punktów wystarcza, żeby przyjść na kolejne spotkanie — i żeby między spotkaniami popracować nad swoją grą.</p>
+        Rosnąca <span class="sila">siła</span> daje grze ciąg dalszy — następnym razem chce się wypaść lepiej niż dziś.
+        Dla zaskakująco wielu osób samo zbieranie <span class="sila">siły</span> wystarcza, żeby przyjść na kolejne spotkanie — i żeby między spotkaniami popracować nad swoją grą.</p>
         <p><strong>Wyrównanie sprawia, że nie ma gier bez sensu.</strong>
         Silniejszy nie miażdży, słabszy nie jest bez szans — obie strony grają o wynik do ostatniego ruchu.
         W klubie, w którym przy jednym stoliku siada 20 kyu z 2 danem, to jest warunek tego, żeby obaj chcieli przyjść znowu.</p>
@@ -416,7 +411,7 @@
         Przy wyrównaniu „przegrałem o 3” znaczy „byłem blisko” — to konkretny feedback, a nie zero-jedynkowa porażka.
         A ponieważ jedna gra to <span class="sila">±½</span> albo <span class="sila">±1</span>, zły dzień nic nie kosztuje: nie ma czego bronić i nie ma powodu unikać silniejszych.</p>
         <p><strong>Do gry równej wchodzi się wcześniej, niż się rywala naprawdę dogoni.</strong>
-        Wystarczy zbliżyć się na mniej niż komi, czyli poniżej różnicy <span class="sila">3</span>.
+        Wystarczy zbliżyć się na mniej niż komi — na 9×9 poniżej różnicy <span class="sila">3</span>, na większych planszach jeszcze bliżej.
         Ten próg jest widocznym kamieniem milowym: rywal, którego słabszy gracz od miesięcy próbuje złapać, siada z nim wreszcie do gry bez wyrównania.
         Widać to na karcie i warto ogłosić.</p>
 
@@ -436,6 +431,10 @@
         Żadna wersja online nie jest do tego potrzebna.</p>
 
         <h3 id="dlaczego-tak">Dlaczego akurat tak</h3>
+        <p><strong>Ranking nie musi być dokładny.</strong>
+        To, że <span class="sila">siła</span> skacze szybko, jest w porządku — wierne odwzorowanie siły gracza nie jest tu celem.
+        Istotne jest, żeby dało się zbierać <span class="sila">siłę</span>.</p>
+
         <p><strong>Kamień to gruby krok, punkt to drobny.</strong>
         Na 19×19 różnica <span class="sila">1</span> warta jest 13 punktów, a drabinka kamieni takiego szczebla nie ma.
         Gra bez komi daje Czarnemu 6,5 punktu — połowę tego, więc przy różnicy <span class="sila">1</span> Biały nadal wygrywa częściej.
@@ -453,18 +452,17 @@
         Komi, czyli cena pierwszego ruchu, to 6 jeńców i wygrana przy równym wyniku — razem 6,5, a darmowy ruch jest wart dwa razy tyle.
         Te <span class="sila">13</span> punktów, z których wyrasta cała tabela wyrównania, potwierdzają eksperymenty z KataGo — liczba okazuje się zaskakująco stabilna.
         Można podnieść zarzut, że początkujący nie wykorzysta darmowego ruchu tak dobrze jak KataGo — ale ten sam zarzut stosuje się symetrycznie do obu stron, czarnej i białej.
-        W praktyce trzynastka sprawdza się u nas dobrze.</p>
+        W praktyce trzynastka sprawdza się u nas dobrze.
+        Nasza tabela nie jest przy tym kopią żadnej z gotowych — te zresztą różnią się i między sobą — ale trzyma się ich rozrzutu.
+        Przepisaliśmy co do liczby cztery: British Go Association (<a href="https://www.britgo.org/handbook/hcap_9x9.pdf">9×9</a>, <a href="https://www.britgo.org/handbook/hcap_13x13.pdf">13×13</a>),
+        Letnią Szkołę Go (<a href="https://lsg.go.art.pl/public/handi/handi-9.pdf">9×9</a>, <a href="https://lsg.go.art.pl/public/handi/handi-13.pdf">13×13</a>)
+        oraz tabele <a href="https://senseis.xmp.net/?HandicapForSmallerBoardSizes">Ishikury Noboru i Tima Hunta</a> zebrane na Sensei's Library.
+        Na 9×9 dają od 1,5 do 3 punktów na <span class="sila">1</span> różnicy — trzy z czterech trafiają w 2 — a na 13×13 rozchodzą się między 4 a 5,5.
+        Wzięliśmy 2 i 5; czym jeszcze nasza się od nich różni, niżej.</p>
         <p><strong>Wyrównanie idzie zawsze w jedną stronę.</strong>
-        Jest wariantem tego, które znamy z Letniej Szkoły Go, z dwiema zmianami.
+        Jest wariantem rozwiązania znanego dziś z wielu turniejów na małych planszach, z dwiema zmianami.
         Biały nigdy nie dokłada kamieni, a Czarny dostaje wyrównanie zawsze w obu postaciach naraz: ruchy na planszy plus jeńcy.
-        Różnica warta mniej niż komi — na 9×9 poniżej <span class="sila">3</span> — jest po prostu grą równą.</p>
-        <p><strong>Nawet skrajne wyrównanie na 9×9 daje sensowną grę.</strong>
-        Przy dużej różnicy sił Czarny dostaje na małej planszy kilka ruchów na start i kilkunastu jeńców naraz — wygląda to jak przepis na farsę.
-        A jednak działa: gry wychodzą wyrównane i obie strony grają serio do końca.
-        Sami byliśmy tym zaskoczeni.</p>
-        <p><strong>Ranking nie musi być dokładny.</strong>
-        To, że <span class="sila">siła</span> skacze szybko, jest w porządku — wierne odwzorowanie siły gracza nie jest tu celem.
-        Istotne jest, żeby dało się zbierać punkty.</p>
+        Różnica warta mniej niż komi jest po prostu grą równą.</p>
         <p><strong>Ranking porusza się wszędzie tak samo szybko.</strong>
         Dwie wygrane to <span class="sila">1</span>, na każdej planszy jednakowo — jedna gra waży tyle samo na 9×9, co na 19×19.
         Tempo jest szybkie i celowo takie: gracz widzi ruch po jednym wieczorze zamiast po miesiącach, a karta nadąża za postępem, zamiast go gonić.
@@ -477,9 +475,16 @@
         Procedura stoi wyżej, w sekcji <a href="#kalibracja">Kalibracja nowego gracza</a>.</p>
         <p><strong>Wszystko opiera się na zaufaniu — ale karta ma wbudowany audyt.</strong>
         Wyniku nie weryfikuje nikt poza dwójką graczy przy stoliku, a dzieci bywają pomysłowe.
-        Tyle że każda gra jest zapisana na dwóch kartach: <span class="kol">różnica siły</span> musi być na obu ta sama, a <span class="kol">wynik</span> — ten sam co do liczby, przeciwny co do znaku.
+        Tyle że niemal każda gra jest zapisana na dwóch kartach: <span class="kol">różnica siły</span> musi być na obu ta sama, a <span class="kol">wynik</span> — ten sam co do liczby, przeciwny co do znaku.
         Do tego kolumny <span class="kol">moja siła</span> i <span class="kol">nowa siła</span> tworzą łańcuch, w którym każdy wiersz zaczyna się tam, gdzie skończył poprzedni.
         Zmyślony wpis nie spina się ani z kartą przeciwnika, ani z własnym łańcuchem.</p>
+        <p id="inflacja"><strong>Siła w klubie powoli rośnie.</strong>
+        To po części cena tego, że <a href="#dlaczego-tak">siłę da się zbierać</a>.
+        Wyraźna wygrana daje zwycięzcy <span class="sila">1</span>, a przegranemu zabiera <span class="sila">½</span> — po każdej takiej grze w klubie przybywa pół.
+        <a href="#kalibracja">Gry kalibracyjne</a> działają równie jednostronnie: nowy gracz się rusza, jego przeciwnik nie.
+        Wewnątrz jednego wieczoru nic to nie psuje, bo wyrównanie bierze się z różnicy dwóch liczb z tego samego klubu — ale liczby z różnych lat przestają znaczyć to samo, a kto gra rzadko, ten z czasem zostaje pod rozdmuchaną resztą i dostaje większe wyrównanie, niż powinien.
+        Na wspólny dryf lekarstwem jest ta sama arytmetyka, co przy klikach: odjęcie wszystkim tej samej liczby nie zmienia ani jednego wyrównania. Na pojedynczego gracza, który został w tyle — <a href="#korekta">szybka korekta</a>.</p>
+
         <p><strong>Kliki dryfują.</strong>
         Grupa, która gra głównie ze sobą — inny klub, ale tak samo mała paczka wewnątrz jednego klubu — z czasem odjeżdża reszcie: jej <span class="sila">siła</span> jest spójna wewnętrznie, ale nieporównywalna na zewnątrz.
         Naprawa jest prosta, bo dodanie albo odjęcie tej samej stałej wszystkim w grupie nie zmienia ani jednego wyrównania wewnątrz niej.

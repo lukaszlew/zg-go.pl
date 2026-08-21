@@ -16,7 +16,7 @@ from .tabela import Arytmetyka, Tabela, UWAGA_KOMI, sprawdz
 
 NAZWA = "hunt"
 
-# TODO: potwierdzic adres — tabele przyszly jako tekst, a nie ze strony.
+# Adres sprawdzony: na tej stronie stoi sekcja "Second possibility (Tim Hunt)".
 _STRONA = "https://senseis.xmp.net/?HandicapForSmallerBoardSizes"
 
 ZRODLA: dict[str, str] = {"9x9": _STRONA, "13x13": _STRONA}

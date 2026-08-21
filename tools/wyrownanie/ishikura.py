@@ -19,7 +19,7 @@ from .tabela import Arytmetyka, Tabela, UWAGA_KOMI, sprawdz
 
 NAZWA = "ishikura"
 
-# TODO: potwierdzic adres — tabele przyszly jako tekst, a nie ze strony.
+# Adres sprawdzony: na tej stronie stoi akapit "Around 1985... Igo Kurabu... Ishikura Noboru".
 _STRONA = "https://senseis.xmp.net/?HandicapForSmallerBoardSizes"
 
 ZRODLA: dict[str, str] = {"9x9": _STRONA, "13x13": _STRONA}

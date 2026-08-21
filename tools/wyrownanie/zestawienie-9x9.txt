@@ -1,6 +1,6 @@
 Wyrownanie na planszy 9x9 — 5 zrodel obok siebie.
 
-"ruchy" to liczba pierwszych ruchow z rzedu Czarnego: 1 to gra rowna, 2 to jeden
+"ruchy" to liczba startowych ruchow z rzedu Czarnego: 1 to gra rowna, 2 to jeden
 ruch darmowy, i tak dalej. Zrodla licza kamienie roznie — jedne pisza gre rowna
 jako 0 kamieni, inne jako 1 — wiec tutaj sa sprowadzone do jednej miary i kolumny
 znacza to samo. Komi stoi tak, jak w zrodle: dodatnie idzie do Bialego, ujemne do

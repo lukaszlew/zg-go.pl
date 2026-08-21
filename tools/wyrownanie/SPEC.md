@@ -137,8 +137,6 @@ zasięg różnicy; to jest w porządku i nie ma czego wyrównywać.
 
 ## Otwarte
 
-- Adres źródłowy tabel Ishikury i Hunta jest zgadnięty (Sensei's Library) i oznaczony
-  w obu modułach jako `TODO`. Przyszły z wklejki, nie ze strony.
 - `tabela-zg.html` pokazuje wszystkie trzy naraz; jest materiałem roboczym do oglądania
   i porównywania, nie źródłem dla strony.
 

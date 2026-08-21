@@ -9,6 +9,7 @@ Wymaga: reportlab, czcionki DejaVu (pakiet fonts-dejavu).
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -18,7 +19,6 @@ from reportlab.graphics.shapes import Drawing
 from reportlab.lib.colors import HexColor
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
-from reportlab.lib.utils import simpleSplit
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
@@ -37,6 +37,9 @@ HEADER_BG = HexColor("#d9c896")         # --rule ze style.css
 # Brzegi siatek wyrownania: na stronie to --rule zmieszane w 45% z tlem, wiec i tu
 # ta sama, jasniejsza wersja — pelna sila przygniatala liczby.
 BRZEG_BG = HexColor("#eee6d0")
+# Podpis rogu ("↓ ruchy", "← jency"): na stronie --fg z opacity 0.7 na tle brzegu,
+# czyli dokladnie ten kolor. Drobniej i bledziej niz liczby, bo to podpis.
+ROG_TEKST = HexColor("#585449")
 KOLOR_SILY = HexColor("#2e7d32")        # --kolor-sily ze style.css
 # tlo rubryki "wynik": ten sam zloty co naglowek, rozcienczony do 45% na bialym.
 # Na drukarce czarno-bialej zostaje z tego okolo 10% szarosci — rubryka dalej
@@ -50,15 +53,15 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "21.08.2026z"                   # stopka karty; podbij przy zmianie zasad/ukladu
+WERSJA = "22.08.2026j"                   # stopka karty; podbij przy zmianie zasad/ukladu
 
 # Obcy klub: jedyne, co jest w karcie lokalne, to nazwa w naglowku (draw_title)
 # i adres w stopce oraz w kodzie QR (draw_sciaga). Gdy zglosi sie pierwszy klub,
 # wyciagnac te trzy napisy do parametru wiersza polecen zamiast kopiowac plik.
 ROWS = 20                               # trzy siatki wyrownania i 11 zasad w sciadze kosztuja reszte strony
-# 7,8 mm zamiast 8: jedenasta zasada wypchnela stopke poza strone, a wiersz nizszy
-# o 0,2 mm dalej z zapasem miesci odreczny wpis (Caveat 14 pt to okolo 4,9 mm).
-ROW_H = 7.8 * mm
+# 7,7 mm zamiast 8: jedenasta zasada wypchnela stopke poza strone, a wiersz nizszy
+# o 0,3 mm dalej z zapasem miesci odreczny wpis (Caveat 14 pt to okolo 4,9 mm).
+ROW_H = 7.7 * mm
 HEAD_H = 13 * mm
 NICK_MAX = 40 * mm                      # nick nie zabiera calej reszty szerokosci
 HEAD_FS = 6.0                           # naglowki kolumn (wersaliki)
@@ -79,10 +82,9 @@ COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     # więc nie ma czego mylić, a kolumna schodzi o jedno słowo węziej
     ("przeciwnik", [("nick", 0.0), ("siła", 8 * mm), ("różnica", 11 * mm)]),
     # "dla Czarnego" raz, w naglowku grupy — podkolumny zostaja krotkie
-    ("wyrównanie dla Czarnego", [("pierwsze\nruchy", 17 * mm), ("dodatkowi\njeńcy", 19 * mm)]),
-    # K u kalibrowanego, P u jego przeciwnika, rozmiar planszy przy grze poza
-    # wlasna glowna, w zwyklej grze myslnik; ostatnia rubryka wypelniana przed
-    # pierwszym ruchem, wiec zamyka srodkowa sekcje karty
+    ("wyrównanie dla Czarnego", [("startowe\nruchy", 17 * mm), ("dodatkowi\njeńcy", 19 * mm)]),
+    # K u kalibrowanego, P u jego przeciwnika, w zwyklej grze myslnik; ostatnia
+    # rubryka wypelniana przed pierwszym ruchem, wiec zamyka srodkowa sekcje karty
     ("typ gry", [("", 15 * mm)]),
     ("wynik", [("", 12 * mm)]),
     ("zmiana\nsiły", [("", 12 * mm)]),
@@ -110,9 +112,9 @@ class Wiersz:
     przeciwnik_nick: str
     sila_przeciwnika: str
     roznica: str
-    ruchy: str              # pierwsze ruchy Czarnego (1 = gra rowna)
+    ruchy: str              # startowe ruchy Czarnego (1 = gra rowna)
     jency: str              # dodatkowi jency dla Czarnego (liczba ujemna = dla Bialego)
-    typ_gry: str            # K, P, rozmiar planszy albo myslnik
+    typ_gry: str            # K, P albo myslnik
     wynik: str
     zmiana: str
     nowa_sila: str
@@ -129,6 +131,14 @@ class KartaDane:
 # Tytul kolumny sciagi dostaje kolor sily, gdy o niej mowi. Wersaliki, bo tak sie
 # je rysuje; formy odmienione, bo nazwy kolumn sa po polsku.
 SILA_W_NAZWIE = {"SIŁA", "SIŁY"}
+
+# Sciaga czyta sie kolorem: zielone niesie sile, pogrubione to pozostale liczby
+# (progi i wpisy w punktach). Slowo "sila" znaczy sile w kazdej kolumnie, ale
+# liczba juz nie — "20 punktow" to punkty, a "+1" to sila — wiec liczby zielenieja
+# tylko w tych kolumnach, w ktorych mowa o zmianie sily.
+SCIAGA_FS = 6
+SILA_SLOWA = {"siła", "siły", "siłę", "sile", "siłą"}
+SILA_KOLUMNY = {"zmiana siły", "typ gry"}
 
 # indeksy podkolumn (w kolejnosci COLUMNS) niosace sile — one, ich naglowki i
 # wpisy w nich ida kolorem sily
@@ -173,7 +183,7 @@ def draw_title(c: Canvas, x0: float, top: float, card_w: float) -> float:
 FIELD_H = 11 * mm
 
 # (etykieta rubryki, szerokosc) — nick dostaje reszte szerokosci karty
-POLE_PLANSZY = "GŁÓWNA PLANSZA (ZAKREŚL JEDNĄ)"
+POLE_PLANSZY = "ROZMIAR PLANSZY (ZAKREŚL JEDEN)"
 
 FIELDS: list[tuple[str, float]] = [
     ("NICK", 0.0),
@@ -458,9 +468,10 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
     wys = (len(ruchy) + 2) * WIERSZ_H
 
     # Brzeg z ruchami szarzeje tak samo jak dolny wiersz z jencami — obu czyta sie
-    # tak samo i oba maja odstawac od siatki.
+    # tak samo i oba maja odstawac od siatki. Tlo siega az pod gorna krawedz, bo
+    # rog "↓ ruchy" nalezy do tej kolumny, a nie do wiersza z nazwa planszy.
     c.setFillColor(BRZEG_BG)
-    c.rect(x + szer - BRZEG_W, top - wys + WIERSZ_H, BRZEG_W, wys - 2 * WIERSZ_H, stroke=0, fill=1)
+    c.rect(x + szer - BRZEG_W, top - wys + WIERSZ_H, BRZEG_W, wys - WIERSZ_H, stroke=0, fill=1)
 
     # Nazwa planszy jako plakietka: ciemne tlo obejmuje sam napis, a nie cala
     # szerokosc siatki. Belka na cala szerokosc przygniatala liczby pod soba.
@@ -476,7 +487,7 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
     )
     c.setFillColor(HexColor("#ffffff"))
     c.drawCentredString(x + len(jency) * KRATKA_W / 2, top - WIERSZ_H + 0.9 * mm, plansza)
-    c.setFillColor(MUTED)
+    c.setFillColor(ROG_TEKST)
     c.setFont(FONT, 4.4)
     c.drawCentredString(x + szer - BRZEG_W / 2, top - WIERSZ_H + 1.0 * mm, "↓ ruchy")
 
@@ -498,7 +509,7 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
         c.setFillColor(INK)
         c.setFont(FONT_BOLD, 5.4)
         c.drawCentredString(x + (kolumna + 0.5) * KRATKA_W, dol, str(j))
-    c.setFillColor(MUTED)
+    c.setFillColor(ROG_TEKST)
     c.setFont(FONT, 4.4)
     c.drawCentredString(x + szer - BRZEG_W / 2, dol, "← jeńcy")
 
@@ -513,9 +524,12 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
         c.line(x + kolumna * KRATKA_W, top - WIERSZ_H, x + kolumna * KRATKA_W, top - wys)
     # Brzegi oddziela kreska w kolorze --rule, ledwie grubsza od siatki — tak samo
     # jak na stronie: ma dzielic, a nie przecinac tabele na pol.
+    # Kreska pionowa idzie od samej gory, bo odcina takze rog "↓ ruchy" — ten
+    # nalezy do kolumny ruchow. Konczy sie nad wierszem jencow: dolny rog nalezy
+    # do niego i ta sama kreska odcielaby go od jego wlasnych liczb.
     c.setStrokeColor(HEADER_BG)
     c.setLineWidth(0.9)
-    c.line(x + szer - BRZEG_W, top - WIERSZ_H, x + szer - BRZEG_W, top - wys)
+    c.line(x + szer - BRZEG_W, top, x + szer - BRZEG_W, top - wys + WIERSZ_H)
     c.line(x, top - wys + WIERSZ_H, x + szer, top - wys + WIERSZ_H)
     c.setStrokeColor(INK)
     c.setLineWidth(0.7)
@@ -532,6 +546,57 @@ def draw_siatki(c: Canvas, x0: float, top: float, card_w: float) -> float:
         najnizej = min(najnizej, top - (len(sorted({r for _, r in siatka(plansza)})) + 2) * WIERSZ_H)
     assert x - SIATKA_GAP <= x0 + card_w, f"siatki nie miesza sie w szerokosc karty: {(x - SIATKA_GAP - x0) / mm:.1f} mm"
     return najnizej
+
+
+OGON = ".,;:—()„”"
+
+
+def _kawalki(slowo: str, kolumna: str) -> list[tuple[str, str, HexColor]]:
+    """Slowo rozbite na (tekst, czcionka, kolor).
+
+    Interpunkcja odpada na koniec zwykla i czarna: zielony srednik po "+1" albo
+    pogrubiony po "0" czytaja sie jak czesc liczby, a nia nie sa.
+    """
+    rdzen = slowo.rstrip(OGON)
+    ogon = slowo[len(rdzen):]
+    goly = rdzen.lstrip(OGON)
+    if goly.lower() in SILA_SLOWA:
+        styl = (FONT, KOLOR_SILY)
+    elif kolumna in SILA_KOLUMNY and ("½" in goly or goly == "0"
+                                      or re.fullmatch(r"[+−±]\d+", goly)):
+        styl = (FONT, KOLOR_SILY)
+    elif any(z.isdigit() for z in goly):
+        styl = (FONT_BOLD, INK)
+    else:
+        styl = (FONT, INK)
+    kawalki = [(rdzen, *styl)] if rdzen else []
+    return kawalki + ([(ogon, FONT, INK)] if ogon else [])
+
+
+def _lamanie(zasada: str, kolumna: str, szerokosc: float) -> list[list[tuple[str, str, HexColor]]]:
+    """Zasada polamana na linie slow (slowo, czcionka, kolor).
+
+    Wlasne lamanie zamiast simpleSplit, bo slowa roznia sie czcionka: pogrubiona
+    liczba jest szersza niz ta sama liczba zwykla i linia by sie przelewala.
+    """
+    spacja = pdfmetrics.stringWidth(" ", FONT, SCIAGA_FS)
+    linie: list[list[tuple[str, str, HexColor]]] = []
+    biezaca: list[tuple[str, str, HexColor]] = []
+    szer = 0.0
+    for slowo in zasada.split():
+        kawalki = _kawalki(slowo, kolumna)
+        w = sum(pdfmetrics.stringWidth(t, f, SCIAGA_FS) for t, f, _ in kawalki)
+        if biezaca and szer + spacja + w > szerokosc:
+            linie.append(biezaca)
+            biezaca, szer = [], 0.0
+        elif biezaca:
+            biezaca.append((" ", FONT, INK))
+            szer += spacja
+        biezaca.extend(kawalki)
+        szer += w
+    if biezaca:
+        linie.append(biezaca)
+    return linie
 
 
 def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
@@ -552,13 +617,16 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
         c.line(x, y0 - 1.6 * mm, x + col_w, y0 - 1.6 * mm)
         y = y0 - 5 * mm
         for zasada in items:
-            c.setFont(FONT_BOLD, 6)
+            c.setFont(FONT_BOLD, SCIAGA_FS)
             c.setFillColor(MUTED)
             c.drawString(x, y, "•")
-            c.setFont(FONT, 6)
-            c.setFillColor(INK)
-            for line in simpleSplit(zasada, FONT, 6, col_w - 4.2 * mm):
-                c.drawString(x + 4.2 * mm, y, line)
+            for linia in _lamanie(zasada, title, col_w - 4.2 * mm):
+                lx = x + 4.2 * mm
+                for tekst, font, kolor in linia:
+                    c.setFont(font, SCIAGA_FS)
+                    c.setFillColor(kolor)
+                    c.drawString(lx, y, tekst)
+                    lx += pdfmetrics.stringWidth(tekst, font, SCIAGA_FS)
                 y -= line_h
             y -= 0.7 * mm
         bottoms.append(y)

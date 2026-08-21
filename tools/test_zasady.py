@@ -20,8 +20,7 @@ STRONA = Path(__file__).resolve().parent.parent / "ranking.html"
 # Podsekcje "Rozwiniecia zasad", w kolejnosci ze strony; kazda zasada stoi w nich jako
 # <strong> na poczatku akapitu. Kolejnosc musi byc ta sama, co w zasady.KOLUMNY —
 # to ona, a nie numer, mowi ktora zasada jest ktora.
-ROZDZIALY_ZASAD = ("wyrownanie", "wynik", "zmiana-sily", "korekta",
-                   "glowna-plansza", "kalibracja")
+ROZDZIALY_ZASAD = ("wyrownanie", "wynik", "zmiana-sily", "korekta", "kalibracja")
 
 
 def tekst(html: str) -> str:
@@ -64,10 +63,16 @@ class TestZasady(unittest.TestCase):
         self.assertEqual(w_rozdzialach, cele, "rozwiniecia w kolejnosci spisu")
 
     def test_rozdzialy_maja_dokladnie_te_zasady(self) -> None:
+        """Naglowek zasady to <strong> otwierajacy <p class=zasada>, i tylko on.
+
+        Wzorzec siega az do <p>, zeby proza pod zasada mogla wyroznic slowo
+        <strong>-iem, nie udajac przy tym kolejnej zasady.
+        """
         naglowki = [
             tekst(m)
             for ident in ROZDZIALY_ZASAD
-            for m in re.findall(r"<strong>(.*?)</strong>", sekcja(self.html, ident), re.S)
+            for m in re.findall(r'<p class="zasada" id="[\w-]+"><strong>(.*?)</strong>',
+                                sekcja(self.html, ident), re.S)
         ]
         self.assertEqual(naglowki, self.zdania, "kolejnosc albo tresc zasad w rozdzialach")
 

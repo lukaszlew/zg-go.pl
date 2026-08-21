@@ -18,8 +18,8 @@ stoi. Roznica 1 znaczy tyle samo na kazdej planszy, ale w punktach gry wychodzi
 rozne: 2 na 9x9, 5 na 13x13, 13 na 19x19. Dlatego wyrownanie czyta sie z tabeli
 swojej planszy (tools/wyrownanie/), a nie z jednej dla wszystkich.
 
-Kolumna "typ gry" zbiera gry, ktore licza sie inaczej niz zwykla: kalibracyjne i
-te poza wlasna glowna plansza. Kazda z nich dotyczy tylko czesci stolika, wiec
+Kolumna "typ gry" zbiera gry, ktore licza sie inaczej niz zwykla — dzis tylko
+kalibracyjne. Dotycza czesci stolika i trzech pierwszych gier nowego gracza, wiec
 reszta moze przeczytac te kolumne raz i wiecej do niej nie wracac.
 
 Podzial na kolumny odpowiada kolejnosci wypelniania wiersza karty:
@@ -32,15 +32,14 @@ KOLUMNY: tuple[str, ...] = ("wyrównanie", "wynik", "zmiana siły", "typ gry")
 
 ZASADY: list[tuple[str, str]] = [
     ("wyrównanie", "Różnica siły to siła silniejszego minus siła słabszego; silniejszy gra Białymi."),
-    ("wyrównanie", "Ruchy Czarnego i dodatkowych jeńców, liczonych na koniec jak zbite w grze, odczytajcie z tabeli swojej planszy i przepiszcie na obie karty."),
-    ("wyrównanie", "Jeżeli różnica siły jest mniejsza niż w tabeli, gra jest równa: zapisujecie 1 ruch i −6,5 jeńca, czyli Biały dostaje 6 jeńców i wygrywa remisy, a kolory rozstrzyga nigiri."),
+    ("wyrównanie", "Startowe ruchy Czarnego i dodatkowych jeńców, liczonych na koniec jak zbite w grze, odczytajcie z tabeli swojej planszy i przepiszcie na obie karty."),
+    ("wyrównanie", "Jeżeli różnica siły jest mniejsza niż pierwsza kratka tabeli, gra jest równa: kolory rozstrzyga nigiri, a zapisujecie 1 ruch i −6,5 jeńca — minus, bo to Biały dostaje 6 jeńców i wygrywa remisy."),
     ("wynik", "Wynik wpisujecie w punktach ze znakiem: + u zwycięzcy, − u przegranego, remis jako 0; po poddaniu +R i −R."),
     ("wynik", "Ta sama gra stoi na dwóch kartach: różnica siły jednakowa, wynik z przeciwnymi znakami."),
     ("zmiana siły", "Zwycięzca +½, przegrany −½, remis 0 — w grze równej remisu nie ma, bo wyklucza go połówka komi."),
     ("zmiana siły", "Wygrana o 20 punktów lub więcej albo przez poddanie daje zwycięzcy +1; przegrany traci ½ jak zawsze."),
-    ("zmiana siły", "Szybką korektę siły przyznaje najsilniejszy gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce moja siła następnej gry."),
-    ("typ gry", "Siła zmienia się tylko po grach na waszej głównej planszy; na każdej innej gracie swoją siłą, ale wasz ranking stoi w miejscu, a w kolumnie typ gry wpisujecie rozmiar tej planszy."),
-    ("typ gry", "W trzech pierwszych grach nowego gracza w kolumnie typ gry stoi K u niego i P u jego przeciwnika; w zwyczajnej grze — myślnik."),
+    ("zmiana siły", "Szybką korektę siły przyznaje silny gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce moja siła w następnej grze."),
+    ("typ gry", "W trzech pierwszych grach nowego gracza w kolumnie typ gry stoi u niego K, a jego przeciwnik wpisuje P albo pomija tę grę, bo nic mu ona nie zmienia; w zwyczajnej grze oboje stawiają myślnik."),
     ("typ gry", "W grze kalibracyjnej nowy gracz dostaje ±1, a po wyraźnej wygranej lub przegranej ±2; przeciwnik przy P nie zmienia swojej siły."),
 ]
 

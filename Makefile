@@ -2,10 +2,10 @@
 # zmianach w tools/. `make help` wypisuje cele.
 # Wymaga: python3 + reportlab i Pillow, pdftocairo (poppler-utils), fonty DejaVu.
 
-all: karta.pdf karta-wycinek-czarek.svg  ## przegeneruj karte i karty przykladowe
+all: karta.pdf karta-wycinek-czarek.svg wyrownanie  ## przegeneruj karte, karty przykladowe i tabele wyrownania
 
 help:  ## wypisz dostepne cele
-	@awk -F':.*##' '/^[a-z-]+:.*##/ { printf "  make %-8s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+	@awk -F':.*##' '/^[a-z-]+:.*##/ { printf "  make %-11s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
 # sciaga na karcie idzie z zasady.py, wiec zmiana zasad tez odswieza karte
 karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
@@ -15,6 +15,21 @@ karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 # karta-wycinek-bianka.svg
 karta-wycinek-czarek.svg: tools/karta_przyklad.py tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 	python3 tools/karta_przyklad.py
+
+# Tabele wyrownania na male plansze. Jeden przebieg pisze caly zestaw, wiec
+# odpowiada za niego jeden cel. Wszystko w tools/wyrownanie/: wyrownanie-*.json
+# (dla kodu, kazde zrodlo osobno) i zestawienie-*.txt (dla czlowieka, zrodla
+# obok siebie, po jednym pliku na plansze). Swiezosci pilnuje test_wyrownanie.py
+# — plik rozjechany z tabela nie przejdzie przez testy ani przez hook.
+TABELE_WYROWNANIA = $(wildcard tools/wyrownanie/*.py)
+
+wyrownanie: tools/wyrownanie/wyrownanie-bga.json  ## przegeneruj tabele wyrownania na 9x9 i 13x13
+
+tools/wyrownanie/wyrownanie-bga.json: $(TABELE_WYROWNANIA)
+# -B tak samo jak w `make test`: generator nie ma prawa zostawic po sobie .pyc,
+# bo cofnieta zmiana tej samej dlugosci w tej samej sekundzie przemycilaby
+# stary kod do testow. Zdarzylo sie i tutaj.
+	PYTHONPATH=tools python3 -B -m wyrownanie.generuj
 
 # Jedyna definicja testow w repo: wola ja hook pre-commit i CI, zeby nie mogly
 # sie rozejsc z tym, co odpalasz recznie.
@@ -42,4 +57,4 @@ serwuj:  ## podglad na http://127.0.0.1:8000/
 	@echo "Podglad: http://127.0.0.1:8000/   (Ctrl+C konczy)"
 	@python3 -m http.server 8000 --bind 127.0.0.1 --directory .
 
-.PHONY: all help test hooks serwuj
+.PHONY: all help test hooks serwuj wyrownanie

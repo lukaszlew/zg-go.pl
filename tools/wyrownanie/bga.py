@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""Tabele wyrownania British Go Association dla malych planszy.
+
+Przepisane co do liczby z PDF-ow BGA, razem z dziwactwami oryginalu — nie wolno
+ich "poprawiac", bo gra sie wedlug tego, co stoi w zrodle:
+
+9x9 nie jest ciagiem arytmetycznym.
+- Komi schodzi po 1,5 punktu na pierwszych czterech stopniach, a dalej po 2.
+- Nie ma wyrownania jednym kamieniem: z 0 skacze od razu na 2, bo drugi kamien
+  to pierwszy naprawde darmowy ruch Czarnego.
+- Blok kamieni obejmuje 7 stopni, czyli 12 punktow komi — i dokladnie tyle wart
+  jest kamien. Roznice 7 i 8 (tak samo 14/15 i 21/22) daja wiec Czarnemu tyle
+  samo wyrownania. To siedzi w tabeli BGA, nie w przepisaniu; pilnuje tego
+  test_wyrownanie.py.
+
+13x13 jest za to regularne: kamien wart 10 punktow, stopien wart 4.
+Ta sama arytmetyka co u Tima Hunta — Hunt zapisuje ja tylko oszczedniej, mniejsza
+liczba kamieni i ujemnym komi zamiast dokladania kamienia i komi ponad 6.
+
+Komi jest calkowite, wiec remis jest mozliwy.
+"""
+
+from .tabela import Arytmetyka, Tabela, UWAGA_KOMI, sprawdz
+
+NAZWA = "bga"
+
+ZRODLA: dict[str, str] = {
+    "9x9": "https://www.britgo.org/handbook/hcap_9x9.pdf",
+    "13x13": "https://www.britgo.org/handbook/hcap_13x13.pdf",
+}
+
+UWAGA = UWAGA_KOMI + " Komi jest całkowite, więc remis jest możliwy."
+
+TABELA_9X9: Tabela = [
+    (0, 0, 6),
+    (1, 0, 4.5),
+    (2, 0, 3),
+    (3, 0, 1.5),
+    (4, 0, 0),
+    (5, 0, -2),
+    (6, 0, -4),
+    (7, 0, -6),
+    (8, 2, 6),
+    (9, 2, 4),
+    (10, 2, 2),
+    (11, 2, 0),
+    (12, 2, -2),
+    (13, 2, -4),
+    (14, 2, -6),
+    (15, 3, 6),
+    (16, 3, 4),
+    (17, 3, 2),
+    (18, 3, 0),
+    (19, 3, -2),
+    (20, 3, -4),
+    (21, 3, -6),
+    (22, 4, 6),
+    (23, 4, 4),
+    (24, 4, 2),
+    (25, 4, 0),
+    (26, 4, -2),
+    (27, 4, -4),
+    (28, 4, -6),
+]
+
+TABELA_13X13: Tabela = [
+    (0, 1, 6),
+    (1, 1, 2),
+    (2, 2, 8),
+    (3, 2, 4),
+    (4, 2, 0),
+    (5, 3, 6),
+    (6, 3, 2),
+    (7, 4, 8),
+    (8, 4, 4),
+    (9, 4, 0),
+    (10, 5, 6),
+    (11, 5, 2),
+    (12, 6, 8),
+    (13, 6, 4),
+    (14, 6, 0),
+    (15, 7, 6),
+    (16, 7, 2),
+    (17, 8, 8),
+    (18, 8, 4),
+    (19, 8, 0),
+    (20, 9, 6),
+    (21, 9, 2),
+    (22, 10, 8),
+    (23, 10, 4),
+    (24, 10, 0),
+    (25, 11, 6),
+    (26, 11, 2),
+    (27, 12, 8),
+    (28, 12, 4),
+    (29, 12, 0),
+]
+
+TABELE: dict[str, Tabela] = {"9x9": TABELA_9X9, "13x13": TABELA_13X13}
+
+# 9x9 nie deklaruje arytmetyki, bo jej nie ma — patrz docstring i test wlasny.
+ARYTMETYKA: dict[str, Arytmetyka] = {
+    "13x13": Arytmetyka(wartosc_kamienia=10, krok=4),
+}
+
+sprawdz(TABELE)

@@ -46,6 +46,23 @@ test('kalkulator zgadza sie z tabela na stronie, komorka po komorce', () => {
   }
 });
 
+/* Tabela Semedori na 19x19 (tools/wyrownanie/zg.py) liczy to samo, co kalkulator —
+ * tyle ze po stopniach, a nie po PS, i drugim kodem w drugim jezyku. Stopien to 13 PS,
+ * czyli tyle, ile KROK, wiec obie strony musza wyjsc na to samo co do jencow. Gdyby
+ * ktos ruszyl ROWNA albo RUCH w module, ten test zgasnie pierwszy. */
+test('tabela Semedori na 19x19 zgadza sie z kalkulatorem, wiersz po wierszu', () => {
+  const dane = JSON.parse(readFileSync(new URL('./wyrownanie/wyrownanie-zg.json', import.meta.url), 'utf8'));
+  const tabela = dane.tabele['19x19'];
+  assert.ok(tabela.length >= 15, 'tabela ma siegac przynajmniej pietnastu stopni');
+  for (const [stopnie, ruchy, komi] of tabela) {
+    const w = wyrownanie(KROK * stopnie, 0);
+    assert.deepEqual(
+      { ruchy: w.ruchy, jency: w.jency }, { ruchy, jency: -komi },
+      `roznica ${stopnie} stopni, czyli ${KROK * stopnie} PS`,
+    );
+  }
+});
+
 test('roznica 0-5 to gra rowna, niezaleznie od tego, kto ma wiecej', () => {
   for (let d = 0; d <= 5; d++) {
     for (const w of [wyrownanie(60 + d, 60), wyrownanie(60, 60 + d)]) {

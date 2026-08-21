@@ -2,4 +2,4 @@
 # sa serwowane przez strone, wiec zostaja w repo
 karta-przyklad.pdf
 karta-wycinek.pdf
-tools/__pycache__/
+__pycache__/

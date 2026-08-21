@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wyrównanie Semedori — 19x19, 13x13, 9x9</title>
+<style>
+  body { font: 15px/1.5 system-ui, sans-serif; margin: 2rem 1rem; color: #222; }
+  .tabele { display: flex; gap: 1rem; align-items: flex-start; }
+  p.opis { max-width: 44rem; margin: 0 0 1.4rem; }
+  p.opis b { font-weight: 600; }
+  table { border-collapse: collapse; table-layout: fixed; font-size: 0.85rem; }
+  /* Szerokosci z <col>, nie z komorek: kratki maja byc waskie, a kolumna brzegowa
+     na tyle szeroka, zeby zmiescil sie w niej podpis "↓ ruchy". */
+  col { width: 2.1em; }
+  col.brzeg { width: 3.5em; }
+  th, td { box-sizing: border-box; border: 1px solid #c4c4c4;
+           padding: 0.15rem 0.15rem; text-align: center; }
+  th { background: #e8e8e8; font-weight: 600; }
+  tr:nth-child(even) td { background: #f4f4f4; }
+  /* Brzegi: to z nich czyta sie, co kratka znaczy. Kreska ledwie grubsza od
+     zwyklej — ma dzielic, a nie przecinac tabeli na pol. */
+  th.komp-jency { background: #dcdcdc; border-top: 2px solid #777; }
+  th.komp-ruchy { background: #dcdcdc; border-left: 2px solid #777; }
+  /* Rogi nalezą do swoich brzegow, wiec i szarzeja razem z nimi — tlo bierze sie
+     z komp-jency i komp-ruchy, tu zostaje samo pismo: mniejsze i bledsze, bo to
+     podpis, a nie liczba. Ciemne tlo ma wylacznie nazwa planszy. */
+  th.rog { color: #666; font-size: 0.62rem; font-weight: 600;
+           letter-spacing: 0; padding: 0.15rem 0.1rem; }
+  /* Ciemne tlo obejmuje sam napis, a nie cala kratke — nazwa ma byc plakietka
+     nad siatka, a nie belka dotykajaca jej bokow. */
+  th.plansza { background: none; padding: 0.2rem 0.15rem; }
+  th.plansza span { display: inline-block; background: #3a3a3a; color: #fff;
+                    font-size: 0.8rem; letter-spacing: 0.06em; border-radius: 2px;
+                    padding: 0.05rem 0.55rem; }
+  /* Ulamek pionowy: obie cyfry jedna pod druga, kreska z koloru tekstu. */
+  /* Ulamek jest wyzszy niz cyfra obok, wiec rownanie do linii pisma wypycha go
+     w gore — stad wyrownanie do srodka, zeby stal na tej samej wysokosci co "1". */
+  span.pol { display: inline-block; font-size: 0.5em; line-height: 1.06;
+             vertical-align: middle; text-align: center; }
+  span.pol span { display: block; padding: 0 0.1em; }
+  span.pol span + span { border-top: 1px solid currentColor; }
+</style>
+</head>
+<body>
+  <h1>Wyrównanie Semedori</h1>
+  <p class="opis">W kratkach różnica stopni. Mniejsza niż pierwsza kratka to gra równa.</p>
+  <div class="tabele">
+    <section id="plansza-19x19">
+      <table class="sila komp" id="wyrownanie-19x19">
+        <colgroup><col span="2"><col class="brzeg"></colgroup>
+        <tr><th class="plansza" colspan="2"><span>19x19</span></th><th class="rog komp-ruchy">↓ ruchy</th></tr>
+        <tr><td>1<span class="pol"><span>1</span><span>2</span></span></td><td>2</td><th class="komp-ruchy" scope="row">2</th></tr>
+        <tr><td>2<span class="pol"><span>1</span><span>2</span></span></td><td>3</td><th class="komp-ruchy" scope="row">3</th></tr>
+        <tr><td>3<span class="pol"><span>1</span><span>2</span></span></td><td>4</td><th class="komp-ruchy" scope="row">4</th></tr>
+        <tr><td>4<span class="pol"><span>1</span><span>2</span></span></td><td>5</td><th class="komp-ruchy" scope="row">5</th></tr>
+        <tr><td>5<span class="pol"><span>1</span><span>2</span></span></td><td>6</td><th class="komp-ruchy" scope="row">6</th></tr>
+        <tr><td>6<span class="pol"><span>1</span><span>2</span></span></td><td>7</td><th class="komp-ruchy" scope="row">7</th></tr>
+        <tr><td>7<span class="pol"><span>1</span><span>2</span></span></td><td>8</td><th class="komp-ruchy" scope="row">8</th></tr>
+        <tr><th class="komp-jency" scope="col">0</th><th class="komp-jency" scope="col">7</th><th class="rog komp-jency">← jeńcy</th></tr>
+      </table>
+    </section>
+    <section id="plansza-13x13">
+      <table class="sila komp" id="wyrownanie-13x13">
+        <colgroup><col span="5"><col class="brzeg"></colgroup>
+        <tr><th class="plansza" colspan="5"><span>13x13</span></th><th class="rog komp-ruchy">↓ ruchy</th></tr>
+        <tr><td>1<span class="pol"><span>1</span><span>2</span></span></td><td>2</td><td>2<span class="pol"><span>1</span><span>2</span></span></td><td>3</td><td>3<span class="pol"><span>1</span><span>2</span></span></td><th class="komp-ruchy" scope="row">1</th></tr>
+        <tr><td>4</td><td>4<span class="pol"><span>1</span><span>2</span></span></td><td>5</td><td>5<span class="pol"><span>1</span><span>2</span></span></td><td>6</td><th class="komp-ruchy" scope="row">2</th></tr>
+        <tr><td>6<span class="pol"><span>1</span><span>2</span></span></td><td>7</td><td>7<span class="pol"><span>1</span><span>2</span></span></td><td>8</td><td>8<span class="pol"><span>1</span><span>2</span></span></td><th class="komp-ruchy" scope="row">3</th></tr>
+        <tr><td>9</td><td>9<span class="pol"><span>1</span><span>2</span></span></td><td>10</td><td>10<span class="pol"><span>1</span><span>2</span></span></td><td>11</td><th class="komp-ruchy" scope="row">4</th></tr>
+        <tr><td>11<span class="pol"><span>1</span><span>2</span></span></td><td>12</td><td>12<span class="pol"><span>1</span><span>2</span></span></td><td>13</td><td>13<span class="pol"><span>1</span><span>2</span></span></td><th class="komp-ruchy" scope="row">5</th></tr>
+        <tr><td>14</td><td>14<span class="pol"><span>1</span><span>2</span></span></td><td>15</td><td>15<span class="pol"><span>1</span><span>2</span></span></td><td>16</td><th class="komp-ruchy" scope="row">6</th></tr>
+        <tr><td>16<span class="pol"><span>1</span><span>2</span></span></td><td>17</td><td>17<span class="pol"><span>1</span><span>2</span></span></td><td>18</td><td>18<span class="pol"><span>1</span><span>2</span></span></td><th class="komp-ruchy" scope="row">7</th></tr>
+        <tr><th class="komp-jency" scope="col">0</th><th class="komp-jency" scope="col">3</th><th class="komp-jency" scope="col">5</th><th class="komp-jency" scope="col">8</th><th class="komp-jency" scope="col">10</th><th class="rog komp-jency">← jeńcy</th></tr>
+      </table>
+    </section>
+    <section id="plansza-9x9">
+      <table class="sila komp" id="wyrownanie-9x9">
+        <colgroup><col span="13"><col class="brzeg"></colgroup>
+        <tr><th class="plansza" colspan="13"><span>9x9</span></th><th class="rog komp-ruchy">↓ ruchy</th></tr>
+        <tr><td>3</td><td>3<span class="pol"><span>1</span><span>2</span></span></td><td>4</td><td>4<span class="pol"><span>1</span><span>2</span></span></td><td>5</td><td>5<span class="pol"><span>1</span><span>2</span></span></td><td>6</td><td>6<span class="pol"><span>1</span><span>2</span></span></td><td>7</td><td>7<span class="pol"><span>1</span><span>2</span></span></td><td>8</td><td>8<span class="pol"><span>1</span><span>2</span></span></td><td>9</td><th class="komp-ruchy" scope="row">1</th></tr>
+        <tr><td>9<span class="pol"><span>1</span><span>2</span></span></td><td>10</td><td>10<span class="pol"><span>1</span><span>2</span></span></td><td>11</td><td>11<span class="pol"><span>1</span><span>2</span></span></td><td>12</td><td>12<span class="pol"><span>1</span><span>2</span></span></td><td>13</td><td>13<span class="pol"><span>1</span><span>2</span></span></td><td>14</td><td>14<span class="pol"><span>1</span><span>2</span></span></td><td>15</td><td>15<span class="pol"><span>1</span><span>2</span></span></td><th class="komp-ruchy" scope="row">2</th></tr>
+        <tr><td>16</td><td>16<span class="pol"><span>1</span><span>2</span></span></td><td>17</td><td>17<span class="pol"><span>1</span><span>2</span></span></td><td>18</td><td>18<span class="pol"><span>1</span><span>2</span></span></td><td>19</td><td>19<span class="pol"><span>1</span><span>2</span></span></td><td>20</td><td>20<span class="pol"><span>1</span><span>2</span></span></td><td>21</td><td>21<span class="pol"><span>1</span><span>2</span></span></td><td>22</td><th class="komp-ruchy" scope="row">3</th></tr>
+        <tr><td>22<span class="pol"><span>1</span><span>2</span></span></td><td>23</td><td>23<span class="pol"><span>1</span><span>2</span></span></td><td>24</td><td>24<span class="pol"><span>1</span><span>2</span></span></td><td>25</td><td>25<span class="pol"><span>1</span><span>2</span></span></td><td>26</td><td>26<span class="pol"><span>1</span><span>2</span></span></td><td>27</td><td>27<span class="pol"><span>1</span><span>2</span></span></td><td>28</td><td>28<span class="pol"><span>1</span><span>2</span></span></td><th class="komp-ruchy" scope="row">4</th></tr>
+        <tr><td>29</td><td>29<span class="pol"><span>1</span><span>2</span></span></td><td>30</td><td>30<span class="pol"><span>1</span><span>2</span></span></td><td>31</td><td>31<span class="pol"><span>1</span><span>2</span></span></td><td>32</td><td>32<span class="pol"><span>1</span><span>2</span></span></td><td>33</td><td>33<span class="pol"><span>1</span><span>2</span></span></td><td>34</td><td>34<span class="pol"><span>1</span><span>2</span></span></td><td>35</td><th class="komp-ruchy" scope="row">5</th></tr>
+        <tr><th class="komp-jency" scope="col">0</th><th class="komp-jency" scope="col">1</th><th class="komp-jency" scope="col">2</th><th class="komp-jency" scope="col">3</th><th class="komp-jency" scope="col">4</th><th class="komp-jency" scope="col">5</th><th class="komp-jency" scope="col">6</th><th class="komp-jency" scope="col">7</th><th class="komp-jency" scope="col">8</th><th class="komp-jency" scope="col">9</th><th class="komp-jency" scope="col">10</th><th class="komp-jency" scope="col">11</th><th class="komp-jency" scope="col">12</th><th class="rog komp-jency">← jeńcy</th></tr>
+      </table>
+    </section>
+  </div>
+</body>
+</html>

@@ -47,7 +47,7 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "21.08.2026d"                   # stopka karty; podbij przy zmianie zasad/ukladu
+WERSJA = "21.08.2026e"                   # stopka karty; podbij przy zmianie zasad/ukladu
 
 # Obcy klub: jedyne, co jest w karcie lokalne, to nazwa w naglowku (draw_title)
 # i adres w stopce oraz w kodzie QR (draw_sciaga). Gdy zglosi sie pierwszy klub,
@@ -397,11 +397,25 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
     szer = len(jency) * KRATKA_W + BRZEG_W
     wys = (len(ruchy) + 2) * WIERSZ_H
 
+    # Brzeg z ruchami szarzeje tak samo jak dolny wiersz z jencami — obu czyta sie
+    # tak samo i oba maja odstawac od siatki.
+    c.setFillColor(HEADER_BG)
+    c.rect(x + szer - BRZEG_W, top - wys + WIERSZ_H, BRZEG_W, wys - 2 * WIERSZ_H, stroke=0, fill=1)
+
+    # Nazwa planszy jako plakietka: ciemne tlo obejmuje sam napis, a nie cala
+    # szerokosc siatki. Belka na cala szerokosc przygniatala liczby pod soba.
+    # Wysokosc pisma dobrana tak, zeby wersaliki miescily sie w plakietce —
+    # przy wiekszym stopniu napis wychodzil ponad jej gorna krawedz.
+    PLANSZA_FS = 5.6
+    c.setFont(FONT_BOLD, PLANSZA_FS)
+    plakietka_w = c.stringWidth(plansza, FONT_BOLD, PLANSZA_FS) + 3.0 * mm
     c.setFillColor(INK)
-    c.rect(x, top - WIERSZ_H, len(jency) * KRATKA_W, WIERSZ_H, stroke=0, fill=1)
+    c.roundRect(
+        x + (len(jency) * KRATKA_W - plakietka_w) / 2, top - WIERSZ_H + 0.35 * mm,
+        plakietka_w, WIERSZ_H - 0.7 * mm, 0.45 * mm, stroke=0, fill=1,
+    )
     c.setFillColor(HexColor("#ffffff"))
-    c.setFont(FONT_BOLD, 6)
-    c.drawCentredString(x + len(jency) * KRATKA_W / 2, top - WIERSZ_H + 1.0 * mm, plansza)
+    c.drawCentredString(x + len(jency) * KRATKA_W / 2, top - WIERSZ_H + 0.9 * mm, plansza)
     c.setFillColor(MUTED)
     c.setFont(FONT, 4.4)
     c.drawCentredString(x + szer - BRZEG_W / 2, top - WIERSZ_H + 1.0 * mm, "↓ ruchy")
@@ -418,6 +432,7 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
 
     dol = top - (len(ruchy) + 2) * WIERSZ_H + 1.0 * mm
     c.setFillColor(HEADER_BG)
+    # Caly wiersz, razem z rogiem: rog nalezy do brzegu, ktory nazywa.
     c.rect(x, dol - 1.0 * mm, szer, WIERSZ_H, stroke=0, fill=1)
     for kolumna, j in enumerate(jency):
         c.setFillColor(INK)
@@ -434,6 +449,11 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
         c.line(x, ly, x + szer, ly)
     for kolumna in range(1, len(jency) + 1):
         c.line(x + kolumna * KRATKA_W, top - WIERSZ_H, x + kolumna * KRATKA_W, top - wys)
+    # Brzegi oddziela kreska ledwie grubsza od siatki — ma dzielic, nie przecinac.
+    c.setStrokeColor(MUTED)
+    c.setLineWidth(0.7)
+    c.line(x + szer - BRZEG_W, top - WIERSZ_H, x + szer - BRZEG_W, top - wys)
+    c.line(x, top - wys + WIERSZ_H, x + szer, top - wys + WIERSZ_H)
     c.setStrokeColor(INK)
     c.setLineWidth(0.7)
     c.rect(x, top - wys, szer, wys, stroke=1, fill=0)

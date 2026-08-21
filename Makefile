@@ -11,6 +11,13 @@ help:  ## wypisz dostepne cele
 karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 	python3 tools/karta_pdf.py
 
+plansza-pdf: plansza/plansza.pdf  ## przegeneruj plansze rankingowa na laminat magnetyczny
+
+# generator importuje draw_siatka/draw_qr z karta_pdf, wiec zmiana karty
+# odswieza tez plansze
+plansza/plansza.pdf: plansza/plansza_pdf.py tools/karta_pdf.py img/logo.svg
+	python3 plansza/plansza_pdf.py
+
 # jeden przebieg tworzy tez: karta-przyklad.pdf, karta-wycinek.pdf,
 # karta-wycinek-bianka.svg
 karta-wycinek-czarek.svg: tools/karta_przyklad.py tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf

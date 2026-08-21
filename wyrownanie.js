@@ -2,7 +2,7 @@
  *
  * Liczy dokladnie to, co mowia zasady stojace wyzej na stronie — i nic ponadto.
  * Ma dwie przewagi nad tabela: dziala dla dowolnej roznicy stopni, takze poza tabela,
- * i zna pulapki zmiany stopni (wyrazna wygrana, podwojenie serii, kalibracja), o ktore
+ * i zna pulapki zmiany stopni (wyrazna wygrana, kalibracja), o ktore
  * ludzie pytaja najczesciej.
  *
  * Rachunek siedzi w czystych funkcjach, bo to jedyne miejsce w repo, gdzie zasady
@@ -12,7 +12,7 @@
 
 export const RUCH = 13;        // punktow warty jest jeden darmowy ruch — na kazdej planszy
 export const KOMI_JENCY = 6;   // gra rowna: Czarny odklada Bialemu 6 jencow
-export const WYRAZNA = 13;     // wygrana o tyle punktow lub wiecej mnozy zmiane ×2
+export const WYRAZNA = 20;     // wygrana o tyle punktow lub wiecej mnozy zmiane ×2
 export const POLOWKA = 0.5;    // rozdzielczosc stopni i typowa zmiana po grze
 
 /* Ile punktow wyrownania dokłada jeden stopien roznicy — zalezy od planszy, bo
@@ -68,7 +68,7 @@ export function parsujWynik(tekst) {
 /* Zwraca zmiane stopni obu graczy z perspektywy tego, kto wpisal swoj wynik.
  * kalibracja: null albo { kto: 'ja' | 'on', mnoznik: 4 | 3 | 2 } — mnoznik stoi
  * na karcie nowego gracza, na karcie przeciwnika stoi K. */
-export function zmianaStopni(wynik, { seria = false, kalibracja = null } = {}) {
+export function zmianaStopni(wynik, { kalibracja = null } = {}) {
   if (!wynik) return null;
   const uwagi = [];
 
@@ -77,20 +77,19 @@ export function zmianaStopni(wynik, { seria = false, kalibracja = null } = {}) {
     return { moja: 0, przeciwnika: 0, uwagi };
   }
 
-  // Zwykla wygrana to pol stopnia, wyrazna — caly. Mnozniki serii i kalibracji
-  // ida na tym samym, wiec cala arytmetyka zostaje w polowkach stopnia.
+  // Zwykla wygrana to pol stopnia, wyrazna — caly. Mnoznik kalibracji idzie na
+  // tym samym, wiec cala arytmetyka zostaje w polowkach stopnia.
   const wyrazna = wynik.poddanie || Math.abs(wynik.punkty) >= WYRAZNA;
   const podstawa = (wyrazna ? 2 : 1) * POLOWKA;
 
-  /* Gra kalibracyjna dziala jak zwykla, tylko stoi poza seria: mnoznik z kolumny
-   * kalibracja kumuluje sie z ×2 za wyrazna wygrana, a przeciwnik przy K dostaje
-   * doslownie ±1 — jego zmiany nie mnozy nic. */
+  /* Gra kalibracyjna dziala jak zwykla: mnoznik z kolumny kalibracja kumuluje sie
+   * z ×2 za wyrazna wygrana, a przeciwnik przy K dostaje doslownie ±½ stopnia —
+   * jego zmiany nie mnozy nic. */
   if (kalibracja) {
-    if (seria) uwagi.push('Gra kalibracyjna stoi poza serią: ani do niej nie wchodzi, ani jej nie przerywa.');
-    if (wyrazna) uwagi.push('Wygrana o 13 punktów lub więcej albo przez poddanie mnoży zmianę stopni nowego gracza ×2 — kumuluje się z mnożnikiem kalibracji; przeciwnik przy K i tak dostaje dokładnie ±½ stopnia.');
+    if (wyrazna) uwagi.push('Wygrana o 20 punktów lub więcej albo przez poddanie mnoży zmianę stopni nowego gracza ×2 — kumuluje się z mnożnikiem kalibracji; przeciwnik przy K i tak dostaje dokładnie ±½ stopnia.');
     const nowyZnak = kalibracja.kto === 'ja' ? wynik.znak : -wynik.znak;
     const nowego = nowyZnak * podstawa * kalibracja.mnoznik;
-    const drugiego = -nowyZnak * POLOWKA;   // zasada 10: przy K dokladnie ±½ stopnia
+    const drugiego = -nowyZnak * POLOWKA;   // zasada 8: przy K dokladnie ±½ stopnia
     return kalibracja.kto === 'ja'
       ? { moja: nowego, przeciwnika: drugiego, uwagi }
       : { moja: drugiego, przeciwnika: nowego, uwagi };
@@ -98,14 +97,12 @@ export function zmianaStopni(wynik, { seria = false, kalibracja = null } = {}) {
 
   if (wyrazna) {
     uwagi.push(wynik.poddanie
-      ? 'Poddanie liczy się tak samo jak wygrana o 13 punktów: mnoży zmianę stopni obu graczy ×2.'
-      : 'Wygrana o 13 punktów lub więcej mnoży zmianę stopni obu graczy ×2.');
+      ? 'Poddanie liczy się tak samo jak wygrana o 20 punktów: mnoży zmianę stopni obu graczy ×2.'
+      : 'Wygrana o 20 punktów lub więcej mnoży zmianę stopni obu graczy ×2.');
   }
-  const zwyciezcy = podstawa * (seria ? 2 : 1);
-  if (seria) uwagi.push('Seria — trzecia wygrana z rzędu i każda kolejna — mnoży zmianę zwycięzcy ×2; sama się nie nawarstwia.');
   return wynik.znak > 0
-    ? { moja: zwyciezcy, przeciwnika: -podstawa, uwagi }
-    : { moja: -podstawa, przeciwnika: zwyciezcy, uwagi };
+    ? { moja: podstawa, przeciwnika: -podstawa, uwagi }
+    : { moja: -podstawa, przeciwnika: podstawa, uwagi };
 }
 
 /* Stopnie pisze sie polowkami: 0, ½, 1, 1½ — tak, jak stawia sie je na karcie. */
@@ -138,8 +135,8 @@ function start() {
   const blok = document.getElementById('kalkulator');
   if (!blok) return;
   const pole = (id) => document.getElementById(id);
-  const [moje, jego, wynik, seria, kalib] =
-    ['k-moje', 'k-jego', 'k-wynik', 'k-seria', 'k-kalibracja'].map(pole);
+  const [moje, jego, wynik, kalib] =
+    ['k-moje', 'k-jego', 'k-wynik', 'k-kalibracja'].map(pole);
 
   const uwaga = (tekst) => {
     const li = document.createElement('li');
@@ -196,7 +193,6 @@ function start() {
     // Wartosc to "kto:mnoznik" — kto mnozy swoja zmiane stopni, a kto przy K dostaje ±½.
     const [kto, mnoznik] = kalib.value ? kalib.value.split(':') : [];
     const z = zmianaStopni(wpisany, {
-      seria: seria.checked,
       kalibracja: mnoznik ? { kto, mnoznik: Number(mnoznik) } : null,
     });
     // Mnoznik stoi na karcie nowego gracza, K na karcie jego przeciwnika.

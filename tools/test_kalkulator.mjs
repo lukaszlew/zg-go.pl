@@ -93,23 +93,12 @@ test('remis nie zmienia nic', () => {
   );
 });
 
-test('wygrana o 13 punktow i poddanie daja caly stopien', () => {
-  assert.equal(zmiana('+12').moja, POLOWKA, 'dwanascie to jeszcze zwykla wygrana');
-  assert.equal(zmiana('+13').moja, 1);
-  assert.equal(zmiana('+13').przeciwnika, -1);
+test('wygrana o 20 punktow i poddanie daja caly stopien', () => {
+  assert.equal(zmiana('+19').moja, POLOWKA, 'dziewietnascie to jeszcze zwykla wygrana');
+  assert.equal(zmiana('+20').moja, 1);
+  assert.equal(zmiana('+20').przeciwnika, -1);
   assert.equal(zmiana('R').moja, 1);
   assert.equal(zmiana('-R').moja, -1);
-});
-
-test('seria podwaja zmiane zwyciezcy i tylko jego', () => {
-  // przypadek Czarka z przykladu na stronie: +15 w czwartej grze z rzedu
-  const z = zmiana('+15', { seria: true });
-  assert.equal(z.moja, 2, 'caly stopien za wyrazna wygrana, razy dwa za serie');
-  assert.equal(z.przeciwnika, -1, 'przegrany traci tyle, ile zwykle');
-  // seria zwyciezcy dziala tak samo, gdy to on wpisuje przegrana
-  const przegrana = zmiana('-15', { seria: true });
-  assert.equal(przegrana.moja, -1);
-  assert.equal(przegrana.przeciwnika, 2);
 });
 
 test('gra kalibracyjna mnozy zmiane nowego gracza, przeciwnik przy K dostaje ±pol', () => {
@@ -123,17 +112,11 @@ test('gra kalibracyjna mnozy zmiane nowego gracza, przeciwnik przy K dostaje ±p
 });
 
 test('mnoznik kalibracji kumuluje sie z ×2 za wyrazna wygrana i poddanie', () => {
-  assert.equal(zmiana('+15', { kalibracja: { kto: 'ja', mnoznik: 4 } }).moja, 4, 'caly stopien razy 4');
+  assert.equal(zmiana('+25', { kalibracja: { kto: 'ja', mnoznik: 4 } }).moja, 4, 'caly stopien razy 4');
+  assert.equal(zmiana('+15', { kalibracja: { kto: 'ja', mnoznik: 4 } }).moja, 2, 'zwykla wygrana razy 4');
   assert.equal(zmiana('R', { kalibracja: { kto: 'ja', mnoznik: 2 } }).moja, 2, 'poddanie liczy sie jak zawsze');
-  assert.equal(zmiana('+15', { kalibracja: { kto: 'ja', mnoznik: 4 } }).przeciwnika, -POLOWKA,
+  assert.equal(zmiana('+25', { kalibracja: { kto: 'ja', mnoznik: 4 } }).przeciwnika, -POLOWKA,
     'przeciwnika nie mnozy nic, nawet ×2');
-});
-
-test('gra kalibracyjna stoi poza seria', () => {
-  const z = zmiana('+5', { seria: true, kalibracja: { kto: 'ja', mnoznik: 4 } });
-  assert.equal(z.moja, 2, 'seria nie mnozy w kalibracji');
-  assert.equal(z.przeciwnika, -POLOWKA);
-  assert.ok(z.uwagi.some((u) => u.includes('poza serią')));
 });
 
 test('stopnie pisze sie polowkami, tak jak stawia sie je na karcie', () => {

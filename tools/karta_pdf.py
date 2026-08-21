@@ -34,6 +34,9 @@ MUTED = HexColor("#555555")
 GRID = HexColor("#9a9a9a")              # wewnetrzne linie siatki (jasniejsze od krawedzi)
 TITLE_GRAY = HexColor("#6b6b6b")        # --muted ze style.css (kolor tytulow strony)
 HEADER_BG = HexColor("#d9c896")         # --rule ze style.css
+# Brzegi siatek wyrownania: na stronie to --rule zmieszane w 45% z tlem, wiec i tu
+# ta sama, jasniejsza wersja — pelna sila przygniatala liczby.
+BRZEG_BG = HexColor("#eee6d0")
 PKT_SILY = HexColor("#2e7d32")          # --pkt-sily ze style.css (zielone punkty sily)
 # tlo rubryki "wynik": ten sam zloty co naglowek, rozcienczony do 45% na bialym.
 # Na drukarce czarno-bialej zostaje z tego okolo 10% szarosci — rubryka dalej
@@ -47,7 +50,7 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "21.08.2026f"                   # stopka karty; podbij przy zmianie zasad/ukladu
+WERSJA = "21.08.2026k"                   # stopka karty; podbij przy zmianie zasad/ukladu
 
 # Obcy klub: jedyne, co jest w karcie lokalne, to nazwa w naglowku (draw_title)
 # i adres w stopce oraz w kodzie QR (draw_sciaga). Gdy zglosi sie pierwszy klub,
@@ -385,6 +388,21 @@ def _stopien(roznica: float) -> str:
     return f"{calosc}½" if calosc else "½"
 
 
+def _rysuj_stopien(c: Canvas, srodek: float, y: float, roznica: float) -> None:
+    """Roznica w kratce: cyfry zawsze koncza sie w tym samym miejscu.
+
+    Gdyby napis byl po prostu wysrodkowany, "3" i "3½" mialyby cyfre w innym
+    miejscu i kolumna bylaby poszarpana. Dlatego calosc dosuwa sie do prawej,
+    a polowka zwisa za nia — tak samo jak w plikach z tabelami.
+    """
+    polowka_w = c.stringWidth("½", FONT, 5.4)
+    kres = srodek + polowka_w / 2
+    calosc = int(roznica)
+    c.drawRightString(kres, y, str(calosc) if calosc or roznica == calosc else "")
+    if roznica != calosc:
+        c.drawString(kres, y, "½")
+
+
 def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
     """Jedna siatka wyrownania; zwraca jej szerokosc.
 
@@ -399,7 +417,7 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
 
     # Brzeg z ruchami szarzeje tak samo jak dolny wiersz z jencami — obu czyta sie
     # tak samo i oba maja odstawac od siatki.
-    c.setFillColor(HEADER_BG)
+    c.setFillColor(BRZEG_BG)
     c.rect(x + szer - BRZEG_W, top - wys + WIERSZ_H, BRZEG_W, wys - 2 * WIERSZ_H, stroke=0, fill=1)
 
     # Nazwa planszy jako plakietka: ciemne tlo obejmuje sam napis, a nie cala
@@ -425,13 +443,13 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
         for kolumna, j in enumerate(jency):
             c.setFillColor(PKT_SILY)
             c.setFont(FONT, 5.4)
-            c.drawCentredString(x + (kolumna + 0.5) * KRATKA_W, y, _stopien(pola[(j, r)]))
+            _rysuj_stopien(c, x + (kolumna + 0.5) * KRATKA_W, y, pola[(j, r)])
         c.setFillColor(INK)
         c.setFont(FONT_BOLD, 5.4)
         c.drawCentredString(x + szer - BRZEG_W / 2, y, str(r))
 
     dol = top - (len(ruchy) + 2) * WIERSZ_H + 1.0 * mm
-    c.setFillColor(HEADER_BG)
+    c.setFillColor(BRZEG_BG)
     # Caly wiersz, razem z rogiem: rog nalezy do brzegu, ktory nazywa.
     c.rect(x, dol - 1.0 * mm, szer, WIERSZ_H, stroke=0, fill=1)
     for kolumna, j in enumerate(jency):
@@ -451,9 +469,10 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
         c.line(x, ly, x + szer, ly)
     for kolumna in range(1, len(jency) + 1):
         c.line(x + kolumna * KRATKA_W, top - WIERSZ_H, x + kolumna * KRATKA_W, top - wys)
-    # Brzegi oddziela kreska ledwie grubsza od siatki — ma dzielic, nie przecinac.
-    c.setStrokeColor(MUTED)
-    c.setLineWidth(0.7)
+    # Brzegi oddziela kreska w kolorze --rule, ledwie grubsza od siatki — tak samo
+    # jak na stronie: ma dzielic, a nie przecinac tabele na pol.
+    c.setStrokeColor(HEADER_BG)
+    c.setLineWidth(0.9)
     c.line(x + szer - BRZEG_W, top - WIERSZ_H, x + szer - BRZEG_W, top - wys)
     c.line(x, top - wys + WIERSZ_H, x + szer, top - wys + WIERSZ_H)
     c.setStrokeColor(INK)

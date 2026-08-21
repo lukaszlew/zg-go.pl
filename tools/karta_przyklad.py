@@ -18,14 +18,13 @@ from karta_pdf import KartaDane, Wiersz, generuj_karte, generuj_wycinek
 
 # Gra z przykladu: 9x9, Bianka 42 St vs Czarek 30 St.
 # Roznica 12 St -> 9x9 daje 2 ruchy i 5 jencow dla Czarnego.
-# Czarek wygrywa o 15 punktow, czyli wyraznie: caly stopien zamiast polowki.
-# To jego czwarta wygrana z rzedu, wiec seria mnozy zmiane zwyciezcy razy dwa.
+# Czarek wygrywa o 15 punktow — zwykla wygrana, bo do podwojenia trzeba dwudziestu.
 CZAREK = KartaDane(
     nick="Czarek", plansza="9×9",
     wiersze=[Wiersz(
         data="15.07", moje_pkt="30",
         przeciwnik_nick="Bianka", przeciwnik_pkt="42", roznica_st="12",
-        ruchy="2", jency="5", kalibracja="—", wynik="+15", zmiana="+1×2", nowe_pkt="32",
+        ruchy="2", jency="5", kalibracja="—", wynik="+15", zmiana="+½", nowe_pkt="30½",
     )],
 )
 
@@ -34,7 +33,7 @@ BIANKA = KartaDane(
     wiersze=[Wiersz(
         data="15.07", moje_pkt="42",
         przeciwnik_nick="Czarek", przeciwnik_pkt="30", roznica_st="12",
-        ruchy="2", jency="5", kalibracja="—", wynik="−15", zmiana="−1", nowe_pkt="41",
+        ruchy="2", jency="5", kalibracja="—", wynik="−15", zmiana="−½", nowe_pkt="41½",
     )],
 )
 

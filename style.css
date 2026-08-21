@@ -433,7 +433,10 @@ table.komp th.plansza span { display: inline-block; background: var(--fg); color
 
 /* Polowka stopnia: 1 nad 2 z kreska. Wyzsza od cyfry obok, wiec rownanie do
    srodka, a nie do linii pisma — inaczej ulamek wisi nad wierszem. */
-span.pol { display: inline-block; font-size: 0.5em; line-height: 1.06;
+/* Stala szerokosc, takze gdy pusta: kratka bez ulamka ma trzymac cyfre w tym
+   samym miejscu, co kratka z ulamkiem — inaczej kolumna jest poszarpana. */
+span.ca { display: inline-block; width: 1.15em; text-align: right; }
+span.pol { display: inline-block; width: 0.85em; font-size: 0.5em; line-height: 1.06;
            vertical-align: middle; text-align: center; }
 span.pol span { display: block; padding: 0 0.1em; }
 span.pol span + span { border-top: 1px solid currentColor; }

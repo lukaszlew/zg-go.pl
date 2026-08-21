@@ -40,7 +40,10 @@ SKOK = 0.5              # o tyle stopni rosnie kolejny wiersz
 # Polowka pisana pionowo: 1 nad 2, kreska miedzy. Wezsza od "½" po przekatnej,
 # bo zajmuje szerokosc jednej cyfry zamiast poltorej, i czytelniejsza w malym
 # piśmie. Skladana recznie, bo zaden znak Unicode tego nie daje.
-POLOWKA = '<span class="pol"><span>1</span><span>2</span></span>' 
+POLOWKA = '<span class="pol"><span>1</span><span>2</span></span>'
+# Pusta polowka zajmuje tyle samo miejsca, co pelna. Bez niej cyfra w kratce bez
+# ulamka przesuwalaby sie w prawo i kolumna bylaby poszarpana.
+BEZ_POLOWKI = '<span class="pol"></span>'
 
 # Podpisy brzegow. Strzalka stoi przed slowem i pokazuje, w ktora strone patrzec:
 # to ona, a nie opis nad tabelami, tlumaczy uklad.
@@ -100,8 +103,11 @@ STYL = """\
   /* Ulamek pionowy: obie cyfry jedna pod druga, kreska z koloru tekstu. */
   /* Ulamek jest wyzszy niz cyfra obok, wiec rownanie do linii pisma wypycha go
      w gore — stad wyrownanie do srodka, zeby stal na tej samej wysokosci co "1". */
-  span.pol { display: inline-block; font-size: 0.5em; line-height: 1.06;
-             vertical-align: middle; text-align: center; }
+  /* Stala szerokosc, takze gdy pusta: kratka bez ulamka ma trzymac cyfre w tym
+     samym miejscu, co kratka z ulamkiem. */
+  span.ca { display: inline-block; width: 1.15em; text-align: right; }
+  span.pol { display: inline-block; width: 0.85em; font-size: 0.5em;
+             line-height: 1.06; vertical-align: middle; text-align: center; }
   span.pol span { display: block; padding: 0 0.1em; }
   span.pol span + span { border-top: 1px solid currentColor; }"""
 
@@ -151,6 +157,15 @@ def siatka(plansza: str) -> dict[tuple[int, int], float]:
         roznica += SKOK
 
 
+def _kratka(roznica: float) -> str:
+    """Roznica w kratce: calosc dosunieta do prawej, polowka zawsze w swoim miejscu."""
+    calosc = int(roznica)
+    return (
+        f'<span class="ca">{calosc or ""}</span>'
+        + (POLOWKA if roznica != calosc else BEZ_POLOWKI)
+    )
+
+
 def _tabela_siatki(plansza: str) -> str:
     """Wiersz to ruchy, kolumna to punkty, w kratkach roznica stopni.
 
@@ -164,7 +179,7 @@ def _tabela_siatki(plansza: str) -> str:
     wiersze = [
         "        <tr>"
         + "".join(
-            f"<td>{_stopien(pola[(p, r)])}</td>" if (p, r) in pola else "<td></td>"
+            f"<td>{_kratka(pola[(p, r)])}</td>" if (p, r) in pola else "<td></td>"
             for p in punkty
         )
         + f'<th class="komp-ruchy" scope="row">{r}</th></tr>'

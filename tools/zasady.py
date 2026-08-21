@@ -17,9 +17,9 @@ Stopien znaczy tyle samo na kazdej planszy, ale w punktach wychodzi rozne: 2 na
 9x9, 5 na 13x13, 13 na 19x19. Dlatego wyrownanie czyta sie z tabeli swojej
 planszy (tools/wyrownanie/), a nie z jednej dla wszystkich.
 
-Zasady sa o grze klubowej i tylko o niej. Kalibracja nowego gracza to robota
-prowadzacego, nie dwojki przy stoliku — stoi wylacznie w rozdziale "Kalibracja
-nowego gracza" na stronie i na karte nie trafia.
+Kalibracja ma wlasna kolumne, a nie doklejone zasady w cudzych: dotyczy trzech
+pierwszych gier nowego gracza i nikogo poza nim, wiec reszta stolika moze ja
+przeczytac raz i wiecej do niej nie wracac.
 
 Numeracja jest ciagla przez cala liste i wynika z kolejnosci — nie zapisujemy
 jej, tylko liczymy, zeby nie dalo sie jej rozjechac.
@@ -28,19 +28,16 @@ Podzial na kolumny odpowiada kolejnosci wypelniania wiersza karty:
 wyrownanie -> wynik -> zmiana St. Rozdzialy strony ida tak samo.
 """
 
-KOLUMNY: tuple[str, ...] = ("wyrównanie", "wynik", "zmiana St")
+KOLUMNY: tuple[str, ...] = ("wyrównanie", "wynik", "zmiana St", "kalibracja")
 
 ZASADY: list[tuple[str, str]] = [
-    ("wyrównanie", "Policzcie różnicę St: St silniejszego minus St słabszego."),
-    ("wyrównanie", "Różnica St 0–2½ to gra równa: kolory przez nigiri, Czarny daje Białemu 6 jeńców i wygraną przy równym wyniku — razem komi 6,5."),
-    ("wyrównanie", "Różnica St 3 i więcej to gra z wyrównaniem: silniejszy gra Białymi, a Czarny bierze z tabeli swojej planszy pierwsze ruchy i dodatkowych jeńców — liczonych na koniec jak zbite w grze."),
-    ("wyrównanie", "W kolumnie kalibracja nowy gracz odlicza swój mnożnik — ×4, ×3, ×2 w trzech pierwszych grach — jego przeciwnik wpisuje K, a w każdej innej grze oboje stawiają myślnik."),
-    ("wynik", "Wynik wpisujecie w punktach ze znakiem: plus u zwycięzcy, minus u przegranego, remis jako zero; po poddaniu +R i −R."),
+    ("wyrównanie", "Policzcie różnicę St — silniejszy minus słabszy; mniejsza niż pierwsza kratka w tabeli waszej planszy to gra równa, kolory przez nigiri, Czarny daje Białemu 6 jeńców i wygraną przy równym wyniku, razem komi 6,5, a od pierwszej kratki w górę silniejszy gra Białymi i Czarny bierze z tabeli pierwsze ruchy oraz dodatkowych jeńców, liczonych na koniec jak zbite w grze."),
+    ("wynik", "Wynik wpisujecie w punktach ze znakiem: + u zwycięzcy, − u przegranego, remis jako zero; po poddaniu +R i −R."),
     ("wynik", "Ta sama gra stoi na dwóch kartach: różnica St jednakowa, wynik z przeciwnymi znakami."),
     ("zmiana St", "Zwycięzca +½ St, przegrany −½ St, remis 0."),
-    ("zmiana St", "Wygrana o 13 punktów lub więcej albo przez poddanie mnoży zmianę St obu graczy ×2."),
-    ("zmiana St", "Seria, czyli trzecia wygrana z rzędu na danej planszy i każda kolejna, mnoży zmianę St zwycięzcy ×2."),
-    ("zmiana St", "Gra kalibracyjna działa jak zwykła, tylko stoi poza serią: nowy gracz mnoży swoją zmianę St jeszcze przez mnożnik z kolumny kalibracja, a przeciwnik przy K dostaje dokładnie ±½ St."),
+    ("zmiana St", "Wygrana o 20 punktów lub więcej albo przez poddanie mnoży zmianę St obu graczy ×2."),
+    ("kalibracja", "W kolumnie kalibracja nowy gracz odlicza swój mnożnik — ×4, ×3, ×2 w trzech pierwszych grach — jego przeciwnik wpisuje K, a w każdej innej grze oboje stawiają myślnik."),
+    ("kalibracja", "Gra kalibracyjna działa jak zwykła, tylko nowy gracz mnoży swoją zmianę St przez mnożnik z kolumny kalibracja, a przeciwnik przy K dostaje dokładnie ±½ St."),
 ]
 
 assert [k for k, _ in ZASADY] == sorted(

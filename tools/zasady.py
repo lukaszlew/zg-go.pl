@@ -39,8 +39,9 @@ ZASADY: list[tuple[str, str]] = [
     ("zmiana siły", "Zwycięzca +½, przegrany −½, remis 0 — w grze równej remisu nie ma, bo wyklucza go połówka komi."),
     ("zmiana siły", "Wygrana o 20 punktów lub więcej albo przez poddanie daje zwycięzcy +1; przegrany traci ½ jak zawsze."),
     ("zmiana siły", "Szybką korektę siły przyznaje silny gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce moja siła w następnej grze."),
-    ("typ gry", "W trzech pierwszych grach nowego gracza w kolumnie typ gry stoi u niego K, a jego przeciwnik wpisuje P albo pomija tę grę, bo nic mu ona nie zmienia; w zwyczajnej grze oboje stawiają myślnik."),
+    ("typ gry", "Dopóki nowy gracz się kalibruje, w kolumnie typ gry stoi u niego K, a jego przeciwnik wpisuje P albo pomija tę grę, bo nic mu ona nie zmienia; w zwyczajnej grze oboje stawiają myślnik."),
     ("typ gry", "W grze kalibracyjnej nowy gracz dostaje ±1, a po wyraźnej wygranej lub przegranej ±2; przeciwnik przy P nie zmienia swojej siły."),
+    ("typ gry", "Kalibracja może się skończyć dopiero wtedy, gdy są w niej i wygrane, i przegrane — a silny gracz w klubie może ją przedłużyć albo przyspieszyć szybką korektą."),
 ]
 
 assert [k for k, _ in ZASADY] == sorted(

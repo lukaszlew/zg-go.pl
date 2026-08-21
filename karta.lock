@@ -1,4 +1,4 @@
 # Odcisk danych, z ktorych powstaje karta.pdf — pilnuje go tools/test_zasady.py.
 # Zmiana zasad albo ukladu bez ponownego `make` konczy sie czerwonym testem.
-wersja=22.08.2026j
-odcisk=eda5b789080bac24e9e0aa2b792b0f49a577c3f72f5a449c990a4c5e44a7f17b
+wersja=22.08.2026k
+odcisk=0f7c65aa12add141aeb00d58e1a879be3a7e52899a98320c941479fde97661a4

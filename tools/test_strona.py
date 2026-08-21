@@ -20,7 +20,8 @@ KORZEN = Path(__file__).resolve().parent.parent
 # i wlasna, czwarta pozycje w menu. Zasoby i kotwice sprawdzamy w niej tak samo
 # jak wszedzie, ale z porownania nawigacji jest wylaczona — do czasu, az artykul
 # zostanie dokonczony i wejdzie do menu na kazdej stronie.
-STRONY = ["index.html", "ranking.html", "hikaru-no-go.html", "alphago.html", "prywatnosc.html"]
+STRONY = ["index.html", "ranking.html", "hikaru-no-go.html", "alphago.html", "prywatnosc.html",
+          "zmiany.html"]
 SZKICE = ["alphago.html"]
 
 LOKALNY_ZASOB = re.compile(r'(?:src|href)="((?!https?:|mailto:|webcal:|#|//)[^"]+)"')

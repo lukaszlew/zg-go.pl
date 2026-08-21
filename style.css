@@ -390,16 +390,21 @@ table.sila th { background: var(--rule); font-weight: 600; }
 
 /* Tabela poziomow lezy poziomo: naglowek wiersza po lewej, wartosci w rzedzie.
    Zielony jest tylko wiersz sily — w wierszu poziomow zielen nie ma czego znaczyc,
-   wiec `table.sila td + td` trzeba tu cofnac. */
-table.poziomy td { color: var(--fg); text-align: center; padding: 0.25rem 0.7rem; }
-table.poziomy tr:last-child td { color: var(--kolor-sily); font-weight: 600; }
+   wiec `table.sila td + td` trzeba tu cofnac — a zeby cofniecie zadzialalo, musi
+   byc od niego specyficzniejsze, stad obie klasy w selektorze. */
+table.sila.poziomy td { color: var(--fg); text-align: center; padding: 0.25rem 0.7rem; }
+table.sila.poziomy tr:last-child td { color: var(--kolor-sily); font-weight: 600; }
+
+/* Przelicznik starych liczb na zmiany.html: sam uklad, bez zieleni — zielen
+   znaczy sile, a w tej tabeli po lewej stronie strzalki stoja jeszcze stare PS. */
+table.sila.przelicznik td { color: var(--fg); text-align: center; padding: 0.25rem 0.7rem; }
 
 /* Legenda kolumny "typ gry": zielony jest sam wpis, bo to on trafia na karte —
    reszta wiersza tlumaczy go zwyklym tekstem, wiec `table.sila td + td` trzeba
    tu cofnac. */
 table.typy { margin: 0.15rem 0 0.5rem; }
-table.typy td + td { color: var(--fg); }
-table.typy td:first-child { color: var(--kolor-sily); font-weight: 700; text-align: center; }
+table.sila.typy td { color: var(--fg); }
+table.sila.typy td:first-child { color: var(--kolor-sily); font-weight: 700; text-align: center; }
 
 /* dalszy ciag rozwiniecia zasady: kolejne akapity i tabele dostaja to samo
    wciecie, co pierwszy akapit, zeby caly punkt trzymal sie pod swoim numerem.

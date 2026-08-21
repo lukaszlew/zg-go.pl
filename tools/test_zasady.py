@@ -19,8 +19,8 @@ STRONA = Path(__file__).resolve().parent.parent / "ranking.html"
 
 # Podsekcje "Rozwiniecia zasad", w kolejnosci ze strony; kazda zasada stoi w nich jako
 # <strong> na poczatku akapitu. Kalibracja jest osobna podsekcja, a nie czescia "Zmiany
-# PS", wiec zasada 10 stoi wlasnie tam — stad czwarta pozycja na liscie.
-ROZDZIALY_ZASAD = ("wyrownanie", "wynik", "zmiana-ps", "kalibracja")
+# St", wiec zasada 10 stoi wlasnie tam — stad czwarta pozycja na liscie.
+ROZDZIALY_ZASAD = ("wyrownanie", "wynik", "zmiana-st", "kalibracja")
 
 
 def tekst(html: str) -> str:

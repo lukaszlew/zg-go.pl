@@ -399,15 +399,44 @@ table.sila th { background: var(--rule); font-weight: 600; }
    Stoi za table.sila, bo tamta regula ma ta sama wage i wlasny margin. */
 p.zasada-cd, table.zasada-cd { margin-left: 1.9rem; }
 
-/* tabela wyrownania: siatka roznic (PS, zielone), jency dla Czarnego
-   w wyroznionych komorkach, ruchy Czarnego w dolnym wierszu */
-table.komp { font-size: 0.75rem; }
-table.komp td, table.komp th { padding: 0.2rem 0.5rem; text-align: center; }
+/* Siatka wyrownania: roznica stopni w kratkach (zielona), a znaczenie na brzegach —
+   ruchy w prawej kolumnie, jency w dolnym wierszu. Markup generuje
+   tools/wyrownanie/tabela_html.py i pilnuje go test; tu stoi sam wyglad.
+
+   table-layout: fixed, bo szerokosci maja isc z <col>: bez tego przegladarka
+   rozpycha kolumny pod tresc i krata przestaje byc krata. Ciasny padding i
+   nowrap, bo kratka ma miescic "41" z polowka w jednej linii — przy szerszym
+   marginesie ulamek lamal sie do nastepnego wiersza. */
+/* Trzy siatki obok siebie; na waskim ekranie zawijaja sie zamiast wystawac. */
+.tabele { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: flex-start;
+          margin: 0.6rem 0; }
+table.komp { font-size: 0.75rem; table-layout: fixed; }
+table.komp col { width: 2.1em; }
+table.komp col.brzeg { width: 3.6em; }
+table.komp td, table.komp th { padding: 0.15rem 0.1rem; text-align: center; white-space: nowrap; }
 table.komp th { border-color: color-mix(in srgb, var(--rule) 85%, black); }
 table.komp td { color: var(--pkt-sily); }
-/* wyroznienie tym samym jasnozlotym tlem: wiersz ruchow i komorki jencow */
-table.komp tr.komp-ruchy th { background: color-mix(in srgb, var(--rule) 45%, transparent); font-weight: 600; }
-table.komp td.komp-jency { color: var(--fg); background: color-mix(in srgb, var(--rule) 45%, transparent); }
+
+/* Brzegi: to z nich czyta sie, co kratka znaczy. Kreska ledwie grubsza od zwyklej. */
+table.komp th.komp-jency,
+table.komp th.komp-ruchy { color: var(--fg); background: color-mix(in srgb, var(--rule) 45%, transparent); }
+table.komp th.komp-jency { border-top: 2px solid var(--rule); }
+table.komp th.komp-ruchy { border-left: 2px solid var(--rule); }
+
+/* Rogi nazywaja swoj brzeg strzalka — to podpisy, nie liczby, wiec drobniej i bledziej. */
+table.komp th.rog { color: var(--fg); font-size: 0.62rem; font-weight: 600; opacity: 0.7; }
+/* Nazwa planszy jako plakietka: ciemne tlo obejmuje napis, a nie cala kratke. */
+table.komp th.plansza { background: none; padding: 0.2rem 0.15rem; }
+table.komp th.plansza span { display: inline-block; background: var(--fg); color: var(--bg);
+                             font-size: 0.8rem; letter-spacing: 0.06em; border-radius: 2px;
+                             padding: 0.05rem 0.55rem; }
+
+/* Polowka stopnia: 1 nad 2 z kreska. Wyzsza od cyfry obok, wiec rownanie do
+   srodka, a nie do linii pisma — inaczej ulamek wisi nad wierszem. */
+span.pol { display: inline-block; font-size: 0.5em; line-height: 1.06;
+           vertical-align: middle; text-align: center; }
+span.pol span { display: block; padding: 0 0.1em; }
+span.pol span + span { border-top: 1px solid currentColor; }
 
 .site-footer {
   border-top: 1px solid var(--rule);
@@ -631,3 +660,4 @@ table.kalk-karta ::placeholder { color: var(--muted); opacity: 1; }
 #zgoda-ustawienia button:hover { background: rgba(156, 42, 42, 0.08); }
 .zgoda a { font-size: 0.95rem; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
 #zgoda-ustawienia p { margin: 0 0 0.6rem; }
+

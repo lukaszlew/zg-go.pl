@@ -11,7 +11,7 @@ Poniżej tylko to, czego nie widać z samego kodu.
 
 **`tools/zasady.py`**. Te same zdania, co do słowa, stoją w trzech miejscach: w bloku
 „Zasady" na `ranking.html`, jako pogrubione nagłówki w rozdziałach Wyrównanie / Wynik /
-Zmiana PS, oraz na ściądze na dole karty gracza.
+Zmiana St, oraz na ściądze na dole karty gracza.
 
 Ściąga to dokładnie zasady — nic więcej i nic mniej. Co jest za drobne na zasadę, idzie
 do szczegółów pod nią na stronie i na kartę nie trafia.

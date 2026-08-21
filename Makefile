@@ -50,11 +50,9 @@ hooks:  ## wlacz hook pre-commit w tym klonie
 	git config core.hooksPath tools/githooks
 	@echo "hook pre-commit wlaczony"
 
-# Podglad lokalny. Strona jest statyczna, wiec wystarczy zwykly serwer plikow —
-# ale z pliku (file://) nie zadzialalby modul spotkania.js ani sciezki absolutne.
-# Terminy z Kalendarza Google wczytuja sie tu tak samo jak na produkcji.
-serwuj:  ## podglad na http://127.0.0.1:8000/
-	@echo "Podglad: http://127.0.0.1:8000/   (Ctrl+C konczy)"
-	@python3 -m http.server 8000 --bind 127.0.0.1 --directory .
+# Podglad lokalny. Terminy z Kalendarza Google wczytuja sie tu tak samo jak na
+# produkcji. Port szuka sie sam, bo zajeta osemka to nie blad — patrz tools/podglad.py.
+serve:  ## podglad na pierwszym wolnym porcie od 8000
+	@python3 -B tools/podglad.py
 
-.PHONY: all help test hooks serwuj wyrownanie
+.PHONY: all help test hooks serve wyrownanie

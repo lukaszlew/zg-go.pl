@@ -16,25 +16,25 @@ from PIL import Image
 
 from karta_pdf import KartaDane, Wiersz, generuj_karte, generuj_wycinek
 
-# Gra z przykladu: 9x9, Bianka 84 vs Czarek 60,
-# roznica PS = 84 - 60 = 24 -> zakres 19-31: Czarny zaczyna 2 ruchami,
-# jency dla Czarnego = 24 - 19 = 5,
-# Czarek wygrywa o 15 punktow (czwarta wygrana z rzedu -> +2x2), Bianka -2.
+# Gra z przykladu: 9x9, Bianka 42 St vs Czarek 30 St.
+# Roznica 12 St -> 9x9 daje 2 ruchy i 5 jencow dla Czarnego.
+# Czarek wygrywa o 15 punktow, czyli wyraznie: caly stopien zamiast polowki.
+# To jego czwarta wygrana z rzedu, wiec seria mnozy zmiane zwyciezcy razy dwa.
 CZAREK = KartaDane(
     nick="Czarek", plansza="9×9",
     wiersze=[Wiersz(
-        data="15.07", moje_pkt="60",
-        przeciwnik_nick="Bianka", przeciwnik_pkt="84", roznica_ps="24",
-        ruchy="2", jency="5", kalibracja="—", wynik="+15", zmiana="+2×2", nowe_pkt="64",
+        data="15.07", moje_pkt="30",
+        przeciwnik_nick="Bianka", przeciwnik_pkt="42", roznica_st="12",
+        ruchy="2", jency="5", kalibracja="—", wynik="+15", zmiana="+1×2", nowe_pkt="32",
     )],
 )
 
 BIANKA = KartaDane(
     nick="Bianka", plansza="9×9",
     wiersze=[Wiersz(
-        data="15.07", moje_pkt="84",
-        przeciwnik_nick="Czarek", przeciwnik_pkt="60", roznica_ps="24",
-        ruchy="2", jency="5", kalibracja="—", wynik="−15", zmiana="−2", nowe_pkt="82",
+        data="15.07", moje_pkt="42",
+        przeciwnik_nick="Czarek", przeciwnik_pkt="30", roznica_st="12",
+        ruchy="2", jency="5", kalibracja="—", wynik="−15", zmiana="−1", nowe_pkt="41",
     )],
 )
 

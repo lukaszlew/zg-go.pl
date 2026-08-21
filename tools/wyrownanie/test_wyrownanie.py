@@ -550,3 +550,53 @@ class BezPierwszegoRuchu(unittest.TestCase):
         """Decyzja kosztuje: przy roznicy 1 Czarny mialby 7 jencow, a gra rowno."""
         self.assertEqual([-zg.wiersz("19x19", r)[2] for r in (0.5, 1.0)], [0, 7])
         self.assertEqual(tabela_html.rowne("19x19"), [0.0, 0.5, 1.0])
+
+
+class NaStronie(unittest.TestCase):
+    """ranking.html nie ma build-stepu, wiec markup wklejamy — i pilnujemy testem."""
+
+    def test_tabele_na_stronie_sa_te_z_generatora(self):
+        strona = (pathlib.Path(tabela_html.KATALOG_PAKIETU).parents[1] / "ranking.html")
+        html = strona.read_text(encoding="utf-8")
+        for plansza in tabela_html.PLANSZE:
+            with self.subTest(plansza=plansza):
+                oczekiwana = tabela_html.tabela(plansza).replace("\n        ", "\n          ")
+                self.assertIn(
+                    oczekiwana, html,
+                    f"tabela {plansza} na ranking.html rozjechala sie z generatorem "
+                    "— wklej ja jeszcze raz zamiast poprawiac recznie",
+                )
+        self.assertIn('<div class="tabele">', html, "trzy siatki stoja w jednym rzedzie")
+
+    def test_strona_ma_style_dla_klas_z_generatora(self):
+        """Markup przynosi wlasne klasy; bez regul w style.css tabela sie rozsypie."""
+        arkusz = (pathlib.Path(tabela_html.KATALOG_PAKIETU).parents[1] / "style.css")
+        tresc = arkusz.read_text(encoding="utf-8")
+        for klasa in ("th.rog", "th.plansza", "span.pol", "col.brzeg"):
+            with self.subTest(klasa=klasa):
+                self.assertIn(klasa, tresc)
+
+
+class SiatkiNaKarcie(unittest.TestCase):
+    """Karta rysuje te same siatki, co strona — z tego samego zrodla."""
+
+    def test_karta_rysuje_wszystkie_trzy_plansze(self):
+        import karta_pdf
+        self.assertEqual(karta_pdf.PLANSZE, tabela_html.PLANSZE)
+        self.assertIs(karta_pdf.siatka, tabela_html.siatka)
+
+    def test_siatki_mieszcza_sie_w_szerokosc_karty(self):
+        """Assert w karcie zlapalby to przy generowaniu; test mowi o tym wczesniej."""
+        import karta_pdf
+        szerokosc = sum(
+            len({j for j, _ in tabela_html.siatka(p)}) * karta_pdf.KRATKA_W + karta_pdf.BRZEG_W
+            for p in tabela_html.PLANSZE
+        ) + (len(tabela_html.PLANSZE) - 1) * karta_pdf.SIATKA_GAP
+        self.assertLessEqual(szerokosc, karta_pdf.PAGE_W - 2 * karta_pdf.MARGIN)
+
+    def test_polowka_pisze_sie_tak_samo_jak_na_stronie(self):
+        import karta_pdf
+        for stopien in (0.5, 3.0, 12.5):
+            with self.subTest(stopien=stopien):
+                ze_strony = tabela_html._stopien(stopien).replace(tabela_html.POLOWKA, "½")
+                self.assertEqual(karta_pdf._stopien(stopien), ze_strony)

@@ -23,6 +23,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 
+from wyrownanie.tabela_html import PLANSZE, siatka
 from zasady import KOLUMNY, ZASADY, w_kolumnie
 
 PAGE_W, PAGE_H = A4                     # 210 x 297 mm, pion
@@ -46,12 +47,12 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "06.08.2026"                   # stopka karty; podbij przy zmianie zasad/ukladu
+WERSJA = "21.08.2026d"                   # stopka karty; podbij przy zmianie zasad/ukladu
 
 # Obcy klub: jedyne, co jest w karcie lokalne, to nazwa w naglowku (draw_title)
 # i adres w stopce oraz w kodzie QR (draw_sciaga). Gdy zglosi sie pierwszy klub,
 # wyciagnac te trzy napisy do parametru wiersza polecen zamiast kopiowac plik.
-ROWS = 21                               # mini-tabela wyrownania i 10 zasad w sciadze kosztuja 5 wierszy
+ROWS = 20                               # trzy siatki wyrownania i 10 zasad w sciadze kosztuja reszte strony
 ROW_H = 8 * mm
 HEAD_H = 13 * mm
 NICK_MAX = 40 * mm                      # nick nie zabiera calej reszty szerokosci
@@ -66,8 +67,8 @@ SUB_FS = 5.2                            # naglowki podkolumn (wersaliki)
 # bez podzialu; szerokosc 0.0 = reszta szerokosci karty (nick przeciwnika)
 COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("data", [("", 9 * mm)]),
-    ("moje PS", [("", 12 * mm)]),
-    ("przeciwnik", [("nick", 0.0), ("PS", 8 * mm), ("różnica PS", 15 * mm)]),
+    ("moje St", [("", 12 * mm)]),
+    ("przeciwnik", [("nick", 0.0), ("St", 8 * mm), ("różnica St", 15 * mm)]),
     # "dla Czarnego" raz, w naglowku grupy — podkolumny zostaja krotkie
     ("wyrównanie dla Czarnego", [("pierwsze\nruchy", 17 * mm), ("dodatkowi\njeńcy", 19 * mm)]),
     # mnoznik nowego gracza (×4/×3/×2), K u przeciwnika, w zwyklej grze myslnik;
@@ -75,8 +76,8 @@ COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     # sekcje karty
     ("kalibracja", [("", 15 * mm)]),
     ("wynik", [("", 12 * mm)]),
-    ("zmiana PS", [("", 13 * mm)]),
-    ("nowe PS", [("", 12.5 * mm)]),
+    ("zmiana St", [("", 13 * mm)]),
+    ("nowe St", [("", 12.5 * mm)]),
 ]
 
 # przed tymi grupami biegnie gruba kreska — sekcje jak w przykladzie na stronie:
@@ -94,7 +95,7 @@ class Wiersz:
     moje_pkt: str
     przeciwnik_nick: str
     przeciwnik_pkt: str
-    roznica_ps: str
+    roznica_st: str
     ruchy: str              # pierwsze ruchy Czarnego (1 = gra rowna)
     jency: str              # dodatkowi jency dla Czarnego (liczba ujemna = dla Bialego)
     kalibracja: str         # mnoznik nowego gracza (×4/×3/×2), K u przeciwnika, albo myslnik
@@ -111,11 +112,11 @@ class KartaDane:
     wiersze: list[Wiersz]
 
 
-# indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze PS
-PS_LEAFS = {1, 3, 4, 9, 10}   # moje PS, PS przeciwnika, roznica PS, zmiana, nowe
+# indeksy podkolumn (w kolejnosci COLUMNS) z wartosciami w kolorze stopni
+ST_LEAFS = {1, 3, 4, 9, 10}   # moje St, St przeciwnika, roznica St, zmiana, nowe
 
 # sciaga na dole karty: (tytul kolumny, [(numer, zasada)]); kolumny w rytmie
-# wypelniania karty (wyrownanie -> wynik -> zmiana PS); mini-tabela KOMP_TABELA
+# wypelniania karty (wyrownanie -> wynik -> zmiana stopni); siatki rysuje draw_siatki
 # stoi w srodkowej kolumnie "wynik", bo ta ma najmniej zasad i najwiecej luzu.
 # Tresc pochodzi w calosci z zasady.py — sciaga to dokladnie zasady ze strony,
 # nic wiecej i nic mniej.
@@ -123,17 +124,6 @@ SCIAGA: list[tuple[str, list[tuple[int, str]]]] = [
     (kolumna, w_kolumnie(kolumna)) for kolumna in KOLUMNY
 ]
 
-# mini-tabela wyrownania: zakres roznicy PS -> pierwsze ruchy Czarnego
-# i formula na dodatkowych jencow; zgodna z tabelami na ranking.html
-KOMP_TABELA_HEAD = ("różnica PS", "pierwsze ruchy", "dodatkowi jeńcy")
-KOMP_TABELA: list[tuple[str, str, str]] = [
-    ("0–5", "1", "−6 (gra równa)"),
-    ("6–18", "1", "różnica − 6"),
-    ("19–31", "2", "różnica − 19"),
-    ("32–44", "3", "różnica − 32"),
-    ("45–57", "4", "różnica − 45"),
-    ("58–70", "5", "różnica − 58"),
-]
 
 
 def register_fonts() -> None:
@@ -222,7 +212,7 @@ def draw_header_text(c: Canvas, cx: float, y: float, text: str, fs: float, max_w
     text = text.upper()
     text_w = pdfmetrics.stringWidth(text, FONT_BOLD, fs)
     assert text_w <= max_w - 1 * mm, f"naglowek '{text}' za szeroki na kolumne {max_w / mm:.1f} mm"
-    c.setFillColor(PKT_SILY if "PS" in text.split() else INK)
+    c.setFillColor(PKT_SILY if "St" in text.split() else INK)
     c.setFont(FONT_BOLD, fs)
     c.drawCentredString(cx, y, text)
 
@@ -330,12 +320,12 @@ def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
     assert len(leaves) == 11, len(leaves)
     for row, w in enumerate(wiersze):
         y = row_baseline(top, row)
-        values = [w.data, w.moje_pkt, w.przeciwnik_nick, w.przeciwnik_pkt, w.roznica_ps,
+        values = [w.data, w.moje_pkt, w.przeciwnik_nick, w.przeciwnik_pkt, w.roznica_st,
                   w.ruchy, w.jency, w.kalibracja, w.wynik, w.zmiana, w.nowe_pkt]
         for li, ((lx, lw), value) in enumerate(zip(leaves, values)):
             if not value:
                 continue
-            c.setFillColor(PKT_SILY if li in PS_LEAFS else INK)
+            c.setFillColor(PKT_SILY if li in ST_LEAFS else INK)
             c.setFont(FONT_HAND, HAND_FS)
             c.drawCentredString(lx + lw / 2, y, value)
 
@@ -355,7 +345,7 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
     c.rect(x0, top - HEAD_H, card_w, HEAD_H, stroke=0, fill=1)
 
     # Rubryka "wynik" dostaje wlasne tlo na calej wysokosci tabeli: to jedyna
-    # liczba wpisywana z pamieci zaraz po grze i ona rozstrzyga o zmianie PS,
+    # liczba wpisywana z pamieci zaraz po grze i ona rozstrzyga o zmianie stopni,
     # wiec ma sie rzucac w oczy takze przy porownywaniu dwoch kart.
     x = x0
     for (label, _), sub_ws in zip(COLUMNS, widths):
@@ -381,37 +371,84 @@ def draw_qr(c: Canvas, x: float, y: float, size: float, url: str) -> None:
     renderPDF.draw(d, c, x, y)
 
 
-def draw_komp_tabela(c: Canvas, x: float, top: float, col_w: float) -> float:
-    """Mini-tabela wyrownania w kolumnie sciagi; zwraca y dolnej krawedzi."""
-    ws = [0.22 * col_w, 0.32 * col_w, 0.46 * col_w]
-    assert abs(sum(ws) - col_w) < 0.01 * mm, f"szerokosci podkolumn != {col_w / mm:.1f} mm"
-    head_h, row_h = 3.8 * mm, 3.4 * mm
-    bottom = top - head_h - len(KOMP_TABELA) * row_h
+
+
+KRATKA_W, BRZEG_W, WIERSZ_H = 6.0 * mm, 8.4 * mm, 2.8 * mm
+SIATKA_GAP = 6 * mm
+
+
+def _stopien(roznica: float) -> str:
+    """Polowka jednym znakiem, tak jak w tabeli na stronie."""
+    calosc = int(roznica)
+    if roznica == calosc:
+        return str(calosc)
+    return f"{calosc}½" if calosc else "½"
+
+
+def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
+    """Jedna siatka wyrownania; zwraca jej szerokosc.
+
+    Liczby ida wprost z wyrownanie/zg.py — to samo zrodlo, co tabele na stronie,
+    wiec karta nie ma jak sie z nia rozjechac.
+    """
+    pola = siatka(plansza)
+    jency = sorted({j for j, _ in pola})
+    ruchy = sorted({r for _, r in pola})
+    szer = len(jency) * KRATKA_W + BRZEG_W
+    wys = (len(ruchy) + 2) * WIERSZ_H
+
+    c.setFillColor(INK)
+    c.rect(x, top - WIERSZ_H, len(jency) * KRATKA_W, WIERSZ_H, stroke=0, fill=1)
+    c.setFillColor(HexColor("#ffffff"))
+    c.setFont(FONT_BOLD, 6)
+    c.drawCentredString(x + len(jency) * KRATKA_W / 2, top - WIERSZ_H + 1.0 * mm, plansza)
+    c.setFillColor(MUTED)
+    c.setFont(FONT, 4.4)
+    c.drawCentredString(x + szer - BRZEG_W / 2, top - WIERSZ_H + 1.0 * mm, "↓ ruchy")
+
+    for numer, r in enumerate(ruchy):
+        y = top - (numer + 2) * WIERSZ_H + 1.0 * mm
+        for kolumna, j in enumerate(jency):
+            c.setFillColor(PKT_SILY)
+            c.setFont(FONT, 5.4)
+            c.drawCentredString(x + (kolumna + 0.5) * KRATKA_W, y, _stopien(pola[(j, r)]))
+        c.setFillColor(INK)
+        c.setFont(FONT_BOLD, 5.4)
+        c.drawCentredString(x + szer - BRZEG_W / 2, y, str(r))
+
+    dol = top - (len(ruchy) + 2) * WIERSZ_H + 1.0 * mm
     c.setFillColor(HEADER_BG)
-    c.rect(x, top - head_h, col_w, head_h, stroke=0, fill=1)
-    hx = x
-    for head, w in zip(KOMP_TABELA_HEAD, ws):
-        draw_header_text(c, hx + w / 2, top - head_h + 1.2 * mm, head, 4.8, w)
-        hx += w
-    for r, row in enumerate(KOMP_TABELA):
-        y = top - head_h - (r + 1) * row_h + 1.0 * mm
-        vx = x
-        for i, (value, w) in enumerate(zip(row, ws)):
-            c.setFillColor(PKT_SILY if i == 0 else INK)
-            c.setFont(FONT, 6)
-            c.drawCentredString(vx + w / 2, y, value)
-            vx += w
+    c.rect(x, dol - 1.0 * mm, szer, WIERSZ_H, stroke=0, fill=1)
+    for kolumna, j in enumerate(jency):
+        c.setFillColor(INK)
+        c.setFont(FONT_BOLD, 5.4)
+        c.drawCentredString(x + (kolumna + 0.5) * KRATKA_W, dol, str(j))
+    c.setFillColor(MUTED)
+    c.setFont(FONT, 4.4)
+    c.drawCentredString(x + szer - BRZEG_W / 2, dol, "← jeńcy")
+
     c.setStrokeColor(GRID)
     c.setLineWidth(0.4)
-    for r in range(len(KOMP_TABELA)):
-        ly = top - head_h - r * row_h
-        c.line(x, ly, x + col_w, ly)
-    vx = x
-    for w in ws[:-1]:
-        vx += w
-        c.line(vx, top, vx, bottom)
-    c.rect(x, bottom, col_w, top - bottom, stroke=1, fill=0)
-    return bottom
+    for numer in range(1, len(ruchy) + 2):
+        ly = top - (numer + 1) * WIERSZ_H
+        c.line(x, ly, x + szer, ly)
+    for kolumna in range(1, len(jency) + 1):
+        c.line(x + kolumna * KRATKA_W, top - WIERSZ_H, x + kolumna * KRATKA_W, top - wys)
+    c.setStrokeColor(INK)
+    c.setLineWidth(0.7)
+    c.rect(x, top - wys, szer, wys, stroke=1, fill=0)
+    return szer
+
+
+def draw_siatki(c: Canvas, x0: float, top: float, card_w: float) -> float:
+    """Trzy siatki w rzedzie; zwraca y dolnej krawedzi."""
+    x, najnizej = x0, top
+    for plansza in PLANSZE:
+        szer = draw_siatka(c, x, top, plansza)
+        x += szer + SIATKA_GAP
+        najnizej = min(najnizej, top - (len(sorted({r for _, r in siatka(plansza)})) + 2) * WIERSZ_H)
+    assert x - SIATKA_GAP <= x0 + card_w, f"siatki nie miesza sie w szerokosc karty: {(x - SIATKA_GAP - x0) / mm:.1f} mm"
+    return najnizej
 
 
 def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
@@ -425,7 +462,7 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
         x = x0 + i * (col_w + gap)
         t = title.upper()
         c.setFont(FONT_BOLD, 6)
-        c.setFillColor(PKT_SILY if "PS" in t.split() else INK)
+        c.setFillColor(PKT_SILY if "St" in t.split() else INK)
         c.drawString(x, y0, t)
         c.setStrokeColor(HEADER_BG)
         c.setLineWidth(0.8)
@@ -441,15 +478,18 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
                 c.drawString(x + 4.2 * mm, y, line)
                 y -= line_h
             y -= 0.7 * mm
-        if title == "wynik":                        # srodkowa kolumna: najkrotsza, wiec tabela tu
-            y = draw_komp_tabela(c, x, y + 1.0 * mm, col_w) - 1.0 * mm
         bottoms.append(y)
-    y = min(bottoms) - 1.5 * mm
+    # Siatki wszystkich trzech plansz ida pod sciaga, na calej szerokosci: karta
+    # sluzy trzem planszom, wiec kazda musi miec swoja — jedna wystarczylaby
+    # tylko wtedy, gdyby wyrownanie bylo wszedzie takie samo, a nie jest.
+    # 4 mm, a nie 1,5: napis rosnie w gore od linii pisma, wiec przy ciasniejszym
+    # odstepie wchodzil w ramke najnizszej siatki.
+    y = draw_siatki(c, x0, min(bottoms) - 2.5 * mm, card_w) - 4 * mm
     qr_size = 14 * mm
     draw_qr(c, x0 + card_w - qr_size, y, qr_size, "https://zg-go.pl/ranking.html")
     c.setFont(FONT, 6)
     c.setFillColor(MUTED)
-    c.drawString(x0, y, "PS = punkty siły · Pełne zasady: zg-go.pl/ranking.html")
+    c.drawString(x0, y, "St = stopnie siły · Pełne zasady: zg-go.pl/ranking.html")
     c.drawRightString(x0 + card_w - qr_size - 2 * mm, y, f"wersja karty {WERSJA}")
     return y
 
@@ -516,8 +556,8 @@ def odcisk() -> str:
         "kolumny": list(KOLUMNY),
         "columns": [[g, [[s, round(w, 3)] for s, w in subs]] for g, subs in COLUMNS],
         "fields": [[etykieta, round(w, 3)] for etykieta, w in FIELDS],
-        "komp_naglowek": list(KOMP_TABELA_HEAD),
-        "komp": [list(w) for w in KOMP_TABELA],
+        # Siatki wyrownania: same liczby, bo to one moga sie rozjechac z zasada.
+        "siatki": {p: {f"{j}/{r}": d for (j, r), d in sorted(siatka(p).items())} for p in PLANSZE},
         "plansza": PLANSZA_PREPRINT,
     }
     kanoniczne = json.dumps(dane, ensure_ascii=False, sort_keys=True)

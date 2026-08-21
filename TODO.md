@@ -36,8 +36,8 @@
 
 ## Kod
 
-- [ ] **Kalkulator wyrównania** na `ranking.html`: dwa pola PS → kolory, pierwsze ruchy
-      i dodatkowi jeńcy; drugi kalkulator na zmianę PS
+- [ ] **Kalkulator wyrównania** na `ranking.html`: dwa pola St → kolory, pierwsze ruchy
+      i dodatkowi jeńcy; drugi kalkulator na zmianę St
 - [ ] **Tłumaczenia** — angielski i ukraiński; prawdopodobnie razem z generatorem stron,
       bo cztery pliki HTML już teraz mają przepisane te same bloki
 - [ ] **Karta dla obcego klubu** — zrobić, gdy zgłosi się pierwszy; co jest w karcie

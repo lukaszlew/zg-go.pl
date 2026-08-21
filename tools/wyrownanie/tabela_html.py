@@ -206,6 +206,19 @@ def _tabela_siatki(plansza: str) -> str:
 OPIS = "W kratkach różnica stopni. Mniejsza niż pierwsza kratka to gra równa."
 
 
+def tabela(plansza: str) -> str:
+    """Sam <table> jednej planszy — do wklejenia na ranking.html.
+
+    Strona jest pisana recznie i nie ma build-stepu, wiec markup wkleja sie tam
+    raz, a pilnuje go test: ma byc znak w znak tym, co zwraca ta funkcja.
+    """
+    return (
+        f'<table class="sila komp" id="wyrownanie-{plansza}">\n'
+        + _tabela_siatki(plansza)
+        + "\n        </table>"
+    )
+
+
 def _sekcja(plansza: str) -> str:
     return f"""\
     <section id="plansza-{plansza}">

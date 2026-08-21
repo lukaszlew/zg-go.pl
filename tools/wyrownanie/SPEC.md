@@ -6,9 +6,9 @@ wyglądają tak, a nie inaczej. Kod mówi, co się dzieje; tutaj stoi, co było 
 
 ## Po co to jest
 
-Klub ma własny system wyrównania na 19x19 — stoi na `ranking.html` i liczy go
-`wyrownanie.js`. Na 9x9 i 13x13 nie miał żadnego. Te tabele domykają lukę: jedną
-zasadą dla wszystkich trzech plansz, a nie trzema osobnymi.
+Klub gra na trzech planszach i wyrównuje je jedną zasadą, a nie trzema osobnymi.
+Zasada stoi na `ranking.html`, liczy ją `wyrownanie.js`, a tabele dla każdej planszy
+biorą się stąd.
 
 Obok stoją cztery cudze tabele (BGA, LSG, Ishikura, Hunt) przepisane co do liczby.
 Nie są konkurencją dla klubowej — są punktem odniesienia i to z nich wyszedł stosunek,
@@ -24,7 +24,8 @@ różnicy sił — zależy od planszy:
 | punktów na stopień | 13 | 5 | 2 |
 
 Stosunek nie jest zgadnięty. Wychodzi ten sam u każdego, kto liczył: LSG 9x9 i Hunt
-9x9 idą po 2, LSG 13x13 i Ishikura 13x13 po 5, a `wyrownanie.js` liczy 19x19 po 13.
+9x9 idą po 2, LSG 13x13 i Ishikura 13x13 po 5, a trzynastka na 19x19 to ta sama liczba,
+na której stoi klubowa zasada — jeden darmowy ruch.
 
 Rachunek:
 
@@ -34,8 +35,12 @@ ruchy  = max(1, 1 + punkty // 13)
 jeńcy  = punkty - (ruchy - 1) * 13  (zawsze 0..12 — trzynasty punkt kupuje ruch)
 ```
 
-Kolumna 19x19 odtwarza `wyrownanie.js` co do wiersza. Pilnuje tego test w drugim
-języku (`tools/test_kalkulator.mjs`), więc rozjazd zapali się od razu.
+Ten sam rachunek liczy `wyrownanie.js` — kalkulator na stronie i ten moduł to dwie
+implementacje jednej zasady. Zestawia je test w drugim języku
+(`tools/test_kalkulator.mjs`), wiersz po wierszu, na każdej z trzech plansz.
+
+Ranking klubowy idzie w tych samych stopniach, o rozdzielczości pół stopnia, więc
+różnicę bierze się z kart wprost — nic się po drodze nie przelicza.
 
 ## Decyzje, które kosztowały
 
@@ -124,8 +129,8 @@ zasięg w stopniach; to jest w porządku i nie ma czego wyrównywać.
   Dziwactwo źródła ma dać się odróżnić od naszej literówki.
 - **Arytmetyka.** Tam, gdzie tabela jest ciągiem arytmetycznym, test przelicza ją co do
   punktu. Gdzie nie jest — ma własny test opisujący, gdzie i o ile się łamie.
-- **Dwa języki.** 19x19 liczone przez `wyrownanie.js` musi wyjść tak samo jak przez
-  `zg.py`.
+- **Dwa języki.** To, co liczy `wyrownanie.js`, musi wyjść tak samo jak w `zg.py` —
+  na każdej z trzech plansz, razem z drabinką 13x13.
 - **Układ.** Rogi, kreski, szerokości, kolejność tabel w rzędzie, brak przecinka w
   siatce, jedno wystąpienie opisu.
 
@@ -133,9 +138,10 @@ zasięg w stopniach; to jest w porządku i nie ma czego wyrównywać.
 
 - Adres źródłowy tabel Ishikury i Hunta jest zgadnięty (Sensei's Library) i oznaczony
   w obu modułach jako `TODO`. Przyszły z wklejki, nie ze strony.
-- `tabela-zg.html` jest na razie materiałem roboczym. Sam `<table>` da się z niego
-  wyciąć i wkleić na `ranking.html` — nosi klasy `sila komp` i `komp-jency` /
-  `komp-ruchy`, więc złapie gotowe reguły ze `style.css`.
+- Na `ranking.html` stoi tabela 9x9, wklejona z `tabela_html.tabela("9x9")` i pilnowana
+  testem. 13x13 i 19x19 czekają — tak samo czeka siatka na karcie gracza.
+- `tabela-zg.html` pokazuje wszystkie trzy naraz; jest materiałem roboczym do oglądania
+  i porównywania, nie źródłem dla strony.
 
 ## Jak to przegenerować
 

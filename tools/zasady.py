@@ -21,9 +21,6 @@ Kalibracja ma wlasna kolumne, a nie doklejone zasady w cudzych: dotyczy trzech
 pierwszych gier nowego gracza i nikogo poza nim, wiec reszta stolika moze ja
 przeczytac raz i wiecej do niej nie wracac.
 
-Numeracja jest ciagla przez cala liste i wynika z kolejnosci — nie zapisujemy
-jej, tylko liczymy, zeby nie dalo sie jej rozjechac.
-
 Podzial na kolumny odpowiada kolejnosci wypelniania wiersza karty:
 wyrownanie -> wynik -> zmiana St. Rozdzialy strony ida tak samo.
 """
@@ -31,13 +28,15 @@ wyrownanie -> wynik -> zmiana St. Rozdzialy strony ida tak samo.
 KOLUMNY: tuple[str, ...] = ("wyrównanie", "wynik", "zmiana St", "kalibracja")
 
 ZASADY: list[tuple[str, str]] = [
-    ("wyrównanie", "Policzcie różnicę St — silniejszy minus słabszy; mniejsza niż pierwsza kratka w tabeli waszej planszy to gra równa, kolory przez nigiri, Czarny daje Białemu 6 jeńców i wygraną przy równym wyniku, razem komi 6,5, a od pierwszej kratki w górę silniejszy gra Białymi i Czarny bierze z tabeli pierwsze ruchy oraz dodatkowych jeńców, liczonych na koniec jak zbite w grze."),
-    ("wynik", "Wynik wpisujecie w punktach ze znakiem: + u zwycięzcy, − u przegranego, remis jako zero; po poddaniu +R i −R."),
+    ("wyrównanie", "Różnica St to St silniejszego minus St słabszego; silniejszy gra Białymi."),
+    ("wyrównanie", "Ruchy Czarnego i dodatkowych jeńców, liczonych na koniec jak zbite w grze, odczytajcie z tabeli swojej planszy i przepiszcie na obie karty."),
+    ("wyrównanie", "Jeżeli różnica St jest mniejsza niż w tabeli, gra jest równa: zapisujecie 1 ruch i −6,5 jeńca, czyli Biały dostaje 6 jeńców i wygrywa remisy, a kolory rozstrzyga nigiri."),
+    ("wynik", "Wynik wpisujecie w punktach ze znakiem: + u zwycięzcy, − u przegranego, remis jako 0; po poddaniu +R i −R."),
     ("wynik", "Ta sama gra stoi na dwóch kartach: różnica St jednakowa, wynik z przeciwnymi znakami."),
-    ("zmiana St", "Zwycięzca +½ St, przegrany −½ St, remis 0."),
-    ("zmiana St", "Wygrana o 20 punktów lub więcej albo przez poddanie mnoży zmianę St obu graczy ×2."),
-    ("kalibracja", "W kolumnie kalibracja nowy gracz odlicza swój mnożnik — ×4, ×3, ×2 w trzech pierwszych grach — jego przeciwnik wpisuje K, a w każdej innej grze oboje stawiają myślnik."),
-    ("kalibracja", "Gra kalibracyjna działa jak zwykła, tylko nowy gracz mnoży swoją zmianę St przez mnożnik z kolumny kalibracja, a przeciwnik przy K dostaje dokładnie ±½ St."),
+    ("zmiana St", "Zwycięzca +½ St, przegrany −½ St, remis 0 — w grze równej remisu nie ma, bo wyklucza go połówka komi."),
+    ("zmiana St", "Wygrana o 20 punktów lub więcej albo przez poddanie daje zwycięzcy +1 St; przegrany traci ½ St jak zawsze."),
+    ("kalibracja", "W kolumnie kalibracja nowy gracz wpisuje K przez swoje trzy pierwsze gry, jego przeciwnik P, a w każdej innej grze oboje stawiają myślnik."),
+    ("kalibracja", "W grze kalibracyjnej nowy gracz dostaje ±1 St, a po wyraźnej wygranej lub przegranej ±2 St; przeciwnik przy P nie zmienia swoich St."),
 ]
 
 assert [k for k, _ in ZASADY] == sorted(
@@ -47,12 +46,12 @@ assert len({z for _, z in ZASADY}) == len(ZASADY), "zdania zasad musza byc unika
 assert {k for k, _ in ZASADY} == set(KOLUMNY), "kazda kolumna musi miec przynajmniej jedna zasade"
 
 
-def ponumerowane() -> list[tuple[int, str, str]]:
-    """(numer od 1, kolumna, zdanie) dla wszystkich zasad, w kolejnosci listy."""
-    return [(n, k, z) for n, (k, z) in enumerate(ZASADY, 1)]
+def w_kolumnie(kolumna: str) -> list[str]:
+    """Zdania jednej kolumny sciagi, w kolejnosci listy.
 
-
-def w_kolumnie(kolumna: str) -> list[tuple[int, str]]:
-    """(numer, zdanie) dla jednej kolumny sciagi."""
+    Zasady nie maja numerow — trzyma je kolejnosc i kolumna, w ktorej stoja.
+    Numer musialby sie zgadzac na stronie, na karcie i w testach naraz, a
+    odsylamy do zasad nazwa rubryki, nie liczba.
+    """
     assert kolumna in KOLUMNY, f"nieznana kolumna: {kolumna}"
-    return [(n, z) for n, k, z in ponumerowane() if k == kolumna]
+    return [z for k, z in ZASADY if k == kolumna]

@@ -32,7 +32,7 @@ powtarzalnego ksztaltu. Drabinka kosztuje 5,2 punktu na stopien zamiast 5,
 czyli szesc punktow nadwyzki przy roznicy 39 — mniej niz pol ruchu.
 
 Gra rowna zaczyna od ROWNA, czyli szesciu jencow dla Bialego — dokladnie tego,
-co mowi zasada 2 na stronie. Potem komi schodzi w dol az do -12 i dopiero
+co mowia zasady: Bialy dostaje szesciu jencow i wygrywa remisy. Potem komi schodzi w dol az do -12 i dopiero
 trzynasty punkt kupuje Czarnemu caly ruch, bo tyle wlasnie ruch jest wart.
 Dlatego komi nigdy nie stoi nizej niz -12: nadwyzka zamienia sie w ruch.
 

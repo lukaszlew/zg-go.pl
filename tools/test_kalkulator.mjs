@@ -11,7 +11,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-import { KROK, POLOWKA, parsujWynik, stopnie, wyrownanie, zeZnakiem, zmianaStopni } from '../wyrownanie.js';
+import { KROK, POLOWKA, ROWNA_JENCY, parsujWynik, stopnie, wyrownanie, zapisJencow, zeZnakiem, zmianaStopni } from '../wyrownanie.js';
 
 const STRONA = new URL('../ranking.html', import.meta.url);
 
@@ -29,7 +29,7 @@ test('kalkulator zgadza sie z zg.py na kazdej planszy, wiersz po wierszu', () =>
       // -0 od 0. Bez tego test pada na kazdej kratce z zerem jencow.
       const jency = -komi || 0;
       const w = wyrownanie(roznica, 0, plansza);
-      // Ponizej pierwszego wyrownania klub trzyma plaskie 6 jencow (zasada 2),
+      // Ponizej pierwszego wyrownania klub trzyma plaskie 6 jencow gry rownej,
       // a zg schodzi po jednym — tam porownujemy tylko to, ze gra jest rowna.
       if (jency < 0) {
         assert.equal(w.rowna, true, `${plansza}, roznica ${roznica}: gra rowna`);
@@ -48,7 +48,7 @@ test('gra rowna siega tam, gdzie na danej planszy nie ma jeszcze czego dac', () 
     for (const w of [wyrownanie(60 + ostatnia, 60, plansza), wyrownanie(60, 60 + ostatnia, plansza)]) {
       assert.equal(w.rowna, true, `${plansza}: roznica ${ostatnia} to jeszcze gra rowna`);
       assert.equal(w.ruchy, 1);
-      assert.equal(w.jency, -6, 'Czarny odklada Bialemu szesciu jencow');
+      assert.equal(w.jency, ROWNA_JENCY, 'na karcie stoi jedna liczba: −6,5');
     }
     assert.equal(wyrownanie(60 + ostatnia + POLOWKA, 60, plansza).rowna, false,
       `${plansza}: pol stopnia dalej to juz wyrownanie`);
@@ -93,30 +93,35 @@ test('remis nie zmienia nic', () => {
   );
 });
 
-test('wygrana o 20 punktow i poddanie daja caly stopien', () => {
+test('wyrazna wygrana daje caly stopien zwyciezcy, ale nie zabiera przegranemu wiecej', () => {
   assert.equal(zmiana('+19').moja, POLOWKA, 'dziewietnascie to jeszcze zwykla wygrana');
   assert.equal(zmiana('+20').moja, 1);
-  assert.equal(zmiana('+20').przeciwnika, -1);
+  assert.equal(zmiana('+20').przeciwnika, -POLOWKA, 'przegrany traci pol stopnia zawsze');
   assert.equal(zmiana('R').moja, 1);
-  assert.equal(zmiana('-R').moja, -1);
+  assert.equal(zmiana('-R').moja, -POLOWKA, 'to ja sie poddalem: pol stopnia w dol');
+  assert.equal(zmiana('-R').przeciwnika, 1);
+  // Ranking przestaje byc zerowy: wyrazna wygrana dodaje klubowi pol stopnia.
+  const wyrazna = zmiana('+20');
+  assert.equal(wyrazna.moja + wyrazna.przeciwnika, POLOWKA);
 });
 
-test('gra kalibracyjna mnozy zmiane nowego gracza, przeciwnik przy K dostaje ±pol', () => {
-  const moja = zmiana('+5', { kalibracja: { kto: 'ja', mnoznik: 3 } });
-  assert.equal(moja.moja, 1.5, 'pol stopnia razy mnoznik 3');
-  assert.equal(moja.przeciwnika, -POLOWKA, 'przeciwnik przy K dokladnie ±pol stopnia');
-  const jego = zmiana('-5', { kalibracja: { kto: 'on', mnoznik: 3 } });
-  assert.equal(jego.przeciwnika, 1.5, 'to on jest nowy i to on mnozy');
-  assert.equal(jego.moja, -POLOWKA);
-  assert.equal(zmiana('-5', { kalibracja: { kto: 'ja', mnoznik: 3 } }).moja, -1.5, 'przegrana tez razy mnoznik');
+test('gra kalibracyjna liczy sie nowemu graczowi podwojnie, przeciwnikowi wcale', () => {
+  const moja = zmiana('+5', { kalibracja: { kto: 'ja' } });
+  assert.equal(moja.moja, 1, 'dwa razy tyle, co zwykla wygrana');
+  assert.equal(moja.przeciwnika, 0, 'przeciwnik przy P nie zmienia swoich stopni');
+  const jego = zmiana('-5', { kalibracja: { kto: 'on' } });
+  assert.equal(jego.przeciwnika, 1, 'to on jest kalibrowany i to jemu sie liczy');
+  assert.equal(jego.moja, 0);
+  assert.equal(zmiana('-5', { kalibracja: { kto: 'ja' } }).moja, -1,
+    'w dol tak samo — strzelona liczba bywa za wysoka rownie dobrze jak za niska');
 });
 
-test('mnoznik kalibracji kumuluje sie z ×2 za wyrazna wygrana i poddanie', () => {
-  assert.equal(zmiana('+25', { kalibracja: { kto: 'ja', mnoznik: 4 } }).moja, 4, 'caly stopien razy 4');
-  assert.equal(zmiana('+15', { kalibracja: { kto: 'ja', mnoznik: 4 } }).moja, 2, 'zwykla wygrana razy 4');
-  assert.equal(zmiana('R', { kalibracja: { kto: 'ja', mnoznik: 2 } }).moja, 2, 'poddanie liczy sie jak zawsze');
-  assert.equal(zmiana('+25', { kalibracja: { kto: 'ja', mnoznik: 4 } }).przeciwnika, -POLOWKA,
-    'przeciwnika nie mnozy nic, nawet ×2');
+test('wyrazny wynik w grze kalibracyjnej to ±2, po obu stronach tak samo', () => {
+  assert.equal(zmiana('+25', { kalibracja: { kto: 'ja' } }).moja, 2);
+  assert.equal(zmiana('-25', { kalibracja: { kto: 'ja' } }).moja, -2);
+  assert.equal(zmiana('R', { kalibracja: { kto: 'ja' } }).moja, 2, 'poddanie liczy sie jak wyrazna');
+  assert.equal(zmiana('+15', { kalibracja: { kto: 'ja' } }).moja, 1, 'pietnascie to jeszcze zwykla');
+  assert.equal(zmiana('+25', { kalibracja: { kto: 'ja' } }).przeciwnika, 0, 'przeciwnika nie rusza nic');
 });
 
 test('stopnie pisze sie polowkami, tak jak stawia sie je na karcie', () => {
@@ -124,8 +129,14 @@ test('stopnie pisze sie polowkami, tak jak stawia sie je na karcie', () => {
   assert.equal(stopnie(0.5), '½');
   assert.equal(stopnie(1), '1');
   assert.equal(stopnie(1.5), '1½');
-  assert.equal(stopnie(-0.5), '-½');
+  assert.equal(stopnie(-0.5), '−½');
   assert.equal(zeZnakiem(POLOWKA), '+½', 'typowa zmiana po grze');
-  assert.equal(zeZnakiem(-2), '-2');
+  assert.equal(zeZnakiem(-2), '−2');
   assert.equal(zeZnakiem(0), '0');
+});
+
+test('jency ida w punktach, wiec polowka jest przecinkiem, a nie ulamkiem', () => {
+  assert.equal(zapisJencow(ROWNA_JENCY), '−6,5');
+  assert.equal(zapisJencow(0), '0');
+  assert.equal(zapisJencow(5), '5');
 });

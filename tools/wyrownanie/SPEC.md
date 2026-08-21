@@ -138,8 +138,8 @@ zasięg w stopniach; to jest w porządku i nie ma czego wyrównywać.
 
 - Adres źródłowy tabel Ishikury i Hunta jest zgadnięty (Sensei's Library) i oznaczony
   w obu modułach jako `TODO`. Przyszły z wklejki, nie ze strony.
-- Na `ranking.html` stoi tabela 9x9, wklejona z `tabela_html.tabela("9x9")` i pilnowana
-  testem. 13x13 i 19x19 czekają — tak samo czeka siatka na karcie gracza.
+- Mnożniki kalibracji na 13x13 i 19x19 nie są ustalone: trzy gry po 1 St są dobrane
+  do 9x9, a na większych planszach skala jest dłuższa.
 - `tabela-zg.html` pokazuje wszystkie trzy naraz; jest materiałem roboczym do oglądania
   i porównywania, nie źródłem dla strony.
 

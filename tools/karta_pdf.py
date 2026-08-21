@@ -50,7 +50,7 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "21.08.2026k"                   # stopka karty; podbij przy zmianie zasad/ukladu
+WERSJA = "21.08.2026s"                   # stopka karty; podbij przy zmianie zasad/ukladu
 
 # Obcy klub: jedyne, co jest w karcie lokalne, to nazwa w naglowku (draw_title)
 # i adres w stopce oraz w kodzie QR (draw_sciaga). Gdy zglosi sie pierwszy klub,
@@ -74,7 +74,7 @@ COLUMNS: list[tuple[str, list[tuple[str, float]]]] = [
     ("przeciwnik", [("nick", 0.0), ("St", 8 * mm), ("różnica St", 15 * mm)]),
     # "dla Czarnego" raz, w naglowku grupy — podkolumny zostaja krotkie
     ("wyrównanie dla Czarnego", [("pierwsze\nruchy", 17 * mm), ("dodatkowi\njeńcy", 19 * mm)]),
-    # mnoznik nowego gracza (×4/×3/×2), K u przeciwnika, w zwyklej grze myslnik;
+    # K u kalibrowanego, P u jego przeciwnika, w zwyklej grze myslnik;
     # ostatnia rubryka wypelniana przed pierwszym ruchem, wiec zamyka srodkowa
     # sekcje karty
     ("kalibracja", [("", 15 * mm)]),
@@ -101,7 +101,7 @@ class Wiersz:
     roznica_st: str
     ruchy: str              # pierwsze ruchy Czarnego (1 = gra rowna)
     jency: str              # dodatkowi jency dla Czarnego (liczba ujemna = dla Bialego)
-    kalibracja: str         # mnoznik nowego gracza (×4/×3/×2), K u przeciwnika, albo myslnik
+    kalibracja: str         # K u kalibrowanego, P u jego przeciwnika, albo myslnik
     wynik: str
     zmiana: str
     nowe_pkt: str
@@ -509,10 +509,10 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
         c.setLineWidth(0.8)
         c.line(x, y0 - 1.6 * mm, x + col_w, y0 - 1.6 * mm)
         y = y0 - 5 * mm
-        for numer, zasada in items:
+        for zasada in items:
             c.setFont(FONT_BOLD, 6)
             c.setFillColor(MUTED)
-            c.drawString(x, y, f"{numer}.")          # numer zamiast punktora: zasady sa numerowane
+            c.drawString(x, y, "•")
             c.setFont(FONT, 6)
             c.setFillColor(INK)
             for line in simpleSplit(zasada, FONT, 6, col_w - 4.2 * mm):

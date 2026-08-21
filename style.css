@@ -331,35 +331,29 @@ img.wycinek {
    a nie splaszcza go do jednej listy. */
 .spis ul.links ul { list-style: none; margin: 0.1rem 0 0.25rem; padding-left: 1rem; }
 
-/* Ramka wokol samych zasad: dziesiec zdan i tabela wyrownania, czyli dokladnie
-   to, co stoi na sciadze karty gracza. Poza ramka zostaja naglowek sekcji i
-   akapit wstepny — one o zasadach mowia, ale nia nie sa. Tabela jest w srodku,
-   bo bez niej zasady 3 nie da sie wykonac. */
+/* Ramka wokol samych zasad: te same zdania i tabele wyrownania, co na sciadze
+   karty gracza. Poza ramka zostaja naglowek sekcji i akapit wstepny — one o
+   zasadach mowia, ale nia nie sa. Tabele sa w srodku, bo bez nich pierwszej
+   zasady nie da sie wykonac. */
 .zasady-blok { margin: 0.9rem 0 0; }
 .zasady-blok > :first-child { margin-top: 0; }
 .zasady-blok > :last-child { margin-bottom: 0; }
 
-/* blok "Zasady": trzy numerowane grupy w rytmie kolumn karty.
+/* blok "Zasady": grupy w rytmie kolumn karty. Zasady nie sa numerowane —
+   punktor wystarczy, a numer i tak trzeba by przestawiac przy kazdym scaleniu.
    Zasada wyglada tu tak samo jak jej naglowek w rozdziale — to ten sam tekst. */
-ol.zasady { margin: 0.15rem 0 0.5rem; padding-left: 1.9rem; }
-ol.zasady li { margin: 0.2rem 0; font-weight: 700; }
+ul.zasady { margin: 0.15rem 0 0.5rem; padding-left: 1.9rem; }
+ul.zasady li { margin: 0.2rem 0; font-weight: 700; }
 /* zasada w bloku ma wygladac jak jej naglowek nizej: to ten sam tekst,
    wiec bez koloru linku — zielen .ps ma dzialac tak samo w obu miejscach */
-ol.zasady a { color: inherit; }
-ol.zasady a:hover { text-decoration: underline; }
+ul.zasady a { color: inherit; }
+ul.zasady a:hover { text-decoration: underline; }
 
-/* zasada w rozdziale: numer wisi w marginesie, pogrubione zdanie w swojej linii,
-   pod nim szczegoly — wciecie zbiera cala zasade pod jej numerem, jak w bloku wyzej */
+/* zasada w rozdziale: pogrubione zdanie w swojej linii, pod nim szczegoly —
+   wciecie zbiera cala zasade razem, tak jak punktor w bloku wyzej */
 .zasada {
   margin: 1.1rem 0;
-  position: relative;
   padding-left: 1.9rem;
-}
-.zasada .nr {
-  position: absolute;
-  left: 0;
-  color: var(--muted);
-  font-weight: 700;
 }
 
 /* wyeksponowany link do karty gracza */

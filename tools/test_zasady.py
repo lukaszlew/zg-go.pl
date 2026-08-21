@@ -18,8 +18,8 @@ import zasady
 STRONA = Path(__file__).resolve().parent.parent / "ranking.html"
 
 # Podsekcje "Rozwiniecia zasad", w kolejnosci ze strony; kazda zasada stoi w nich jako
-# <strong> na poczatku akapitu. Kalibracja jest osobna podsekcja, a nie czescia "Zmiany
-# St", wiec zasada 10 stoi wlasnie tam — stad czwarta pozycja na liscie.
+# <strong> na poczatku akapitu. Kolejnosc musi byc ta sama, co w zasady.KOLUMNY —
+# to ona, a nie numer, mowi ktora zasada jest ktora.
 ROZDZIALY_ZASAD = ("wyrownanie", "wynik", "zmiana-st", "kalibracja")
 
 
@@ -36,8 +36,8 @@ def sekcja(html: str, ident: str) -> str:
 
 
 def listy_zasad(html: str) -> list[str]:
-    """Kolejne bloki <ol class=zasady> ze spisu."""
-    return re.findall(r'<ol class="zasady"[^>]*>(.*?)</ol>', html, re.S)
+    """Kolejne bloki <ul class=zasady> ze spisu."""
+    return re.findall(r'<ul class="zasady"[^>]*>(.*?)</ul>', html, re.S)
 
 
 class TestZasady(unittest.TestCase):
@@ -53,20 +53,14 @@ class TestZasady(unittest.TestCase):
         self.assertEqual(pozycje, self.zdania)
 
     def test_spis_linkuje_kazda_zasade_do_jej_rozwiniecia(self) -> None:
-        cele = re.findall(r'<li><a href="#(zasada-\d+)">', self.spis)
-        self.assertEqual(cele, [f"zasada-{n}" for n in range(1, len(self.zdania) + 1)])
+        """Kazda pozycja spisu ma swoje rozwiniecie, i na odwrot — bez sierot."""
+        cele = re.findall(r'<li><a href="#(zasada-[\w-]+)">', self.spis)
+        self.assertEqual(len(cele), len(self.zdania), "tyle linkow, ile zasad")
+        self.assertEqual(len(set(cele)), len(cele), "kazda zasada ma wlasna kotwice")
         for cel in cele:
             self.assertIn(f'id="{cel}"', self.html, f"kotwica {cel} bez celu")
-
-    def test_numeracja_spisu_jest_ciagla(self) -> None:
-        starty = [int(s or 1) for s in
-                  re.findall(r'<ol class="zasady"(?: start="(\d+)")?>', self.spis)]
-        oczekiwane, n = [], 1
-        for blok in listy_zasad(self.spis):
-            oczekiwane.append(n)
-            n += len(re.findall(r"<li>", blok))
-        self.assertEqual(starty, oczekiwane)
-        self.assertEqual(n - 1, len(self.zdania))
+        w_rozdzialach = re.findall(r'<p class="zasada" id="(zasada-[\w-]+)"', self.html)
+        self.assertEqual(w_rozdzialach, cele, "rozwiniecia w kolejnosci spisu")
 
     def test_rozdzialy_maja_dokladnie_te_zasady(self) -> None:
         naglowki = [
@@ -76,19 +70,8 @@ class TestZasady(unittest.TestCase):
         ]
         self.assertEqual(naglowki, self.zdania, "kolejnosc albo tresc zasad w rozdzialach")
 
-    def test_numery_przy_zasadach_zgadzaja_sie_z_kolejnoscia(self) -> None:
-        numery = [
-            (int(ident), int(nr))
-            for r in ROZDZIALY_ZASAD
-            for ident, nr in re.findall(
-                r'<p class="zasada" id="zasada-(\d+)"><span class="nr">(\d+)\.</span>',
-                sekcja(self.html, r))
-        ]
-        oczekiwane = [(n, n) for n in range(1, len(self.zdania) + 1)]
-        self.assertEqual(numery, oczekiwane)
-
     def test_sciaga_karty_to_te_same_zasady(self) -> None:
-        ze_sciagi = [(kolumna, z) for kolumna, punkty in karta_pdf.SCIAGA for _, z in punkty]
+        ze_sciagi = [(kolumna, z) for kolumna, punkty in karta_pdf.SCIAGA for z in punkty]
         self.assertEqual(ze_sciagi, zasady.ZASADY)
 
     def test_sciaga_ma_kolumny_w_kolejnosci_wypelniania(self) -> None:

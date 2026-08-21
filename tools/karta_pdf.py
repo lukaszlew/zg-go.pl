@@ -47,7 +47,7 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "21.08.2026e"                   # stopka karty; podbij przy zmianie zasad/ukladu
+WERSJA = "21.08.2026f"                   # stopka karty; podbij przy zmianie zasad/ukladu
 
 # Obcy klub: jedyne, co jest w karcie lokalne, to nazwa w naglowku (draw_title)
 # i adres w stopce oraz w kodzie QR (draw_sciaga). Gdy zglosi sie pierwszy klub,
@@ -444,7 +444,9 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
 
     c.setStrokeColor(GRID)
     c.setLineWidth(0.4)
-    for numer in range(1, len(ruchy) + 2):
+    # Od zera, bo pierwsza kreska oddziela czapke od pierwszego wiersza liczb —
+    # bez niej nazwa planszy zlewa sie z siatka.
+    for numer in range(len(ruchy) + 2):
         ly = top - (numer + 1) * WIERSZ_H
         c.line(x, ly, x + szer, ly)
     for kolumna in range(1, len(jency) + 1):

@@ -2,7 +2,7 @@
 # zmianach w tools/. `make help` wypisuje cele.
 # Wymaga: python3 + reportlab i Pillow, pdftocairo (poppler-utils), fonty DejaVu.
 
-all: karta.pdf karta-wycinek-czarek.svg wyrownanie  ## przegeneruj karty, karty przykladowe i tabele wyrownania
+all: karta.pdf karta-klub-przyklad.pdf karta-wycinek-czarek.svg wyrownanie  ## przegeneruj karty, karty przykladowe i tabele wyrownania
 
 help:  ## wypisz dostepne cele
 	@awk -F':.*##' '/^[a-z-]+:.*##/ { printf "  make %-11s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -10,8 +10,12 @@ help:  ## wypisz dostepne cele
 # sciaga na karcie idzie z zasady.py, wiec zmiana zasad tez odswieza karte.
 # Jeden przebieg pisze obie wersje: karta.pdf (kolor) i karta-cb.pdf (czarno-biala,
 # na ksero i drukarke laserowa).
-karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
+karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf img/logo.svg
 	python3 tools/karta_pdf.py
+
+# przyklad karty obcego klubu: inna nazwa w naglowku, bez logo
+karta-klub-przyklad.pdf: tools/karta_klub.py tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
+	python3 tools/karta_klub.py
 
 plansza-pdf: plansza/plansza.pdf  ## przegeneruj plansze rankingowa na laminat magnetyczny
 

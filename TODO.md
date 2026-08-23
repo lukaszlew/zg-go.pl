@@ -40,8 +40,6 @@
       i dodatkowi jeńcy; drugi kalkulator na zmianę St
 - [ ] **Tłumaczenia** — angielski i ukraiński; prawdopodobnie razem z generatorem stron,
       bo cztery pliki HTML już teraz mają przepisane te same bloki
-- [ ] **Karta dla obcego klubu** — zrobić, gdy zgłosi się pierwszy; co jest w karcie
-      lokalne, opisuje komentarz w `tools/karta_pdf.py`
 - [ ] Trzy słabości układu: próg `820px` wpisany w dwóch miejscach, `.przyklad`
       wychodzący poza kolumnę przez `transform`, justowanie akapitów na wąskim telefonie
 - [ ] Self-host fontów — nie dla szybkości (CSS fontów waży 0,7 kB), tylko żeby nie

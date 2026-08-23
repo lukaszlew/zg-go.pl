@@ -17,7 +17,6 @@ Szerokosc wydruku musi zmiescic sie w 1000 mm (szerokosc rolki laminatu).
 Wymaga: reportlab, czcionki DejaVu (pakiet fonts-dejavu).
 """
 
-import re
 import sys
 from pathlib import Path
 
@@ -42,7 +41,7 @@ CIEMNY = HexColor("#444444")            # podtytul: ciemniejszy od --muted
 ACCENT = HexColor("#9c2a2a")            # --accent: wyeksponowany adres zg-go.pl
 RULE = HexColor("#d9c896")              # --rule: zloty pasek z numerem kratki
 CARD = HexColor("#ffffff")              # --card: wnetrze kratek
-SILA = HexColor("#2e7d32")              # --kolor-sily: numery sil
+SILA = karta_pdf.KOLOROWA.sila          # kolor sily, ten sam co na karcie
 
 FONT = "DejaVu"
 FONT_BOLD = "DejaVu-Bold"
@@ -112,7 +111,7 @@ TABELA_GAP = 12 * mm                    # tabele wyrownania stoja kolo siebie
 
 NOTKA = "pierwszy raz?  nauczymy cię zasad w 15 minut"
 KODY_QR: list[tuple[str, str]] = [
-    ("https://zg-go.pl/ranking.html", "zasady rankingu"),
+    ("https://zg-go.pl/ranking", "zasady rankingu"),
     ("https://discord.gg/EB5at7kM9v", "klubowy Discord"),
     ("https://maps.app.goo.gl/zrGynDtGVZLG2zVd7", "opinia w Mapach Google"),
 ]
@@ -128,51 +127,6 @@ def zarejestruj_czcionki() -> None:
     lato = Path("/usr/share/fonts/truetype/lato")
     assert lato.is_dir(), f"brak katalogu czcionek Lato: {lato}"
     pdfmetrics.registerFont(TTFont(FONT_RANKING, str(lato / "Lato-Black.ttf")))
-
-
-def sciezka_logo(d: str) -> list[tuple[str, list[float]]]:
-    """Rozbija atrybut d na komendy; logo uzywa wylacznie absolutnych M, L, C i Z."""
-    czesci = re.findall(r"([A-Za-z])([^A-Za-z]*)", d)
-    nieznane = {cmd for cmd, _ in czesci} - set("MLCZ")
-    assert not nieznane, f"nieobslugiwane komendy SVG w logo: {nieznane}"
-    return [(cmd, [float(x) for x in re.findall(r"-?\d+(?:\.\d+)?", args)]) for cmd, args in czesci]
-
-
-def rysuj_logo(c: Canvas, x0: float, y0: float, rozmiar: float) -> None:
-    """Rysuje img/logo.svg (winogrono ZG) w kwadracie o boku rozmiar, lewy dolny rog w (x0, y0)."""
-    svg = (REPO / "img" / "logo.svg").read_text()
-    vb = [float(x) for x in re.search(r'viewBox="([^"]+)"', svg).group(1).split()]
-    sciezki = re.findall(r'<path d="([^"]+)"([^/]*)/>', svg)
-    assert len(sciezki) == 2, f"logo.svg ma {len(sciezki)} sciezek zamiast 2"
-    skala = rozmiar / vb[2]
-
-    def pkt(x: float, y: float) -> tuple[float, float]:
-        return x0 + (x - vb[0]) * skala, y0 + rozmiar - (y - vb[1]) * skala
-
-    for d, atrybuty in sciezki:
-        p = c.beginPath()
-        for cmd, args in sciezka_logo(d):
-            if cmd == "M":
-                assert len(args) == 2
-                p.moveTo(*pkt(args[0], args[1]))
-            elif cmd == "L":
-                assert len(args) == 2
-                p.lineTo(*pkt(args[0], args[1]))
-            elif cmd == "C":
-                assert len(args) % 6 == 0
-                for i in range(0, len(args), 6):
-                    p.curveTo(*pkt(args[i], args[i + 1]), *pkt(args[i + 2], args[i + 3]),
-                              *pkt(args[i + 4], args[i + 5]))
-            else:
-                p.close()
-        wypelniona = 'fill="none"' not in atrybuty
-        if wypelniona:
-            c.setFillColor(INK)
-            c.drawPath(p, stroke=0, fill=1)
-        else:
-            c.setStrokeColor(INK)
-            c.setLineWidth(0.363 * skala)
-            c.drawPath(p, stroke=1, fill=0)
 
 
 def zaokraglony(c: Canvas, x: float, y: float, w: float, h: float, r: float) -> PDFPathObject:
@@ -272,7 +226,7 @@ def rysuj_naglowek(c: Canvas, gora_y: float) -> None:
     nazwa_w = LOGO + przerwa + tytul_w
     nazwa_h = LOGO + 22 * mm            # wiersz logo+tytul, pod nim podtytul
     gora_nazwy = gora_y - (NAGLOWEK_H - nazwa_h) / 2
-    rysuj_logo(c, x, gora_nazwy - LOGO, LOGO)
+    karta_pdf.rysuj_logo(c, karta_pdf.SEMEDORI.logo, x, gora_nazwy - LOGO, LOGO, INK)
     c.setFillColor(INK)
     c.setFont(FONT_SERIF_BOLD, TYTUL_FS)
     c.drawString(x + LOGO + przerwa, gora_nazwy - LOGO / 2 - 0.36 * TYTUL_FS, tytul)

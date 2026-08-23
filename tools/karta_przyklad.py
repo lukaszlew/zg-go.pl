@@ -14,7 +14,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from karta_pdf import KOLOROWA, KartaDane, Wiersz, generuj_karte, generuj_wycinek
+from karta_pdf import KOLOROWA, SEMEDORI, KartaDane, Wiersz, generuj_karte, generuj_wycinek
 
 # Gra z przykladu: 9x9, sila Bianki 42, sila Czarka 30.
 # Roznica 12 -> 9x9 daje 2 ruchy i 5 jencow dla Czarnego.
@@ -67,7 +67,7 @@ def zloz_og_image(root: Path, wycinek: Path) -> None:
 
 def main() -> None:
     root = Path(__file__).resolve().parent.parent
-    generuj_karte(root / "karta-przyklad.pdf", [CZAREK, BIANKA], KOLOROWA)
+    generuj_karte(root / "karta-przyklad.pdf", [CZAREK, BIANKA], KOLOROWA, SEMEDORI)
 
     wycinek = root / "karta-wycinek.pdf"
     generuj_wycinek(wycinek, [CZAREK, BIANKA], n_rows=1.5, p=KOLOROWA)

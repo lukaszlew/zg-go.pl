@@ -30,6 +30,8 @@ from zasady import KOLUMNY, ZASADY, w_kolumnie
 PAGE_W, PAGE_H = A4                     # 210 x 297 mm, pion
 MARGIN = 10 * mm                        # margines zewnetrzny strony
 
+KORZEN = Path(__file__).resolve().parent.parent
+
 CZERN = HexColor("#000000")
 BIEL = HexColor("#ffffff")              # papier; takze napis na plakietce nazwy planszy
 
@@ -71,7 +73,9 @@ KOLOROWA = Paleta(
     # Podpis rogu ("↓ ruchy", "← jency"): na stronie --fg z opacity 0.7 na tle brzegu,
     # czyli dokladnie ten kolor. Drobniej i bledziej niz liczby, bo to podpis.
     rog=HexColor("#585449"),
-    sila=HexColor("#2e7d32"),           # --kolor-sily ze style.css
+    # Ciemniejsza zielen niz --kolor-sily na stronie (#2e7d32): ekran rozjasnia,
+    # a druk blednie, wiec na papierze kolor musi startowac ciemniej.
+    sila=HexColor("#1b5e20"),
 )
 
 # Bez jednej szarosci: na ksero i drukarce laserowej kazdy polton wychodzi
@@ -92,12 +96,9 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "22.08.2026k"                   # stopka karty; podbij przy zmianie zasad/ukladu
+WERSJA = "23.08.2026a"                   # dopiska na karcie; podbij przy zmianie zasad/ukladu
 
-# Obcy klub: jedyne, co jest w karcie lokalne, to nazwa w naglowku (draw_title)
-# i adres w stopce oraz w kodzie QR (draw_sciaga). Gdy zglosi sie pierwszy klub,
-# wyciagnac te trzy napisy do parametru wiersza polecen zamiast kopiowac plik.
-ROWS = 20                               # trzy siatki wyrownania i 11 zasad w sciadze kosztuja reszte strony
+ROWS = 19                               # wysoki naglowek, trzy siatki wyrownania i 11 zasad w sciadze kosztuja reszte strony
 # 7,7 mm zamiast 8: jedenasta zasada wypchnela stopke poza strone, a wiersz nizszy
 # o 0,3 mm dalej z zapasem miesci odreczny wpis (Caveat 14 pt to okolo 4,9 mm).
 ROW_H = 7.7 * mm
@@ -142,6 +143,24 @@ PLANSZA_FS = 9                          # nadruk wyraznie wiekszy od etykiet rub
 KRATKA_PLANSZY_H = 5.4 * mm
 KRATKA_PLANSZY_GAP = 2.0 * mm           # tyle, zeby kolko nie dotykalo sasiadki
 KRATKA_PLANSZY_MARGINES = 1.5 * mm
+# Zaokraglenie rogow jak na plakietkach nazw plansz w siatkach wyrownania
+# (0,45 mm na 2,1 mm wysokosci) — ten sam stosunek do wysokosci kratki.
+KRATKA_PLANSZY_PROMIEN = 1.2 * mm
+
+@dataclass(frozen=True)
+class Klub:
+    """Lokalna czesc karty: nazwa w naglowku i logo obok tytulu.
+
+    To jest cala lokalnosc — adres zasad (stopka i kod QR) celowo nie jest
+    polem, bo zasady mieszkaja na zg-go.pl niezaleznie od tego, kto drukuje.
+    Przyklad karty obcego klubu: tools/karta_klub.py.
+    """
+    nazwa: str              # w naglowku: "Ranking <nazwa> · zg-go.pl"
+    logo: Path | None       # prosty SVG (sciezki M/L/C/Z, jak img/logo.svg); None = bez logo
+
+
+SEMEDORI = Klub(nazwa="Semedori", logo=KORZEN / "img" / "logo.svg")
+
 
 @dataclass(frozen=True)
 class Wiersz:
@@ -205,28 +224,102 @@ def register_fonts() -> None:
     pdfmetrics.registerFont(TTFont(FONT_HAND, str(hand)))
 
 
-def draw_title(c: Canvas, p: Paleta, x0: float, top: float, card_w: float) -> float:
-    """Tytul karty jak naglowek strony zg-go.pl; zwraca y pod nim."""
-    y = top - 6 * mm
+def sciezka_logo(d: str) -> list[tuple[str, list[float]]]:
+    """Rozbija atrybut d na komendy; logo uzywa wylacznie absolutnych M, L, C i Z."""
+    czesci = re.findall(r"([A-Za-z])([^A-Za-z]*)", d)
+    nieznane = {cmd for cmd, _ in czesci} - set("MLCZ")
+    assert not nieznane, f"nieobslugiwane komendy SVG w logo: {nieznane}"
+    return [(cmd, [float(x) for x in re.findall(r"-?\d+(?:\.\d+)?", args)]) for cmd, args in czesci]
+
+
+def rysuj_logo(c: Canvas, plik: Path, x0: float, y0: float, rozmiar: float,
+               kolor: Color) -> None:
+    """Rysuje logo z prostego SVG w kwadracie o boku rozmiar, lewy dolny rog w (x0, y0).
+
+    Wlasny parser zamiast biblioteki, bo potrzeba nam tylko sciezek M/L/C/Z —
+    assert wyzej powie wprost, gdy logo wymaga czegos wiecej. Kreske sciezek
+    fill="none" rysuje grubosc ze stroke-width w pliku.
+    """
+    svg = plik.read_text()
+    vb = [float(x) for x in re.search(r'viewBox="([^"]+)"', svg).group(1).split()]
+    sciezki = re.findall(r'<path d="([^"]+)"([^/]*)/>', svg)
+    assert sciezki, f"brak sciezek <path> w {plik.name}"
+    skala = rozmiar / vb[2]
+
+    def pkt(x: float, y: float) -> tuple[float, float]:
+        return x0 + (x - vb[0]) * skala, y0 + rozmiar - (y - vb[1]) * skala
+
+    for d, atrybuty in sciezki:
+        p = c.beginPath()
+        for cmd, args in sciezka_logo(d):
+            if cmd == "M":
+                assert len(args) == 2
+                p.moveTo(*pkt(args[0], args[1]))
+            elif cmd == "L":
+                assert len(args) == 2
+                p.lineTo(*pkt(args[0], args[1]))
+            elif cmd == "C":
+                assert len(args) % 6 == 0
+                for i in range(0, len(args), 6):
+                    p.curveTo(*pkt(args[i], args[i + 1]), *pkt(args[i + 2], args[i + 3]),
+                              *pkt(args[i + 4], args[i + 5]))
+            else:
+                p.close()
+        if 'fill="none"' in atrybuty:
+            grubosc = re.search(r'stroke-width="([\d.]+)"', atrybuty)
+            assert grubosc, f"sciezka fill=\"none\" bez stroke-width w {plik.name}"
+            c.setStrokeColor(kolor)
+            c.setLineWidth(float(grubosc.group(1)) * skala)
+            c.drawPath(p, stroke=1, fill=0)
+        else:
+            c.setFillColor(kolor)
+            c.drawPath(p, stroke=0, fill=1)
+
+
+RANKING_URL = "https://zg-go.pl/ranking"
+# Logo i QR flankuja dwie linie adresu i maja dokladnie ich wysokosc.
+NAGLOWEK_BOK = 16 * mm
+
+
+def draw_title(c: Canvas, p: Paleta, klub: Klub, x0: float, top: float, card_w: float) -> float:
+    """Naglowek karty: tytul po lewej, blok adresu zasad po prawej; zwraca y pod nim.
+
+    Blok to [logo | "Ranking <klub>" nad "zg-go.pl/ranking" | QR] — karta nie ma
+    stopki, wiec pelny adres zasad stoi tu, a QR oszczedza jego wpisywania.
+    """
+    y = top - 12 * mm
     c.setFillColor(p.tytul)
-    c.setFont(FONT_SERIF, 14)
+    c.setFont(FONT_SERIF, 28)
     c.drawString(x0, y, "Karta gracza")
-    c.setFont(FONT, 7)
-    c.drawRightString(x0 + card_w, y, "Ranking Semedori · zg-go.pl")
+
+    gora = top - 1.4 * mm               # gorna krawedz logo i QR
+    draw_qr(c, x0 + card_w - NAGLOWEK_BOK, gora - NAGLOWEK_BOK, NAGLOWEK_BOK, RANKING_URL)
+    kres = x0 + card_w - NAGLOWEK_BOK - 5 * mm
+    linie = [f"Ranking {klub.nazwa}", "zg-go.pl/ranking"]
+    c.setFont(FONT, 14)
+    c.drawRightString(kres, top - 7.6 * mm, linie[0])
+    c.drawRightString(kres, top - 15.2 * mm, linie[1])
+    if klub.logo is not None:
+        szer_linii = max(pdfmetrics.stringWidth(t, FONT, 14) for t in linie)
+        # Logo w kolorze sily: to jedyny kolor karty i logo ma go niesc.
+        rysuj_logo(c, klub.logo, kres - szer_linii - 5 * mm - NAGLOWEK_BOK,
+                   gora - NAGLOWEK_BOK, NAGLOWEK_BOK, p.sila)
     c.setStrokeColor(p.linia)
     c.setLineWidth(0.8)
-    c.line(x0, y - 3 * mm, x0 + card_w, y - 3 * mm)
-    return y - 6 * mm
+    c.line(x0, y - 6 * mm, x0 + card_w, y - 6 * mm)
+    return y - 9 * mm
 
 
 FIELD_H = 11 * mm
 
-# (etykieta rubryki, szerokosc) — nick dostaje reszte szerokosci karty
+# Rubryka nicku i blok planszy stoja osobno: ramke ma tylko nick, a blok planszy
+# to wysrodkowany naglowek nad trzema kratkami. Nick wezszy niz resztka
+# szerokosci, zeby kratki planszy mialy luz.
 POLE_PLANSZY = "ROZMIAR PLANSZY (ZAKREŚL JEDEN)"
 
 FIELDS: list[tuple[str, float]] = [
-    ("NICK", 0.0),
-    (POLE_PLANSZY, 50 * mm),
+    ("NICK", 118 * mm),
+    (POLE_PLANSZY, 64 * mm),
 ]
 
 
@@ -240,41 +333,40 @@ def plansza_kratki(x: float, w: float) -> list[tuple[float, float]]:
 
 def draw_fields(c: Canvas, p: Paleta, x0: float, top: float, card_w: float,
                 dane: KartaDane | None) -> float:
-    """Rubryki Nick / plansza jako obramowany pasek; zwraca y pod nim."""
-    fixed = sum(w for _, w in FIELDS)
-    nick_w = card_w - fixed
-    assert nick_w > 30 * mm, f"za malo miejsca na rubryke nicku: {nick_w / mm:.1f} mm"
-    widths = [w if w > 0 else nick_w for _, w in FIELDS]
-    values = ["", ""] if dane is None else [dane.nick, ""]
-
+    """Rubryka nicku w ramce i blok wyboru planszy obok; zwraca y pod nimi."""
+    (_, nick_w), (_, plansza_w) = FIELDS
+    assert nick_w + plansza_w <= card_w, \
+        f"rubryki szersze niz karta: {(nick_w + plansza_w) / mm:.1f} mm"
     bottom = top - FIELD_H
+
     c.setStrokeColor(p.tusz)
     c.setLineWidth(0.6)
-    c.rect(x0, bottom, card_w, FIELD_H, stroke=1, fill=0)
-    x = x0
-    for (label, _), w, value in zip(FIELDS, widths, values):
-        c.line(x, top, x, bottom)
-        c.setFillColor(p.przygaszony)
-        c.setFont(FONT, 5.5)
-        c.drawString(x + 1.5 * mm, top - 3 * mm, label)
-        if label == POLE_PLANSZY:
-            y_kratek = bottom + 1.2 * mm
-            c.setFont(FONT_BOLD, PLANSZA_FS)
-            for (kx, kw), plansza in zip(plansza_kratki(x, w), PLANSZE_KARTY):
-                assert pdfmetrics.stringWidth(plansza, FONT_BOLD, PLANSZA_FS) <= kw - 1.5 * mm, \
-                    f"nazwa planszy {plansza} za szeroka na kratke {kw / mm:.1f} mm"
-                c.setStrokeColor(p.siatka)
-                c.setLineWidth(0.6)
-                c.rect(kx, y_kratek, kw, KRATKA_PLANSZY_H, stroke=1, fill=0)
-                c.setFillColor(p.tusz)
-                c.drawCentredString(kx + kw / 2, y_kratek + 1.6 * mm, plansza)
-            if dane is not None:
-                draw_plansza_kolko(c, p, x, w, y_kratek, dane.plansza)
-        else:
-            c.setFillColor(p.tusz)
-            c.setFont(FONT_HAND, HAND_FS_FIELDS)
-            c.drawString(x + 2 * mm, bottom + 2.5 * mm, value)
-        x += w
+    c.rect(x0, bottom, nick_w, FIELD_H, stroke=1, fill=0)
+    c.setFillColor(p.przygaszony)
+    c.setFont(FONT, 5.5)
+    c.drawString(x0 + 1.5 * mm, top - 3 * mm, "NICK")
+    if dane is not None:
+        c.setFillColor(p.tusz)
+        c.setFont(FONT_HAND, HAND_FS_FIELDS)
+        c.drawString(x0 + 2 * mm, bottom + 2.5 * mm, dane.nick)
+
+    px = x0 + card_w - plansza_w
+    c.setFillColor(p.przygaszony)
+    c.setFont(FONT, 5.5)
+    c.drawCentredString(px + plansza_w / 2, top - 3 * mm, POLE_PLANSZY)
+    y_kratek = bottom + 1.2 * mm
+    c.setFont(FONT_BOLD, PLANSZA_FS)
+    for (kx, kw), plansza in zip(plansza_kratki(px, plansza_w), PLANSZE_KARTY):
+        assert pdfmetrics.stringWidth(plansza, FONT_BOLD, PLANSZA_FS) <= kw - 1.5 * mm, \
+            f"nazwa planszy {plansza} za szeroka na kratke {kw / mm:.1f} mm"
+        c.setStrokeColor(p.siatka)
+        c.setLineWidth(0.6)
+        c.roundRect(kx, y_kratek, kw, KRATKA_PLANSZY_H, KRATKA_PLANSZY_PROMIEN,
+                    stroke=1, fill=0)
+        c.setFillColor(p.tusz)
+        c.drawCentredString(kx + kw / 2, y_kratek + 1.6 * mm, plansza)
+    if dane is not None:
+        draw_plansza_kolko(c, p, px, plansza_w, y_kratek, dane.plansza)
     return bottom - 3 * mm
 
 
@@ -484,11 +576,13 @@ def _rysuj_kratke(c: Canvas, srodek: float, y: float, roznica: float) -> None:
     """Roznica w kratce: cyfry zawsze koncza sie w tym samym miejscu.
 
     Gdyby napis byl po prostu wysrodkowany, "3" i "3½" mialyby cyfre w innym
-    miejscu i kolumna bylaby poszarpana. Dlatego calosc dosuwa sie do prawej,
-    a polowka zwisa za nia — tak samo jak w plikach z tabelami.
+    miejscu i kolumna bylaby poszarpana. Dlatego calosc dosuwa sie do wspolnego
+    kresu, a polowka zwisa za nia. Kres stoi tam, gdzie koncza sie cyfry
+    wysrodkowanego najszerszego wpisu (dwie cyfry z polowka): krotsze wpisy
+    zostawiaja luz po lewej, a polowka nie dociska prawej krawedzi kratki.
     """
     polowka_w = c.stringWidth("½", FONT, 5.4)
-    kres = srodek + polowka_w / 2
+    kres = srodek + (c.stringWidth("00", FONT, 5.4) - polowka_w) / 2
     calosc = int(roznica)
     c.drawRightString(kres, y, str(calosc) if calosc or roznica == calosc else "")
     if roznica != calosc:
@@ -520,13 +614,18 @@ def draw_siatka(c: Canvas, p: Paleta, x: float, top: float, plansza: str) -> flo
     PLAKIETKA_FS = 5.6
     c.setFont(FONT_BOLD, PLAKIETKA_FS)
     plakietka_w = c.stringWidth(plansza, FONT_BOLD, PLAKIETKA_FS) + 3.0 * mm
+    plakietka_dol = top - WIERSZ_H + 0.35 * mm
+    plakietka_wys = WIERSZ_H - 0.7 * mm
     c.setFillColor(p.tusz)
     c.roundRect(
-        x + (len(jency) * KRATKA_W - plakietka_w) / 2, top - WIERSZ_H + 0.35 * mm,
-        plakietka_w, WIERSZ_H - 0.7 * mm, 0.45 * mm, stroke=0, fill=1,
+        x + (len(jency) * KRATKA_W - plakietka_w) / 2, plakietka_dol,
+        plakietka_w, plakietka_wys, 0.45 * mm, stroke=0, fill=1,
     )
+    # Linia pisma tak, by wersaliki staly w pionie posrodku plakietki;
+    # 0.72 * fs to przyblizona wysokosc wersalikow DejaVu (jak na planszy).
     c.setFillColor(BIEL)
-    c.drawCentredString(x + len(jency) * KRATKA_W / 2, top - WIERSZ_H + 0.9 * mm, plansza)
+    c.drawCentredString(x + len(jency) * KRATKA_W / 2,
+                        plakietka_dol + (plakietka_wys - 0.72 * PLAKIETKA_FS) / 2, plansza)
     c.setFillColor(p.rog)
     c.setFont(FONT, 4.4)
     c.drawCentredString(x + szer - BRZEG_W / 2, top - WIERSZ_H + 1.0 * mm, "↓ ruchy")
@@ -676,19 +775,20 @@ def draw_sciaga(c: Canvas, p: Paleta, x0: float, top: float, card_w: float) -> f
     # tylko wtedy, gdyby wyrownanie bylo wszedzie takie samo, a nie jest.
     # 4 mm, a nie 1,5: napis rosnie w gore od linii pisma, wiec przy ciasniejszym
     # odstepie wchodzil w ramke najnizszej siatki.
-    y = draw_siatki(c, p, x0, min(bottoms) - 2.5 * mm, card_w) - 4 * mm
-    qr_size = 14 * mm
-    draw_qr(c, x0 + card_w - qr_size, y, qr_size, "https://zg-go.pl/ranking.html")
-    c.setFont(FONT, 6)
+    # Adres zasad i QR stoja w naglowku karty, wiec stopki nie ma. Zostaje sama
+    # wersja, drobna i przygaszona: wydrukowane pokolenia kart musza dac sie
+    # odroznic (tego pilnuje karta.lock), wiec ona jedyna nie mogla odejsc.
+    y = draw_siatki(c, p, x0, min(bottoms) - 2.5 * mm, card_w) - 3 * mm
+    c.setFont(FONT, 4.5)
     c.setFillColor(p.przygaszony)
-    c.drawString(x0, y, "Pełne zasady: zg-go.pl/ranking.html")
-    c.drawRightString(x0 + card_w - qr_size - 2 * mm, y, f"wersja karty {WERSJA}")
+    c.drawRightString(x0 + card_w, y, f"wersja karty {WERSJA}")
     return y
 
 
-def draw_card(c: Canvas, p: Paleta, x0: float, card_w: float, dane: KartaDane | None) -> None:
+def draw_card(c: Canvas, p: Paleta, klub: Klub, x0: float, card_w: float,
+              dane: KartaDane | None) -> None:
     top = PAGE_H - MARGIN
-    y = draw_title(c, p, x0, top, card_w)
+    y = draw_title(c, p, klub, x0, top, card_w)
     y = draw_fields(c, p, x0, y, card_w, dane)
     y = draw_table(c, p, x0, y, card_w, [] if dane is None else dane.wiersze, ROWS)
     y = draw_sciaga(c, p, x0, y, card_w)
@@ -718,20 +818,19 @@ def generuj_wycinek(out: Path, karty: list[KartaDane], n_rows: float, p: Paleta)
     print(f"OK: {out} ({out.stat().st_size} B)")
 
 
-def generuj_karte(out: Path, karty: list[KartaDane | None], p: Paleta) -> None:
+def generuj_karte(out: Path, karty: list[KartaDane | None], p: Paleta, klub: Klub) -> None:
     """Zapisuje PDF: jedna karta na strone; None = pusta karta do druku."""
     assert karty, "co najmniej jedna karta"
     register_fonts()
     c = Canvas(str(out), pagesize=(PAGE_W, PAGE_H))
-    c.setTitle("Karta gracza — Klub Go Semedori")
+    c.setTitle(f"Karta gracza — {klub.nazwa}")
     for dane in karty:
-        draw_card(c, p, MARGIN, PAGE_W - 2 * MARGIN, dane)
+        draw_card(c, p, klub, MARGIN, PAGE_W - 2 * MARGIN, dane)
         c.showPage()
     c.save()
     print(f"OK: {out} ({out.stat().st_size} B)")
 
 
-KORZEN = Path(__file__).resolve().parent.parent
 ZAMEK = KORZEN / "karta.lock"
 
 
@@ -788,8 +887,8 @@ def zapisz_zamek() -> None:
 
 
 def main() -> None:
-    generuj_karte(KORZEN / "karta.pdf", [None], KOLOROWA)
-    generuj_karte(KORZEN / "karta-cb.pdf", [None], CZARNO_BIALA)
+    generuj_karte(KORZEN / "karta.pdf", [None], KOLOROWA, SEMEDORI)
+    generuj_karte(KORZEN / "karta-cb.pdf", [None], CZARNO_BIALA, SEMEDORI)
     zapisz_zamek()
 
 

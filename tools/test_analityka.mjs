@@ -36,14 +36,14 @@ test('mail i kalendarz maja wlasne nazwy, bo nie sa strona', () => {
 });
 
 test('przejscie miedzy podstronami nie jest zdarzeniem — widac je w odslonach', () => {
-  assert.equal(nazwa('https://zg-go.pl/ranking.html'), null);
-  assert.equal(nazwa('https://zg-go.pl/ranking.html#kalkulator'), null);
+  assert.equal(nazwa('https://zg-go.pl/ranking'), null);
+  assert.equal(nazwa('https://zg-go.pl/ranking#kalkulator'), null);
   assert.equal(nazwa('https://zg-go.pl/'), null);
 });
 
 test('to samo przejscie z menu juz jest — mowi, ktoredy ludzie chodza', () => {
-  assert.equal(nazwa('https://zg-go.pl/ranking.html', true), 'menu: ranking.html');
-  assert.equal(nazwa('https://zg-go.pl/', true), 'menu: index.html');
+  assert.equal(nazwa('https://zg-go.pl/ranking', true), 'menu: ranking');
+  assert.equal(nazwa('https://zg-go.pl/', true), 'menu: index');
 });
 
 test('plik na cudzym serwerze liczy sie jako wyjscie, nie jako pobranie', () => {
@@ -76,7 +76,7 @@ test('nazwa zdarzenia miesci sie w limicie Umami (50 znakow)', () => {
   const najdluzsze = [
     nazwa('https://zg-go.pl/karta-wycinek-bianka.svg'),
     nazwa('https://www.europeangodatabase.eu/EGD/'),
-    nazwa('https://zg-go.pl/hikaru-no-go.html', true),
+    nazwa('https://zg-go.pl/hikaru-no-go', true),
   ];
   for (const n of najdluzsze) assert.ok(n.length <= 50, `za dluga nazwa: ${n}`);
 });

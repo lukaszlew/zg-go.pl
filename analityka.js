@@ -100,7 +100,7 @@ function pokazBaner() {
 
   const tresc = document.createElement('p');
   const szczegoly = document.createElement('a');
-  szczegoly.href = 'prywatnosc.html';
+  szczegoly.href = 'prywatnosc';
   szczegoly.textContent = 'Prywatność';
   tresc.append(`${TRESC} `, szczegoly);
 
@@ -200,7 +200,7 @@ function wpiszUstawieniaZgody() {
 
 const PLIK = /\.(pdf|svg|png|zip)$/i;
 
-const nazwaPliku = (sciezka) => sciezka.split('/').pop() || 'index.html';
+const nazwaPliku = (sciezka) => sciezka.split('/').pop() || 'index';
 
 /* Adres wychodzi z DOM-u (`a.href`), wiec jest juz absolutny — funkcja jest
  * czysta i dlatego sprawdzalna w tools/test_analityka.mjs bez przegladarki.

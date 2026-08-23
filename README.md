@@ -54,6 +54,9 @@ takie same i czy zaproszenie na Discorda stoi dokładnie w jednym miejscu.
 - **Zaproszenie na Discorda jest w jednym miejscu**, w sekcji „Między spotkaniami" na
   `index.html`. Reszta strony linkuje do tej sekcji, bo zaproszenia wygasają.
 - **Zdjęcia są w WebP**, bez zapasowego `<picture>`.
+- **Adresy podstron są bez `.html`** (`zg-go.pl/ranking`) — tak je rozwiązuje GitHub
+  Pages i tak samo robi lokalny podgląd (`tools/podglad.py`). Stare adresy z `.html`
+  dalej działają, ale linkujemy i kanonizujemy formę bez rozszerzenia.
 - **Baner strony głównej sam zmienia się na Bachusa** w sezonie Winobrania.
 - **`img/hikaru/` i `img/alphago/` to cudze materiały** — źródła podane w stopkach tych
   stron. Nie są nasze do rozdawania.

@@ -27,9 +27,25 @@ PIERWSZY_PORT = 8000
 ILE_PORTOW = 20
 
 
+class Obsluga(SimpleHTTPRequestHandler):
+    """Serwer plikow plus adresy bez rozszerzenia, jak na GitHub Pages.
+
+    Strona linkuje podstrony bez ".html" (/ranking), a tak samo robi produkcja —
+    wiec i podglad musi: /ranking podaje ranking.html. Bez tego kazdy klik w menu
+    podgladu konczylby sie 404 i podglad nie sprawdzalby prawdziwych linkow.
+    """
+
+    def translate_path(self, path: str) -> str:
+        plik = Path(super().translate_path(path))
+        strona = plik.with_suffix(".html")
+        if not plik.suffix and not plik.is_dir() and strona.is_file():
+            return str(strona)
+        return str(plik)
+
+
 def serwer() -> ThreadingHTTPServer:
     """Serwer na pierwszym wolnym porcie od PIERWSZY_PORT."""
-    obsluga = partial(SimpleHTTPRequestHandler, directory=str(KATALOG))
+    obsluga = partial(Obsluga, directory=str(KATALOG))
     for port in range(PIERWSZY_PORT, PIERWSZY_PORT + ILE_PORTOW):
         try:
             return ThreadingHTTPServer((ADRES, port), obsluga)

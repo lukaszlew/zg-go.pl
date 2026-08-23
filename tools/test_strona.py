@@ -25,7 +25,7 @@ STRONY = ["index.html", "ranking.html", "hikaru-no-go.html", "alphago.html", "pr
 SZKICE = ["alphago.html"]
 
 LOKALNY_ZASOB = re.compile(r'(?:src|href)="((?!https?:|mailto:|webcal:|#|//)[^"]+)"')
-KOTWICA = re.compile(r'href="([a-z0-9-]*\.html)?#([a-z0-9-]+)"')
+KOTWICA = re.compile(r'href="(/|[a-z0-9-]+)?#([a-z0-9-]+)"')
 IDENTYFIKATOR = re.compile(r'id="([^"]+)"')
 ZAPROSZENIE = re.compile(r'https://discord\.gg/[A-Za-z0-9]+')
 WIZYTOWKA = re.compile(r'https://maps\.app\.goo\.gl/[A-Za-z0-9]+')
@@ -34,6 +34,20 @@ ZEWNETRZNY_SKRYPT = re.compile(r'<script[^>]*src=[\'"]https?:[^\'"]*')
 
 def tresc(strona: str) -> str:
     return (KORZEN / strona).read_text()
+
+
+def plik_zasobu(sciezka: str) -> Path:
+    """Plik, ktory GitHub Pages poda pod linkiem.
+
+    Strony linkuja podstrony bez rozszerzenia (/ranking -> ranking.html,
+    "/" -> strona glowna) — dokladnie tak rozwiazuje adresy GitHub Pages,
+    a za podglad lokalny robi to samo tools/podglad.py.
+    """
+    goly = sciezka.split("#")[0].lstrip("/")
+    if not goly:
+        return KORZEN / "index.html"
+    cel = KORZEN / goly
+    return cel if cel.suffix else cel.with_suffix(".html")
 
 
 def blok(html: str, wzorzec: str) -> str:
@@ -52,7 +66,7 @@ class TestZasoby(unittest.TestCase):
         """
         for strona in STRONY:
             for sciezka in set(LOKALNY_ZASOB.findall(tresc(strona))):
-                cel = KORZEN / sciezka.split("#")[0]
+                cel = plik_zasobu(sciezka)
                 self.assertTrue(cel.is_file(), f"{strona} wskazuje na nieistniejace {sciezka}")
 
 
@@ -61,7 +75,7 @@ class TestKotwice(unittest.TestCase):
         """Spis tresci i odsylacze miedzy zasadami zyja z tego, ze cel istnieje."""
         for strona in STRONY:
             for plik, kotwica in set(KOTWICA.findall(tresc(strona))):
-                docelowa = plik or strona
+                docelowa = plik_zasobu(plik).name if plik else strona
                 cele = set(IDENTYFIKATOR.findall(tresc(docelowa)))
                 self.assertIn(kotwica, cele, f"{strona}: #{kotwica} nie ma celu w {docelowa}")
 

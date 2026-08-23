@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Karta gracza klubu Semedori (pionowe A4) — biblioteka + generator karta.pdf.
 
-Uruchomienie:  python3 tools/karta_pdf.py   (zapisuje pusta karte: karta.pdf w korzeniu repo)
-Jako biblioteka: generuj_karte(sciezka, [KartaDane(...), ...]) — karta na strone,
-z wypelnionym naglowkiem i wierszami gier (np. karty przykladowe).
+Uruchomienie:  python3 tools/karta_pdf.py   (zapisuje puste karty w korzeniu repo:
+karta.pdf w kolorach strony i karta-cb.pdf czarno-biala, na drukarke laserowa i ksero)
+Jako biblioteka: generuj_karte(sciezka, [KartaDane(...), ...], paleta) — karta na
+strone, z wypelnionym naglowkiem i wierszami gier (np. karty przykladowe).
 Wymaga: reportlab, czcionki DejaVu (pakiet fonts-dejavu).
 """
 
@@ -16,7 +17,7 @@ from pathlib import Path
 from reportlab.graphics import renderPDF
 from reportlab.graphics.barcode.qr import QrCodeWidget
 from reportlab.graphics.shapes import Drawing
-from reportlab.lib.colors import HexColor
+from reportlab.lib.colors import Color, HexColor
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
@@ -29,22 +30,60 @@ from zasady import KOLUMNY, ZASADY, w_kolumnie
 PAGE_W, PAGE_H = A4                     # 210 x 297 mm, pion
 MARGIN = 10 * mm                        # margines zewnetrzny strony
 
-INK = HexColor("#1a1a1a")
-MUTED = HexColor("#555555")
-GRID = HexColor("#9a9a9a")              # wewnetrzne linie siatki (jasniejsze od krawedzi)
-TITLE_GRAY = HexColor("#6b6b6b")        # --muted ze style.css (kolor tytulow strony)
-HEADER_BG = HexColor("#d9c896")         # --rule ze style.css
-# Brzegi siatek wyrownania: na stronie to --rule zmieszane w 45% z tlem, wiec i tu
-# ta sama, jasniejsza wersja — pelna sila przygniatala liczby.
-BRZEG_BG = HexColor("#eee6d0")
-# Podpis rogu ("↓ ruchy", "← jency"): na stronie --fg z opacity 0.7 na tle brzegu,
-# czyli dokladnie ten kolor. Drobniej i bledziej niz liczby, bo to podpis.
-ROG_TEKST = HexColor("#585449")
-KOLOR_SILY = HexColor("#2e7d32")        # --kolor-sily ze style.css
-# tlo rubryki "wynik": ten sam zloty co naglowek, rozcienczony do 45% na bialym.
-# Na drukarce czarno-bialej zostaje z tego okolo 10% szarosci — rubryka dalej
-# odstaje, a wpis olowkiem jest czytelny.
-WYNIK_BG = HexColor("#f0e6cd")
+CZERN = HexColor("#000000")
+BIEL = HexColor("#ffffff")              # papier; takze napis na plakietce nazwy planszy
+
+
+@dataclass(frozen=True)
+class Paleta:
+    """Wszystkie kolory karty w jednym miejscu; kazda draw_* dostaje ja jawnie.
+
+    Dwie instancje nizej: KOLOROWA (barwy strony) i CZARNO_BIALA. Tla w wersji
+    czarno-bialej sa po prostu biale — rysuja sie pod wszystkim innym, wiec biel
+    na bialym papierze znaczy "bez tla", a kod nie potrzebuje osobnej galezi.
+    """
+    tusz: Color          # tekst, krawedzie, wpisy
+    przygaszony: Color   # etykiety rubryk, punktory sciagi, stopka
+    siatka: Color        # wewnetrzne linie siatki (jasniejsze od krawedzi)
+    tytul: Color         # "Karta gracza"
+    linia: Color         # kreski pod tytulem i tytulami sciagi, rozdzielacze brzegow siatek
+    tlo_naglowka: Color  # naglowek tabeli gier
+    tlo_wyniku: Color    # rubryka "wynik" na calej wysokosci tabeli
+    tlo_brzegu: Color    # brzegi siatek wyrownania (ruchy, jency)
+    rog: Color           # podpis rogu siatki ("↓ ruchy", "← jency")
+    sila: Color          # wszystko, co niesie sile
+
+
+KOLOROWA = Paleta(
+    tusz=HexColor("#1a1a1a"),
+    przygaszony=HexColor("#555555"),
+    siatka=HexColor("#9a9a9a"),
+    tytul=HexColor("#6b6b6b"),          # --muted ze style.css (kolor tytulow strony)
+    linia=HexColor("#d9c896"),          # --rule ze style.css
+    tlo_naglowka=HexColor("#d9c896"),   # --rule ze style.css
+    # tlo rubryki "wynik": ten sam zloty co naglowek, rozcienczony do 45% na bialym.
+    # Na drukarce czarno-bialej zostaje z tego okolo 10% szarosci — rubryka dalej
+    # odstaje, a wpis olowkiem jest czytelny.
+    tlo_wyniku=HexColor("#f0e6cd"),
+    # Brzegi siatek wyrownania: na stronie to --rule zmieszane w 45% z tlem, wiec i tu
+    # ta sama, jasniejsza wersja — pelna sila przygniatala liczby.
+    tlo_brzegu=HexColor("#eee6d0"),
+    # Podpis rogu ("↓ ruchy", "← jency"): na stronie --fg z opacity 0.7 na tle brzegu,
+    # czyli dokladnie ten kolor. Drobniej i bledziej niz liczby, bo to podpis.
+    rog=HexColor("#585449"),
+    sila=HexColor("#2e7d32"),           # --kolor-sily ze style.css
+)
+
+# Bez jednej szarosci: na ksero i drukarce laserowej kazdy polton wychodzi
+# inaczej, a czysta czern i biel zawsze tak samo. Co w kolorze rozni sie barwa
+# (sila, podpisy, cienkie linie), tu rozni sie juz tylko grubosc kreski i
+# pogrubienie pisma.
+CZARNO_BIALA = Paleta(
+    tusz=CZERN, przygaszony=CZERN, siatka=CZERN, tytul=CZERN, linia=CZERN,
+    tlo_naglowka=BIEL, tlo_wyniku=BIEL, tlo_brzegu=BIEL, rog=CZERN, sila=CZERN,
+)
+assert {kolor.hexval() for kolor in vars(CZARNO_BIALA).values()} <= {CZERN.hexval(), BIEL.hexval()}, \
+    "paleta czarno-biala nie ma prawa znac innych kolorow niz czern i biel"
 
 FONT = "DejaVu"
 FONT_BOLD = "DejaVu-Bold"
@@ -166,15 +205,15 @@ def register_fonts() -> None:
     pdfmetrics.registerFont(TTFont(FONT_HAND, str(hand)))
 
 
-def draw_title(c: Canvas, x0: float, top: float, card_w: float) -> float:
+def draw_title(c: Canvas, p: Paleta, x0: float, top: float, card_w: float) -> float:
     """Tytul karty jak naglowek strony zg-go.pl; zwraca y pod nim."""
     y = top - 6 * mm
-    c.setFillColor(TITLE_GRAY)
+    c.setFillColor(p.tytul)
     c.setFont(FONT_SERIF, 14)
     c.drawString(x0, y, "Karta gracza")
     c.setFont(FONT, 7)
     c.drawRightString(x0 + card_w, y, "Ranking Semedori · zg-go.pl")
-    c.setStrokeColor(HEADER_BG)
+    c.setStrokeColor(p.linia)
     c.setLineWidth(0.8)
     c.line(x0, y - 3 * mm, x0 + card_w, y - 3 * mm)
     return y - 6 * mm
@@ -199,7 +238,7 @@ def plansza_kratki(x: float, w: float) -> list[tuple[float, float]]:
             for i in range(ile)]
 
 
-def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
+def draw_fields(c: Canvas, p: Paleta, x0: float, top: float, card_w: float,
                 dane: KartaDane | None) -> float:
     """Rubryki Nick / plansza jako obramowany pasek; zwraca y pod nim."""
     fixed = sum(w for _, w in FIELDS)
@@ -209,13 +248,13 @@ def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
     values = ["", ""] if dane is None else [dane.nick, ""]
 
     bottom = top - FIELD_H
-    c.setStrokeColor(INK)
+    c.setStrokeColor(p.tusz)
     c.setLineWidth(0.6)
     c.rect(x0, bottom, card_w, FIELD_H, stroke=1, fill=0)
     x = x0
     for (label, _), w, value in zip(FIELDS, widths, values):
         c.line(x, top, x, bottom)
-        c.setFillColor(MUTED)
+        c.setFillColor(p.przygaszony)
         c.setFont(FONT, 5.5)
         c.drawString(x + 1.5 * mm, top - 3 * mm, label)
         if label == POLE_PLANSZY:
@@ -224,15 +263,15 @@ def draw_fields(c: Canvas, x0: float, top: float, card_w: float,
             for (kx, kw), plansza in zip(plansza_kratki(x, w), PLANSZE_KARTY):
                 assert pdfmetrics.stringWidth(plansza, FONT_BOLD, PLANSZA_FS) <= kw - 1.5 * mm, \
                     f"nazwa planszy {plansza} za szeroka na kratke {kw / mm:.1f} mm"
-                c.setStrokeColor(GRID)
+                c.setStrokeColor(p.siatka)
                 c.setLineWidth(0.6)
                 c.rect(kx, y_kratek, kw, KRATKA_PLANSZY_H, stroke=1, fill=0)
-                c.setFillColor(INK)
+                c.setFillColor(p.tusz)
                 c.drawCentredString(kx + kw / 2, y_kratek + 1.6 * mm, plansza)
             if dane is not None:
-                draw_plansza_kolko(c, x, w, y_kratek, dane.plansza)
+                draw_plansza_kolko(c, p, x, w, y_kratek, dane.plansza)
         else:
-            c.setFillColor(INK)
+            c.setFillColor(p.tusz)
             c.setFont(FONT_HAND, HAND_FS_FIELDS)
             c.drawString(x + 2 * mm, bottom + 2.5 * mm, value)
         x += w
@@ -251,8 +290,8 @@ def group_widths(card_w: float) -> list[list[float]]:
     return [[w + extra if w > 0 else nick_w for _, w in subs] for _, subs in COLUMNS]
 
 
-def draw_header_text(c: Canvas, cx: float, y: float, text: str, fs: float, max_w: float,
-                     sila: bool) -> None:
+def draw_header_text(c: Canvas, p: Paleta, cx: float, y: float, text: str, fs: float,
+                     max_w: float, sila: bool) -> None:
     """Jedna linia naglowka, wersalikami; `sila` decyduje o kolorze.
 
     Kolor bierze sie z tego, ktora rubryka niesie sile (SILA_W_RUBRYCE), a nie z
@@ -262,12 +301,13 @@ def draw_header_text(c: Canvas, cx: float, y: float, text: str, fs: float, max_w
     text = text.upper()
     text_w = pdfmetrics.stringWidth(text, FONT_BOLD, fs)
     assert text_w <= max_w - 1 * mm, f"naglowek '{text}' za szeroki na kolumne {max_w / mm:.1f} mm"
-    c.setFillColor(KOLOR_SILY if sila else INK)
+    c.setFillColor(p.sila if sila else p.tusz)
     c.setFont(FONT_BOLD, fs)
     c.drawCentredString(cx, y, text)
 
 
-def draw_header_labels(c: Canvas, x0: float, top: float, widths: list[list[float]]) -> None:
+def draw_header_labels(c: Canvas, p: Paleta, x0: float, top: float,
+                       widths: list[list[float]]) -> None:
     line_h = 3.5 * mm
     x = x0
     leaf = 0
@@ -277,7 +317,7 @@ def draw_header_labels(c: Canvas, x0: float, top: float, widths: list[list[float
         if len(subs) == 1:
             y = top - (HEAD_H - (len(lines) - 1) * line_h) / 2 - 0.8 * mm
             for line in lines:
-                draw_header_text(c, x + group_w / 2, y, line, HEAD_FS, group_w,
+                draw_header_text(c, p, x + group_w / 2, y, line, HEAD_FS, group_w,
                                  leaf in SILA_W_RUBRYCE)
                 y -= line_h
             leaf += 1
@@ -285,7 +325,7 @@ def draw_header_labels(c: Canvas, x0: float, top: float, widths: list[list[float
             assert "\n" not in label, "naglowek grupy z podkolumnami musi byc jednoliniowy"
             # Naglowek grupy zbiera rubryki rozne co do tresci, wiec zostaje czarny;
             # kolor niosa podkolumny, kazda za siebie.
-            draw_header_text(c, x + group_w / 2, top - HEAD_H / 4 - 0.8 * mm, label, HEAD_FS,
+            draw_header_text(c, p, x + group_w / 2, top - HEAD_H / 4 - 0.8 * mm, label, HEAD_FS,
                              group_w, False)
             sx = x
             sub_line_h = 2.9 * mm
@@ -293,7 +333,7 @@ def draw_header_labels(c: Canvas, x0: float, top: float, widths: list[list[float
                 sub_lines = sub_label.split("\n")
                 y = top - HEAD_H / 2 - (HEAD_H / 2 - (len(sub_lines) - 1) * sub_line_h) / 2 - 0.8 * mm
                 for line in sub_lines:
-                    draw_header_text(c, sx + sub_w / 2, y, line, SUB_FS, sub_w,
+                    draw_header_text(c, p, sx + sub_w / 2, y, line, SUB_FS, sub_w,
                                      leaf in SILA_W_RUBRYCE)
                     y -= sub_line_h
                 sx += sub_w
@@ -301,34 +341,34 @@ def draw_header_labels(c: Canvas, x0: float, top: float, widths: list[list[float
         x += group_w
 
 
-def draw_grid(c: Canvas, x0: float, top: float, card_w: float, widths: list[list[float]],
-              n_rows: float) -> None:
+def draw_grid(c: Canvas, p: Paleta, x0: float, top: float, card_w: float,
+              widths: list[list[float]], n_rows: float) -> None:
     """Siatka tabeli; ulamkowe n_rows -> ostatni wiersz uciety, bez dolnej krawedzi.
 
-    Czarne sa tylko krawedzie: obrys, spod naglowka i grube granice sekcji;
-    wewnetrzne linie wierszy i podkolumn sa jasnoszare.
+    Tuszem sa tylko krawedzie: obrys, spod naglowka i grube granice sekcji;
+    wewnetrzne linie wierszy i podkolumn ida kolorem siatki i ciensza kreska.
     """
     bottom = top - HEAD_H - n_rows * ROW_H
     last = int(n_rows) + 1
     for row in range(last + 1):
         y = top - min(row, 1) * HEAD_H - max(row - 1, 0) * ROW_H
         edge = row <= 1 or (row == last and n_rows == int(n_rows))
-        c.setStrokeColor(INK if edge else GRID)
+        c.setStrokeColor(p.tusz if edge else p.siatka)
         c.setLineWidth(0.6 if edge else 0.4)
         c.line(x0, y, x0 + card_w, y)
     x = x0
     for i, ((label, _), sub_ws) in enumerate(zip(COLUMNS, widths)):
         if label in THICK_BEFORE:                     # granica sekcji karty
-            c.setStrokeColor(INK)
+            c.setStrokeColor(p.tusz)
             c.setLineWidth(1.8)
         elif i == 0:                                  # lewa krawedz tabeli
-            c.setStrokeColor(INK)
+            c.setStrokeColor(p.tusz)
             c.setLineWidth(0.6)
         else:
-            c.setStrokeColor(GRID)
+            c.setStrokeColor(p.siatka)
             c.setLineWidth(0.5)
         c.line(x, top, x, bottom)                     # granica grupy: pelna wysokosc
-        c.setStrokeColor(GRID)
+        c.setStrokeColor(p.siatka)
         c.setLineWidth(0.4)
         sx = x
         for sub_w in sub_ws[:-1]:
@@ -337,7 +377,7 @@ def draw_grid(c: Canvas, x0: float, top: float, card_w: float, widths: list[list
         if len(sub_ws) > 1:                           # kreska miedzy etykieta grupy a podkolumnami
             c.line(x, top - HEAD_H / 2, x + sum(sub_ws), top - HEAD_H / 2)
         x += sum(sub_ws)
-    c.setStrokeColor(INK)
+    c.setStrokeColor(p.tusz)
     c.setLineWidth(0.6)
     c.line(x0 + card_w, top, x0 + card_w, bottom)     # prawa krawedz tabeli
 
@@ -357,18 +397,18 @@ def row_baseline(top: float, row: int) -> float:
     return top - HEAD_H - row * ROW_H - ROW_H / 2 - 1
 
 
-def draw_plansza_kolko(c: Canvas, x: float, w: float, y: float, plansza: str) -> None:
+def draw_plansza_kolko(c: Canvas, p: Paleta, x: float, w: float, y: float, plansza: str) -> None:
     """Zakresla kratke wybranej planszy — tak, jak zrobilby to gracz olowkiem."""
     assert plansza in PLANSZE_KARTY, f"nieznana plansza: {plansza}"
     kx, kw = plansza_kratki(x, w)[PLANSZE_KARTY.index(plansza)]
     cx, cy = kx + kw / 2, y + KRATKA_PLANSZY_H / 2
     rx, ry = kw / 2 + 0.6 * mm, KRATKA_PLANSZY_H / 2 + 0.9 * mm
-    c.setStrokeColor(INK)
+    c.setStrokeColor(p.tusz)
     c.setLineWidth(1.5)
     c.ellipse(cx - rx, cy - ry, cx + rx, cy + ry, stroke=1, fill=0)
 
 
-def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
+def draw_wiersze(c: Canvas, p: Paleta, x0: float, top: float, widths: list[list[float]],
                  wiersze: list[Wiersz]) -> None:
     """Wypelnione wiersze gier (karty przykladowe)."""
     leaves = leaf_geometry(x0, widths)
@@ -380,12 +420,12 @@ def draw_wiersze(c: Canvas, x0: float, top: float, widths: list[list[float]],
         for li, ((lx, lw), value) in enumerate(zip(leaves, values)):
             if not value:
                 continue
-            c.setFillColor(KOLOR_SILY if li in SILA_W_RUBRYCE else INK)
+            c.setFillColor(p.sila if li in SILA_W_RUBRYCE else p.tusz)
             c.setFont(FONT_HAND, HAND_FS)
             c.drawCentredString(lx + lw / 2, y, value)
 
 
-def draw_table(c: Canvas, x0: float, top: float, card_w: float,
+def draw_table(c: Canvas, p: Paleta, x0: float, top: float, card_w: float,
                wiersze: list[Wiersz], n_rows: float) -> float:
     """Tabela gier (naglowek dwupoziomowy + wiersze); zwraca y pod tabela.
 
@@ -396,7 +436,7 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
     widths = group_widths(card_w)
     bottom = top - HEAD_H - n_rows * ROW_H
 
-    c.setFillColor(HEADER_BG)
+    c.setFillColor(p.tlo_naglowka)
     c.rect(x0, top - HEAD_H, card_w, HEAD_H, stroke=0, fill=1)
 
     # Rubryka "wynik" dostaje wlasne tlo na calej wysokosci tabeli: to jedyna
@@ -406,14 +446,14 @@ def draw_table(c: Canvas, x0: float, top: float, card_w: float,
     for (label, _), sub_ws in zip(COLUMNS, widths):
         szerokosc = sum(sub_ws)
         if label == "wynik":
-            c.setFillColor(WYNIK_BG)
+            c.setFillColor(p.tlo_wyniku)
             c.rect(x, bottom, szerokosc, top - HEAD_H - bottom, stroke=0, fill=1)
         x += szerokosc
 
-    draw_header_labels(c, x0, top, widths)
+    draw_header_labels(c, p, x0, top, widths)
 
-    draw_wiersze(c, x0, top, widths, wiersze)
-    draw_grid(c, x0, top, card_w, widths, n_rows)
+    draw_wiersze(c, p, x0, top, widths, wiersze)
+    draw_grid(c, p, x0, top, card_w, widths, n_rows)
     return bottom - 4 * mm
 
 
@@ -455,7 +495,7 @@ def _rysuj_kratke(c: Canvas, srodek: float, y: float, roznica: float) -> None:
         c.drawString(kres, y, "½")
 
 
-def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
+def draw_siatka(c: Canvas, p: Paleta, x: float, top: float, plansza: str) -> float:
     """Jedna siatka wyrownania; zwraca jej szerokosc.
 
     Liczby ida wprost z wyrownanie/zg.py — to samo zrodlo, co tabele na stronie,
@@ -470,7 +510,7 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
     # Brzeg z ruchami szarzeje tak samo jak dolny wiersz z jencami — obu czyta sie
     # tak samo i oba maja odstawac od siatki. Tlo siega az pod gorna krawedz, bo
     # rog "↓ ruchy" nalezy do tej kolumny, a nie do wiersza z nazwa planszy.
-    c.setFillColor(BRZEG_BG)
+    c.setFillColor(p.tlo_brzegu)
     c.rect(x + szer - BRZEG_W, top - wys + WIERSZ_H, BRZEG_W, wys - WIERSZ_H, stroke=0, fill=1)
 
     # Nazwa planszy jako plakietka: ciemne tlo obejmuje sam napis, a nie cala
@@ -480,40 +520,40 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
     PLAKIETKA_FS = 5.6
     c.setFont(FONT_BOLD, PLAKIETKA_FS)
     plakietka_w = c.stringWidth(plansza, FONT_BOLD, PLAKIETKA_FS) + 3.0 * mm
-    c.setFillColor(INK)
+    c.setFillColor(p.tusz)
     c.roundRect(
         x + (len(jency) * KRATKA_W - plakietka_w) / 2, top - WIERSZ_H + 0.35 * mm,
         plakietka_w, WIERSZ_H - 0.7 * mm, 0.45 * mm, stroke=0, fill=1,
     )
-    c.setFillColor(HexColor("#ffffff"))
+    c.setFillColor(BIEL)
     c.drawCentredString(x + len(jency) * KRATKA_W / 2, top - WIERSZ_H + 0.9 * mm, plansza)
-    c.setFillColor(ROG_TEKST)
+    c.setFillColor(p.rog)
     c.setFont(FONT, 4.4)
     c.drawCentredString(x + szer - BRZEG_W / 2, top - WIERSZ_H + 1.0 * mm, "↓ ruchy")
 
     for numer, r in enumerate(ruchy):
         y = top - (numer + 2) * WIERSZ_H + 1.0 * mm
         for kolumna, j in enumerate(jency):
-            c.setFillColor(KOLOR_SILY)
+            c.setFillColor(p.sila)
             c.setFont(FONT, 5.4)
             _rysuj_kratke(c, x + (kolumna + 0.5) * KRATKA_W, y, pola[(j, r)])
-        c.setFillColor(INK)
+        c.setFillColor(p.tusz)
         c.setFont(FONT_BOLD, 5.4)
         c.drawCentredString(x + szer - BRZEG_W / 2, y, str(r))
 
     dol = top - (len(ruchy) + 2) * WIERSZ_H + 1.0 * mm
-    c.setFillColor(BRZEG_BG)
+    c.setFillColor(p.tlo_brzegu)
     # Caly wiersz, razem z rogiem: rog nalezy do brzegu, ktory nazywa.
     c.rect(x, dol - 1.0 * mm, szer, WIERSZ_H, stroke=0, fill=1)
     for kolumna, j in enumerate(jency):
-        c.setFillColor(INK)
+        c.setFillColor(p.tusz)
         c.setFont(FONT_BOLD, 5.4)
         c.drawCentredString(x + (kolumna + 0.5) * KRATKA_W, dol, str(j))
-    c.setFillColor(ROG_TEKST)
+    c.setFillColor(p.rog)
     c.setFont(FONT, 4.4)
     c.drawCentredString(x + szer - BRZEG_W / 2, dol, "← jeńcy")
 
-    c.setStrokeColor(GRID)
+    c.setStrokeColor(p.siatka)
     c.setLineWidth(0.4)
     # Od zera, bo pierwsza kreska oddziela czapke od pierwszego wiersza liczb —
     # bez niej nazwa planszy zlewa sie z siatka.
@@ -527,21 +567,21 @@ def draw_siatka(c: Canvas, x: float, top: float, plansza: str) -> float:
     # Kreska pionowa idzie od samej gory, bo odcina takze rog "↓ ruchy" — ten
     # nalezy do kolumny ruchow. Konczy sie nad wierszem jencow: dolny rog nalezy
     # do niego i ta sama kreska odcielaby go od jego wlasnych liczb.
-    c.setStrokeColor(HEADER_BG)
+    c.setStrokeColor(p.linia)
     c.setLineWidth(0.9)
     c.line(x + szer - BRZEG_W, top, x + szer - BRZEG_W, top - wys + WIERSZ_H)
     c.line(x, top - wys + WIERSZ_H, x + szer, top - wys + WIERSZ_H)
-    c.setStrokeColor(INK)
+    c.setStrokeColor(p.tusz)
     c.setLineWidth(0.7)
     c.rect(x, top - wys, szer, wys, stroke=1, fill=0)
     return szer
 
 
-def draw_siatki(c: Canvas, x0: float, top: float, card_w: float) -> float:
+def draw_siatki(c: Canvas, p: Paleta, x0: float, top: float, card_w: float) -> float:
     """Trzy siatki w rzedzie; zwraca y dolnej krawedzi."""
     x, najnizej = x0, top
     for plansza in PLANSZE:
-        szer = draw_siatka(c, x, top, plansza)
+        szer = draw_siatka(c, p, x, top, plansza)
         x += szer + SIATKA_GAP
         najnizej = min(najnizej, top - (len(sorted({r for _, r in siatka(plansza)})) + 2) * WIERSZ_H)
     assert x - SIATKA_GAP <= x0 + card_w, f"siatki nie miesza sie w szerokosc karty: {(x - SIATKA_GAP - x0) / mm:.1f} mm"
@@ -551,7 +591,7 @@ def draw_siatki(c: Canvas, x0: float, top: float, card_w: float) -> float:
 OGON = ".,;:—()„”"
 
 
-def _kawalki(slowo: str, kolumna: str) -> list[tuple[str, str, HexColor]]:
+def _kawalki(slowo: str, kolumna: str, p: Paleta) -> list[tuple[str, str, Color]]:
     """Slowo rozbite na (tekst, czcionka, kolor).
 
     Interpunkcja odpada na koniec zwykla i czarna: zielony srednik po "+1" albo
@@ -561,36 +601,37 @@ def _kawalki(slowo: str, kolumna: str) -> list[tuple[str, str, HexColor]]:
     ogon = slowo[len(rdzen):]
     goly = rdzen.lstrip(OGON)
     if goly.lower() in SILA_SLOWA:
-        styl = (FONT, KOLOR_SILY)
+        styl = (FONT, p.sila)
     elif kolumna in SILA_KOLUMNY and ("½" in goly or goly == "0"
                                       or re.fullmatch(r"[+−±]\d+", goly)):
-        styl = (FONT, KOLOR_SILY)
+        styl = (FONT, p.sila)
     elif any(z.isdigit() for z in goly):
-        styl = (FONT_BOLD, INK)
+        styl = (FONT_BOLD, p.tusz)
     else:
-        styl = (FONT, INK)
+        styl = (FONT, p.tusz)
     kawalki = [(rdzen, *styl)] if rdzen else []
-    return kawalki + ([(ogon, FONT, INK)] if ogon else [])
+    return kawalki + ([(ogon, FONT, p.tusz)] if ogon else [])
 
 
-def _lamanie(zasada: str, kolumna: str, szerokosc: float) -> list[list[tuple[str, str, HexColor]]]:
+def _lamanie(zasada: str, kolumna: str, szerokosc: float,
+             p: Paleta) -> list[list[tuple[str, str, Color]]]:
     """Zasada polamana na linie slow (slowo, czcionka, kolor).
 
     Wlasne lamanie zamiast simpleSplit, bo slowa roznia sie czcionka: pogrubiona
     liczba jest szersza niz ta sama liczba zwykla i linia by sie przelewala.
     """
     spacja = pdfmetrics.stringWidth(" ", FONT, SCIAGA_FS)
-    linie: list[list[tuple[str, str, HexColor]]] = []
-    biezaca: list[tuple[str, str, HexColor]] = []
+    linie: list[list[tuple[str, str, Color]]] = []
+    biezaca: list[tuple[str, str, Color]] = []
     szer = 0.0
     for slowo in zasada.split():
-        kawalki = _kawalki(slowo, kolumna)
+        kawalki = _kawalki(slowo, kolumna, p)
         w = sum(pdfmetrics.stringWidth(t, f, SCIAGA_FS) for t, f, _ in kawalki)
         if biezaca and szer + spacja + w > szerokosc:
             linie.append(biezaca)
             biezaca, szer = [], 0.0
         elif biezaca:
-            biezaca.append((" ", FONT, INK))
+            biezaca.append((" ", FONT, p.tusz))
             szer += spacja
         biezaca.extend(kawalki)
         szer += w
@@ -599,7 +640,7 @@ def _lamanie(zasada: str, kolumna: str, szerokosc: float) -> list[list[tuple[str
     return linie
 
 
-def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
+def draw_sciaga(c: Canvas, p: Paleta, x0: float, top: float, card_w: float) -> float:
     """Trzykolumnowa sciaga z mini-naglowkami i punktami; zwraca y pod nia."""
     gap = 6 * mm
     col_w = (card_w - (len(SCIAGA) - 1) * gap) / len(SCIAGA)
@@ -610,17 +651,17 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
         x = x0 + i * (col_w + gap)
         t = title.upper()
         c.setFont(FONT_BOLD, 6)
-        c.setFillColor(KOLOR_SILY if SILA_W_NAZWIE & set(t.split()) else INK)
+        c.setFillColor(p.sila if SILA_W_NAZWIE & set(t.split()) else p.tusz)
         c.drawString(x, y0, t)
-        c.setStrokeColor(HEADER_BG)
+        c.setStrokeColor(p.linia)
         c.setLineWidth(0.8)
         c.line(x, y0 - 1.6 * mm, x + col_w, y0 - 1.6 * mm)
         y = y0 - 5 * mm
         for zasada in items:
             c.setFont(FONT_BOLD, SCIAGA_FS)
-            c.setFillColor(MUTED)
+            c.setFillColor(p.przygaszony)
             c.drawString(x, y, "•")
-            for linia in _lamanie(zasada, title, col_w - 4.2 * mm):
+            for linia in _lamanie(zasada, title, col_w - 4.2 * mm, p):
                 lx = x + 4.2 * mm
                 for tekst, font, kolor in linia:
                     c.setFont(font, SCIAGA_FS)
@@ -635,29 +676,29 @@ def draw_sciaga(c: Canvas, x0: float, top: float, card_w: float) -> float:
     # tylko wtedy, gdyby wyrownanie bylo wszedzie takie samo, a nie jest.
     # 4 mm, a nie 1,5: napis rosnie w gore od linii pisma, wiec przy ciasniejszym
     # odstepie wchodzil w ramke najnizszej siatki.
-    y = draw_siatki(c, x0, min(bottoms) - 2.5 * mm, card_w) - 4 * mm
+    y = draw_siatki(c, p, x0, min(bottoms) - 2.5 * mm, card_w) - 4 * mm
     qr_size = 14 * mm
     draw_qr(c, x0 + card_w - qr_size, y, qr_size, "https://zg-go.pl/ranking.html")
     c.setFont(FONT, 6)
-    c.setFillColor(MUTED)
+    c.setFillColor(p.przygaszony)
     c.drawString(x0, y, "Pełne zasady: zg-go.pl/ranking.html")
     c.drawRightString(x0 + card_w - qr_size - 2 * mm, y, f"wersja karty {WERSJA}")
     return y
 
 
-def draw_card(c: Canvas, x0: float, card_w: float, dane: KartaDane | None) -> None:
+def draw_card(c: Canvas, p: Paleta, x0: float, card_w: float, dane: KartaDane | None) -> None:
     top = PAGE_H - MARGIN
-    y = draw_title(c, x0, top, card_w)
-    y = draw_fields(c, x0, y, card_w, dane)
-    y = draw_table(c, x0, y, card_w, [] if dane is None else dane.wiersze, ROWS)
-    y = draw_sciaga(c, x0, y, card_w)
+    y = draw_title(c, p, x0, top, card_w)
+    y = draw_fields(c, p, x0, y, card_w, dane)
+    y = draw_table(c, p, x0, y, card_w, [] if dane is None else dane.wiersze, ROWS)
+    y = draw_sciaga(c, p, x0, y, card_w)
     assert y > 5 * mm, f"karta nie miesci sie na stronie: y={y / mm:.1f} mm"
 
 
 CUT_MARGIN = 2 * mm
 
 
-def generuj_wycinek(out: Path, karty: list[KartaDane], n_rows: float) -> None:
+def generuj_wycinek(out: Path, karty: list[KartaDane], n_rows: float, p: Paleta) -> None:
     """Zapisuje PDF-wycinek karty (naglowek + n_rows wierszy) do osadzenia na stronie.
 
     Jedna karta na strone; strona ma dokladnie rozmiar wycinka.
@@ -670,21 +711,21 @@ def generuj_wycinek(out: Path, karty: list[KartaDane], n_rows: float) -> None:
     c = Canvas(str(out), pagesize=(page_w, page_h))
     c.setTitle("Karta gracza (przykład) — Klub Go Semedori")
     for dane in karty:
-        y = draw_fields(c, CUT_MARGIN, page_h - CUT_MARGIN, card_w, dane)
-        draw_table(c, CUT_MARGIN, y, card_w, dane.wiersze, n_rows)
+        y = draw_fields(c, p, CUT_MARGIN, page_h - CUT_MARGIN, card_w, dane)
+        draw_table(c, p, CUT_MARGIN, y, card_w, dane.wiersze, n_rows)
         c.showPage()
     c.save()
     print(f"OK: {out} ({out.stat().st_size} B)")
 
 
-def generuj_karte(out: Path, karty: list[KartaDane | None]) -> None:
+def generuj_karte(out: Path, karty: list[KartaDane | None], p: Paleta) -> None:
     """Zapisuje PDF: jedna karta na strone; None = pusta karta do druku."""
     assert karty, "co najmniej jedna karta"
     register_fonts()
     c = Canvas(str(out), pagesize=(PAGE_W, PAGE_H))
     c.setTitle("Karta gracza — Klub Go Semedori")
     for dane in karty:
-        draw_card(c, MARGIN, PAGE_W - 2 * MARGIN, dane)
+        draw_card(c, p, MARGIN, PAGE_W - 2 * MARGIN, dane)
         c.showPage()
     c.save()
     print(f"OK: {out} ({out.stat().st_size} B)")
@@ -747,7 +788,8 @@ def zapisz_zamek() -> None:
 
 
 def main() -> None:
-    generuj_karte(KORZEN / "karta.pdf", [None])
+    generuj_karte(KORZEN / "karta.pdf", [None], KOLOROWA)
+    generuj_karte(KORZEN / "karta-cb.pdf", [None], CZARNO_BIALA)
     zapisz_zamek()
 
 

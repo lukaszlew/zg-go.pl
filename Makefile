@@ -2,12 +2,14 @@
 # zmianach w tools/. `make help` wypisuje cele.
 # Wymaga: python3 + reportlab i Pillow, pdftocairo (poppler-utils), fonty DejaVu.
 
-all: karta.pdf karta-wycinek-czarek.svg wyrownanie  ## przegeneruj karte, karty przykladowe i tabele wyrownania
+all: karta.pdf karta-wycinek-czarek.svg wyrownanie  ## przegeneruj karty, karty przykladowe i tabele wyrownania
 
 help:  ## wypisz dostepne cele
 	@awk -F':.*##' '/^[a-z-]+:.*##/ { printf "  make %-11s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
-# sciaga na karcie idzie z zasady.py, wiec zmiana zasad tez odswieza karte
+# sciaga na karcie idzie z zasady.py, wiec zmiana zasad tez odswieza karte.
+# Jeden przebieg pisze obie wersje: karta.pdf (kolor) i karta-cb.pdf (czarno-biala,
+# na ksero i drukarke laserowa).
 karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 	python3 tools/karta_pdf.py
 

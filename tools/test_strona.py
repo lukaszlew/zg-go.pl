@@ -164,6 +164,14 @@ class TestPowtorzoneBloki(unittest.TestCase):
     def test_fonty_ladowane_wszedzie_tak_samo(self) -> None:
         self.porownaj(r'<link href="https://fonts\.googleapis\.com[^>]*>', STRONY)
 
+    def test_logo_stoi_w_naglowku_kazdej_strony_tak_samo(self) -> None:
+        """Logo otwiera hero-band na kazdej podstronie identycznym znacznikiem.
+
+        Pozycje na ekranie daja te same kolumny siatki i stala szerokosc logo
+        w CSS, wiec identyczny znacznik na identycznym miejscu w strukturze
+        znaczy: logo nie przeskakuje przy przechodzeniu miedzy stronami."""
+        self.porownaj(r'<header class="hero-band">\s*<span class="hero-logo"[^>]*></span>', STRONY)
+
     def test_menu_prowadzi_do_tych_samych_stron(self) -> None:
         """Porownujemy cele, nie znaczniki: klasa `active` z natury sie rozni."""
         widoczne = [s for s in STRONY if s not in SZKICE]

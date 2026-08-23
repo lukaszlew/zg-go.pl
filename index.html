@@ -64,6 +64,7 @@
     </div>
 
     <header class="hero-band">
+      <span class="hero-logo" aria-hidden="true"></span>
       <h1 class="site-title">Klub Semedori</h1>
       <p class="site-tagline">Gramy w Go w Zielonej Górze</p>
       <nav class="hb-menu">
@@ -220,12 +221,16 @@
     (function () {
       const img = document.getElementById('banner-img');
       if (!img) return;
-      // Bachus pojawia się tylko w sezonie Winobrania w Zielonej Górze:
-      // od 2 tygodni przed startem (~23 sierpnia) do tygodnia po zakończeniu (~21 września).
-      // Winobranie zaczyna się zwykle w pierwszą/drugą sobotę września i trwa ok. 9 dni.
-      const now = new Date();
-      const md = (now.getMonth() + 1) * 100 + now.getDate(); // np. 8 września -> 908
-      const winobranie = md >= 823 && md <= 921;
+      // Bachus pojawia się tylko w sezonie Winobrania w Zielonej Górze.
+      // Święto zaczyna się w pierwszą albo drugą sobotę września i trwa ok. 9 dni,
+      // więc baner żyje od pierwszej wrześniowej soboty przez 16 dni — obejmuje
+      // oba warianty startu i nie wyprzedza święta.
+      const dzis = new Date();
+      const start = new Date(dzis.getFullYear(), 8, 1);
+      start.setDate(1 + (6 - start.getDay() + 7) % 7);   // pierwsza sobota września
+      const koniec = new Date(start);
+      koniec.setDate(start.getDate() + 16);
+      const winobranie = dzis >= start && dzis < koniec;
       img.src = winobranie ? 'img/bachus.webp' : 'img/grapes.webp';
     })();
   </script>

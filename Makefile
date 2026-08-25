@@ -17,12 +17,16 @@ karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf img/lo
 karta-klub-przyklad.pdf: tools/karta_klub.py tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 	python3 tools/karta_klub.py
 
-plansza-pdf: plansza/plansza.pdf  ## przegeneruj plansze rankingowa na laminat magnetyczny
+tablica-pdf: tablica/tablica.pdf tablica/tablica-mala.pdf  ## przegeneruj obie tablice rankingowe
 
-# generator importuje draw_siatka/draw_qr z karta_pdf, wiec zmiana karty
-# odswieza tez plansze
-plansza/plansza.pdf: plansza/plansza_pdf.py tools/karta_pdf.py img/logo.svg
-	python3 plansza/plansza_pdf.py
+# generatory importuja draw_siatka/draw_qr z karta_pdf, wiec zmiana karty
+# odswieza tez tablice
+tablica/tablica.pdf: tablica/tablica_pdf.py tools/karta_pdf.py img/logo.svg
+	python3 tablica/tablica_pdf.py
+
+# wydruk na mala tablice magnetyczna (67 x 93,5 cm); uklad wspolny z tablica_pdf.py
+tablica/tablica-mala.pdf: tablica/tablica_mala_pdf.py tablica/tablica_pdf.py tools/karta_pdf.py img/logo.svg
+	python3 tablica/tablica_mala_pdf.py
 
 # jeden przebieg tworzy tez: karta-przyklad.pdf, karta-wycinek.pdf,
 # karta-wycinek-bianka.svg

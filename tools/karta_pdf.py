@@ -96,9 +96,9 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "23.08.2026a"                   # dopiska na karcie; podbij przy zmianie zasad/ukladu
+WERSJA = "25.08.2026a"                   # dopiska na karcie; podbij przy zmianie zasad/ukladu
 
-ROWS = 19                               # wysoki naglowek, trzy siatki wyrownania i 11 zasad w sciadze kosztuja reszte strony
+ROWS = 18                               # wysoki naglowek, trzy siatki wyrownania i 13 zasad w sciadze kosztuja reszte strony
 # 7,7 mm zamiast 8: jedenasta zasada wypchnela stopke poza strone, a wiersz nizszy
 # o 0,3 mm dalej z zapasem miesci odreczny wpis (Caveat 14 pt to okolo 4,9 mm).
 ROW_H = 7.7 * mm
@@ -307,7 +307,7 @@ def draw_title(c: Canvas, p: Paleta, klub: Klub, x0: float, top: float, card_w: 
     c.setStrokeColor(p.linia)
     c.setLineWidth(0.8)
     c.line(x0, y - 6 * mm, x0 + card_w, y - 6 * mm)
-    return y - 9 * mm
+    return y - 8 * mm
 
 
 FIELD_H = 11 * mm
@@ -561,7 +561,6 @@ def draw_qr(c: Canvas, x: float, y: float, size: float, url: str) -> None:
 
 
 KRATKA_W, BRZEG_W, WIERSZ_H = 6.0 * mm, 8.4 * mm, 2.8 * mm
-SIATKA_GAP = 6 * mm
 
 
 def _kratka_sily(roznica: float) -> str:
@@ -677,13 +676,21 @@ def draw_siatka(c: Canvas, p: Paleta, x: float, top: float, plansza: str) -> flo
 
 
 def draw_siatki(c: Canvas, p: Paleta, x0: float, top: float, card_w: float) -> float:
-    """Trzy siatki w rzedzie; zwraca y dolnej krawedzi."""
+    """Trzy siatki rozlozone na cala szerokosc karty; zwraca y dolnej krawedzi.
+
+    Siatki sa rozne co do szerokosci, wiec pierwsza stoi przy lewej krawedzi,
+    ostatnia przy prawej, a luz idzie po rowno w przerwy miedzy nimi — rzad
+    jest wysrodkowany i nie zostawia pustki po zadnej stronie.
+    """
+    szerokosci = [len({j for j, _ in siatka(pl)}) * KRATKA_W + BRZEG_W for pl in PLANSZE]
+    gap = (card_w - sum(szerokosci)) / (len(PLANSZE) - 1)
+    assert gap >= 4 * mm, f"siatki nie zostawiaja przerw: {gap / mm:.1f} mm"
     x, najnizej = x0, top
-    for plansza in PLANSZE:
-        szer = draw_siatka(c, p, x, top, plansza)
-        x += szer + SIATKA_GAP
-        najnizej = min(najnizej, top - (len(sorted({r for _, r in siatka(plansza)})) + 2) * WIERSZ_H)
-    assert x - SIATKA_GAP <= x0 + card_w, f"siatki nie miesza sie w szerokosc karty: {(x - SIATKA_GAP - x0) / mm:.1f} mm"
+    for plansza, szer in zip(PLANSZE, szerokosci):
+        narysowana = draw_siatka(c, p, x, top, plansza)
+        assert abs(narysowana - szer) < 0.01, f"szerokosc siatki {plansza} rozjechala sie z rachubka"
+        x += szer + gap
+        najnizej = min(najnizej, top - (len({r for _, r in siatka(plansza)}) + 2) * WIERSZ_H)
     return najnizej
 
 
@@ -739,15 +746,29 @@ def _lamanie(zasada: str, kolumna: str, szerokosc: float,
     return linie
 
 
+def _szerokosci_sciagi(card_w: float, gap: float) -> list[float]:
+    """Szerokosc kazdej kolumny sciagi: w polowie rowna, w polowie proporcjonalna
+    do ilosci tekstu w kolumnie.
+
+    Kolumny niosa rozna liczbe zasad, wiec przy rownych szerokosciach najkrotsza
+    marnuje miejsce, a najdluzsza spycha siatki w dol. Czysta proporcja z kolei
+    robi z krotkiej kolumny waski komin — stad polowa na polowe.
+    """
+    wolne = card_w - (len(SCIAGA) - 1) * gap
+    teksty = [sum(pdfmetrics.stringWidth(z, FONT, SCIAGA_FS) for z in punkty)
+              for _, punkty in SCIAGA]
+    return [wolne * (0.5 / len(SCIAGA) + 0.5 * t / sum(teksty)) for t in teksty]
+
+
 def draw_sciaga(c: Canvas, p: Paleta, x0: float, top: float, card_w: float) -> float:
-    """Trzykolumnowa sciaga z mini-naglowkami i punktami; zwraca y pod nia."""
+    """Sciaga w kolumnach (po jednej na kolumne zasad); zwraca y pod nia."""
     gap = 6 * mm
-    col_w = (card_w - (len(SCIAGA) - 1) * gap) / len(SCIAGA)
+    szerokosci = _szerokosci_sciagi(card_w, gap)
     y0 = top - 4 * mm
     line_h = 2.7 * mm
     bottoms: list[float] = []
-    for i, (title, items) in enumerate(SCIAGA):
-        x = x0 + i * (col_w + gap)
+    x = x0
+    for (title, items), col_w in zip(SCIAGA, szerokosci):
         t = title.upper()
         c.setFont(FONT_BOLD, 6)
         c.setFillColor(p.sila if SILA_W_NAZWIE & set(t.split()) else p.tusz)
@@ -770,6 +791,7 @@ def draw_sciaga(c: Canvas, p: Paleta, x0: float, top: float, card_w: float) -> f
                 y -= line_h
             y -= 0.7 * mm
         bottoms.append(y)
+        x += col_w + gap
     # Siatki wszystkich trzech plansz ida pod sciaga, na calej szerokosci: karta
     # sluzy trzem planszom, wiec kazda musi miec swoja — jedna wystarczylaby
     # tylko wtedy, gdyby wyrownanie bylo wszedzie takie samo, a nie jest.

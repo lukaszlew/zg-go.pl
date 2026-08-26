@@ -158,14 +158,16 @@
           <ul class="zasady">
             <li><a href="#zasada-6">Zwycięzca <span class="sila">+½</span>, przegrany <span class="sila">−½</span>, remis <span class="sila">0</span> — w grze równej remisu nie ma, bo wyklucza go połówka komi.</a></li>
             <li><a href="#zasada-7">Wygrana o 20 punktów lub więcej albo przez poddanie daje zwycięzcy <span class="sila">+1</span>; przegrany traci <span class="sila">½</span> jak zawsze.</a></li>
-            <li><a href="#zasada-8">Szybką korektę <span class="sila">siły</span> przyznaje silny gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce <span class="kol">moja siła</span> w następnej grze.</a></li>
+            <li><a href="#zasada-8">Pierwsza przegrana w danym dniu nie odbiera <span class="sila">siły</span> — zapisujecie zmianę <span class="sila">0</span>; każda następna kosztuje <span class="sila">½</span> jak zawsze.</a></li>
+            <li><a href="#zasada-9">Przy <span class="sila">różnicy siły</span> 10 lub większej silniejszy nie zmienia swojej <span class="sila">siły</span> — rusza się tylko słabszy.</a></li>
+            <li><a href="#zasada-10">Szybką korektę <span class="sila">siły</span> przyznaje silny gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce <span class="kol">moja siła</span> w następnej grze.</a></li>
           </ul>
 
           <h3><a href="#kalibracja">Typ gry</a></h3>
           <ul class="zasady">
-            <li><a href="#zasada-9">Dopóki nowy gracz się kalibruje, w kolumnie <span class="kol">typ gry</span> stoi u niego K, a jego przeciwnik wpisuje P albo pomija tę grę, bo nic mu ona nie zmienia; w zwyczajnej grze oboje stawiają myślnik.</a></li>
-            <li><a href="#zasada-10">W grze kalibracyjnej nowy gracz dostaje <span class="sila">±1</span>, a po wyraźnej wygranej lub przegranej <span class="sila">±2</span>; przeciwnik przy P nie zmienia swojej <span class="sila">siły</span>.</a></li>
-            <li><a href="#zasada-11">Kalibracja może się skończyć dopiero wtedy, gdy są w niej i wygrane, i przegrane — a silny gracz w klubie może ją przedłużyć albo przyspieszyć <span class="kol">szybką korektą</span>.</a></li>
+            <li><a href="#zasada-11">Dopóki nowy gracz się kalibruje, w kolumnie <span class="kol">typ gry</span> stoi u niego K, a jego przeciwnik wpisuje P albo pomija tę grę, bo nic mu ona nie zmienia; w zwyczajnej grze oboje stawiają myślnik.</a></li>
+            <li><a href="#zasada-12">W grze kalibracyjnej nowy gracz dostaje <span class="sila">±1</span>, a po wyraźnej wygranej lub przegranej <span class="sila">±2</span>; przeciwnik przy P nie zmienia swojej <span class="sila">siły</span>.</a></li>
+            <li><a href="#zasada-13">Kalibracja może się skończyć dopiero wtedy, gdy są w niej i wygrane, i przegrane — a silny gracz w klubie może ją przedłużyć albo przyspieszyć <span class="kol">szybką korektą</span>.</a></li>
           </ul>
 
           <table class="sila typy">
@@ -303,7 +305,7 @@
           Poddanej gry nie ma jak policzyć, a litera wystarczy: do <a href="#zmiana-sily">zmiany siły</a> poddanie liczy się jak wyraźna wygrana.</p>
 
           <p class="zasada" id="zasada-5"><strong>Ta sama gra stoi na dwóch kartach: <span class="sila">różnica siły</span> jednakowa, wynik z przeciwnymi znakami.</strong>
-          Dwa zapisy tej samej gry pilnują się nawzajem: jeśli do siebie nie pasują, ktoś się pomylił. Wyjątek jest jeden: <a href="#zasada-9">grę kalibracyjną</a> przeciwnik może pominąć, bo nic mu ona nie zmienia.
+          Dwa zapisy tej samej gry pilnują się nawzajem: jeśli do siebie nie pasują, ktoś się pomylił. Wyjątek jest jeden: <a href="#zasada-11">grę kalibracyjną</a> przeciwnik może pominąć, bo nic mu ona nie zmienia.
           Porównajcie je jeszcze przy stoliku — na następnym spotkaniu nikt już nie odtworzy, jak było naprawdę.</p>
         </section>
 
@@ -320,13 +322,22 @@
           Dwadzieścia punktów to przewaga większa niż darmowy ruch — wygrana na tyle wyraźna, że starczyłoby jej nawet o ruch mniej.
           Poddanie też, bo kto się poddaje, ten zwykle przegrywa wyraźnie.
           Nagradza się przewagę zwycięzcy, a nie karze podwójnie tego, kto ją przyjął: przegranemu zwyczajna gra nie zabiera więcej niż pół — podwójnie liczy się tylko <a href="#kalibracja">kalibracja</a>.</p>
+
+          <p class="zasada" id="zasada-8"><strong>Pierwsza przegrana w danym dniu nie odbiera <span class="sila">siły</span> — zapisujecie zmianę <span class="sila">0</span>; każda następna kosztuje <span class="sila">½</span> jak zawsze.</strong>
+          Działa niezależnie od marginesu — także wyraźna przegrana, jeśli jest pierwsza tego dnia, kosztuje <span class="sila">0</span>; zwycięzca dostaje swoje jak zwykle.
+          Rubryka <span class="kol">data</span> pokazuje, która przegrana jest pierwsza.
+          Nie dotyczy <a href="#kalibracja">gier kalibracyjnych</a> — w nich wynik zmienia <span class="sila">siłę</span> w obie strony.</p>
+
+          <p class="zasada" id="zasada-9"><strong>Przy <span class="sila">różnicy siły</span> 10 lub większej silniejszy nie zmienia swojej <span class="sila">siły</span> — rusza się tylko słabszy.</strong>
+          Silniejszy wpisuje w rubryce <span class="kol">zmiana siły</span> <span class="sila">0</span>, a w <span class="kol">nowa siła</span> starą wartość — łańcuch na karcie musi się spinać; słabszy liczy zmianę jak zwykle.
+          To samo rozwiązanie stosuje <a href="https://senseis.xmp.net/?Winchester" target="_blank" rel="noopener">drabinka klubu Winchester</a>: różnica ponad 9 kamieni nie rusza tam silniejszego.</p>
         </section>
 
         <section id="korekta">
           <h3>Szybka korekta</h3>
           <p>Ranking nadąża za graczem po jednej grze na raz, a to czasem za wolno — bywa, że gracz siedzi na <span class="sila">sile</span>, która już nic o nim nie mówi.</p>
 
-          <p class="zasada" id="zasada-8"><strong>Szybką korektę <span class="sila">siły</span> przyznaje silny gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce <span class="kol">moja siła</span> w następnej grze.</strong>
+          <p class="zasada" id="zasada-10"><strong>Szybką korektę <span class="sila">siły</span> przyznaje silny gracz w klubie: skorygowaną wartość zapisujecie z wykrzyknikiem w rubryce <span class="kol">moja siła</span> w następnej grze.</strong>
           To jedyna liczba w całym rankingu, która bierze się z decyzji, a nie z rachunku — dlatego nie przyznaje jej sobie sam zainteresowany.
           Poprosić może każdy i w każdej chwili — zwłaszcza po serii wygranych albo serii porażek, albo po dłuższej nieobecności; zwykle kończy się to szybkim awansem w górę, rzadziej cofnięciem w dół.</p>
 
@@ -354,17 +365,17 @@
           Wystarczy ją zgadnąć — kilka pierwszych gier samo sprowadzi tę liczbę tam, gdzie trzeba.
           Dlatego do kalibracji nie jest potrzebny nauczyciel: rachunek robi to za was.</p>
 
-          <p class="zasada" id="zasada-9"><strong>Dopóki nowy gracz się kalibruje, w kolumnie <span class="kol">typ gry</span> stoi u niego K, a jego przeciwnik wpisuje P albo pomija tę grę, bo nic mu ona nie zmienia; w zwyczajnej grze oboje stawiają myślnik.</strong>
+          <p class="zasada" id="zasada-11"><strong>Dopóki nowy gracz się kalibruje, w kolumnie <span class="kol">typ gry</span> stoi u niego K, a jego przeciwnik wpisuje P albo pomija tę grę, bo nic mu ona nie zmienia; w zwyczajnej grze oboje stawiają myślnik.</strong>
           To ostatnia rubryka wypełniana przed pierwszym ruchem.
           Ciąg K na karcie pokazuje wprost, jak długo kalibracja trwała; po niej gracza obowiązują zwykłe zasady.
           Jeśli przeciwnik grę zapisze, jego P stoi naprzeciw K i tak się je czyta przy porównaniu kart; jeśli nie zapisze, nie ma czego porównywać — to jedyny wpis na karcie, który może nie mieć pary.</p>
 
-          <p class="zasada" id="zasada-10"><strong>W grze kalibracyjnej nowy gracz dostaje <span class="sila">±1</span>, a po wyraźnej wygranej lub przegranej <span class="sila">±2</span>; przeciwnik przy P nie zmienia swojej <span class="sila">siły</span>.</strong>
+          <p class="zasada" id="zasada-12"><strong>W grze kalibracyjnej nowy gracz dostaje <span class="sila">±1</span>, a po wyraźnej wygranej lub przegranej <span class="sila">±2</span>; przeciwnik przy P nie zmienia swojej <span class="sila">siły</span>.</strong>
           To dwa razy tyle, co w zwykłej grze — i w obie strony tak samo, bo strzelona liczba może być za wysoka równie dobrze jak za niska.
           Przeciwnik nie zmienia nic, bo taka gra nic o nim nie mówi: wyrównanie liczyło się z <span class="sila">siły</span>, która dopiero jest zgadywana, więc ani wygrana, ani przegrana w niej niczego o jego własnej nie dowodzi.
 </p>
 
-          <p class="zasada" id="zasada-11"><strong>Kalibracja może się skończyć dopiero wtedy, gdy są w niej i wygrane, i przegrane — a silny gracz w klubie może ją przedłużyć albo przyspieszyć <span class="kol">szybką korektą</span>.</strong>
+          <p class="zasada" id="zasada-13"><strong>Kalibracja może się skończyć dopiero wtedy, gdy są w niej i wygrane, i przegrane — a silny gracz w klubie może ją przedłużyć albo przyspieszyć <span class="kol">szybką korektą</span>.</strong>
           Same wygrane albo same porażki znaczą, że liczba wciąż jest chybiona i nie ma jeszcze czego kończyć — dopiero kiedy wyniki zaczynają iść w obie strony, wiadomo, że trafiła mniej więcej tam, gdzie trzeba.
           To warunek konieczny, nie wystarczający: kalibrację można przeciągnąć dalej, jeśli te wyniki wyglądają na przypadek.
           A gdy wszystko idzie w jedną stronę i widać, że dojście tam po <span class="sila">1</span> zajmie pół roku, szybciej jest przeskoczyć od razu — od tego jest <a href="#korekta">szybka korekta</a>, i ona też może się zdarzyć w środku kalibracji.</p>
@@ -489,6 +500,7 @@
         <p id="inflacja"><strong>Siła w klubie powoli rośnie.</strong>
         To po części cena tego, że <a href="#dlaczego-tak">siłę da się zbierać</a>.
         Wyraźna wygrana daje zwycięzcy <span class="sila">1</span>, a przegranemu zabiera <span class="sila">½</span> — po każdej takiej grze w klubie przybywa pół.
+        Darmowa pierwsza przegrana dnia dokłada kolejne <span class="sila">½</span> za każdy wieczór z choć jedną przegraną; zasada o różnicy 10 trochę to hamuje, bo silniejszy nie zbiera już <span class="sila">siły</span> na nowicjuszach.
         <a href="#kalibracja">Gry kalibracyjne</a> działają równie jednostronnie: nowy gracz się rusza, jego przeciwnik nie.
         Wewnątrz jednego wieczoru nic to nie psuje, bo wyrównanie bierze się z różnicy dwóch liczb z tego samego klubu — ale liczby z różnych lat przestają znaczyć to samo, a kto gra rzadko, ten z czasem zostaje pod rozdmuchaną resztą i dostaje większe wyrównanie, niż powinien.
         Staramy się trzymać naszą skalę przy oficjalnych stopniach — stąd <a href="#kalibracja">poprawka przy tabeli kyu</a> — ale nie liczymy, że dryfu nie będzie.
@@ -511,7 +523,7 @@
 
         <h3 id="zmiany">Zmiany</h3>
         <p>Zasady zmieniają się rzadko, ale kiedy się zmieniają, zostaje po tym ślad — żeby dało się sprawdzić, czym różni się dzisiejsza karta od tej sprzed roku.</p>
-        <p class="karta-link"><a href="zmiany">Zmiany w rankingu — 20 sierpnia</a></p>
+        <p class="karta-link"><a href="zmiany">Zmiany w rankingu — ostatnia 25 sierpnia</a></p>
 
         <h3 id="tablica">Tablica</h3>
         <p class="karta-link"><a href="tablica/tablica.pdf">Tablica rankingowa (PDF)</a> — kratki sił 1–60 do wydruku na laminacie magnetycznym (100 × 85 cm); każdy gracz wisi na niej na magnesie ze swoim nazwiskiem, w kratce swojej <span class="sila">siły</span>.</p>

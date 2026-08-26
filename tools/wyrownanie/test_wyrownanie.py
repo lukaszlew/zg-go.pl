@@ -586,13 +586,17 @@ class SiatkiNaKarcie(unittest.TestCase):
         self.assertIs(karta_pdf.siatka, tabela_html.siatka)
 
     def test_siatki_mieszcza_sie_w_szerokosc_karty(self):
-        """Assert w karcie zlapalby to przy generowaniu; test mowi o tym wczesniej."""
+        """Assert w karcie zlapalby to przy generowaniu; test mowi o tym wczesniej.
+
+        Siatki rozkladaja sie na cala szerokosc karty, a luz idzie w przerwy —
+        wiec "miesza sie" znaczy: zostaje przerwa co najmniej 4 mm."""
         import karta_pdf
         szerokosc = sum(
             len({j for j, _ in tabela_html.siatka(p)}) * karta_pdf.KRATKA_W + karta_pdf.BRZEG_W
             for p in tabela_html.PLANSZE
-        ) + (len(tabela_html.PLANSZE) - 1) * karta_pdf.SIATKA_GAP
-        self.assertLessEqual(szerokosc, karta_pdf.PAGE_W - 2 * karta_pdf.MARGIN)
+        )
+        luz = (karta_pdf.PAGE_W - 2 * karta_pdf.MARGIN - szerokosc) / (len(tabela_html.PLANSZE) - 1)
+        self.assertGreaterEqual(luz, 4 * karta_pdf.mm)
 
     def test_polowka_pisze_sie_tak_samo_jak_na_stronie(self):
         import karta_pdf

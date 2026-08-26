@@ -17,7 +17,7 @@ karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf img/lo
 karta-klub-przyklad.pdf: tools/karta_klub.py tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 	python3 tools/karta_klub.py
 
-tablica-pdf: tablica/tablica.pdf tablica/tablica-mala.pdf  ## przegeneruj obie tablice rankingowe
+tablica-pdf: tablica/tablica.pdf tablica/tablica-mala.pdf tablica/tablica-kyu.pdf  ## przegeneruj wszystkie tablice
 
 # generatory importuja draw_siatka/draw_qr z karta_pdf, wiec zmiana karty
 # odswieza tez tablice
@@ -27,6 +27,10 @@ tablica/tablica.pdf: tablica/tablica_pdf.py tools/karta_pdf.py img/logo.svg
 # wydruk na mala tablice magnetyczna (67 x 93,5 cm); uklad wspolny z tablica_pdf.py
 tablica/tablica-mala.pdf: tablica/tablica_mala_pdf.py tablica/tablica_pdf.py tools/karta_pdf.py img/logo.svg
 	python3 tablica/tablica_mala_pdf.py
+
+# tablica stopni (slupki progresji sily z cwiartkami) na te sama mala tablice
+tablica/tablica-kyu.pdf: tablica/tablica_kyu_pdf.py tablica/tablica_pdf.py tools/karta_pdf.py img/logo.svg
+	python3 tablica/tablica_kyu_pdf.py
 
 # jeden przebieg tworzy tez: karta-przyklad.pdf, karta-wycinek.pdf,
 # karta-wycinek-bianka.svg

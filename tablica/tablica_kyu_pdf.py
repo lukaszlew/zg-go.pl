@@ -10,8 +10,9 @@ cala kratka ma 106 mm.
 Silniejszy po prawej, dan u gory. Skala do sily 40 idzie cwiartkami, nizej
 polowkami. Kazda kolumna sekcji scala sie w jeden slupek: wspolny obrys,
 w srodku kreski dzielace segmenty progresji (np. 50 / 49,75 / 49,5 / 49,25),
-a pasek z lewej niesie liczbe kazdego segmentu. Zielone sa okragle piatki
-sily (55-20) w prawych rogach sekcji. Sekcje rozdziela wyrazny odstep.
+a pasek z lewej niesie liczbe kazdego segmentu. Zielona jest kazda sila
+podzielna przez 5 — w sekcjach piatek to lewe dolne rogi. Sekcje rozdziela
+wyrazny odstep.
 
 Naglowek: logo z nazwa i adresem zg-go.pl/ranking po lewej, tabele wyrownania
 wszystkich plansz (z karty gracza) po prawej — musza byc, bo z nich odczytuje
@@ -30,23 +31,24 @@ from tablica_pdf import (ACCENT, BG, CARD, FONT_BOLD, FONT_SERIF_BOLD, INK, KRES
 import karta_pdf                        # sciezke do tools/ dodaje tablica_pdf
 from wyrownanie.tabela_html import PLANSZE
 
-def _cwiartki(gorny_wiersz: list[float]) -> list[list[float]]:
-    """Sekcja cwiartkowa: pod wierszem okraglych ida +0,25, +0,5 i +0,75 —
-    kazda kolumna to ciagly odcinek skali, a okragla liczba stoi na gorze."""
-    return [[k + p for k in gorny_wiersz] for p in (0.0, 0.25, 0.5, 0.75)]
+def _cwiartki(okragle: list[float]) -> list[list[float]]:
+    """Sekcja cwiartkowa: nad wierszem okraglych ida -0,25, -0,5 i -0,75 kyu —
+    kazda kolumna to ciagly odcinek skali, a okragla liczba stoi na dole."""
+    return [[k - p for k in okragle] for p in (0.75, 0.5, 0.25, 0.0)]
 
 
-# Sekcje wierszy wartosci: piatka stopni konczaca sie okragla liczba w prawym
-# gornym rogu (silniejszy po prawej, dan u gory); (wiersze, czy pola podwojne).
+# Sekcje wierszy wartosci (kyu; na paskach stoi sila = 50 - kyu): piatka stopni
+# z okragla liczba w lewym dolnym rogu (silniejszy po prawej, dan u gory);
+# (wiersze, czy pola podwojne). Skala konczy sie na 54,75 sily — 55 juz nie ma.
 GRUPY: list[tuple[list[list[float]], bool]] = [
-    (_cwiartki([-1.0, -2.0, -3.0, -4.0, -5.0]), False),
-    (_cwiartki([4.0, 3.0, 2.0, 1.0, 0.0]), False),
-    (_cwiartki([9.0, 8.0, 7.0, 6.0, 5.0]), False),
-    ([[14.0, 13.0, 12.0, 11.0, 10.0], [14.5, 13.5, 12.5, 11.5, 10.5]], True),
-    ([[19.0, 18.0, 17.0, 16.0, 15.0], [19.5, 18.5, 17.5, 16.5, 15.5]], True),
-    ([[24.0, 23.0, 22.0, 21.0, 20.0]], True),
+    (_cwiartki([0.0, -1.0, -2.0, -3.0, -4.0]), False),
+    (_cwiartki([5.0, 4.0, 3.0, 2.0, 1.0]), False),
+    (_cwiartki([10.0, 9.0, 8.0, 7.0, 6.0]), False),
+    ([[14.5, 13.5, 12.5, 11.5, 10.5], [15.0, 14.0, 13.0, 12.0, 11.0]], True),
+    ([[19.5, 18.5, 17.5, 16.5, 15.5], [20.0, 19.0, 18.0, 17.0, 16.0]], True),
+    ([[25.0, 24.0, 23.0, 22.0, 21.0]], True),
     # Ostatni wiersz to osobna sekcja: skala poczatkujacych o wiekszych skokach.
-    ([[40.0, 34.0, 30.0, 27.0, 25.0]], True),
+    ([[35.0, 32.0, 30.0, 28.0, 26.0]], True),
 ]
 
 PAS_LICZBY = 24 * mm                    # kolorowy pasek z liczba, z lewej kratki
@@ -55,8 +57,8 @@ POLE_SZER = PAS_LICZBY + POLE_BIALE     # cala kratka
 POLE_WYS = 32 * mm
 POLE_WYS_2 = 2 * POLE_WYS - 5 * mm      # pole podwojne: 57 mm, z linia dzielaca
 LICZBA_FS = 20
-ODSTEP_GRUP = 8 * mm
-ODSTEP_POZIOM = 12 * mm
+ODSTEP_GRUP = 11 * mm
+ODSTEP_POZIOM = 5 * mm
 
 PAGE_W = 670 * mm                       # szerokosc malej tablicy, na styk
 MARGINES = 15 * mm
@@ -84,8 +86,8 @@ def liczba_skali(kyu: float) -> str:
 
 
 def zielona(kyu: float) -> bool:
-    """Wyroznione okragle piatki sily: 55, 50, 45, 40, 35, 30, 25 i 20."""
-    return kyu in (-5.0, 0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0)
+    """Wyrozniona kazda sila podzielna przez 5."""
+    return (50 - kyu) % 5 == 0
 
 
 def rysuj_slupek(c: Canvas, x: float, y: float, wartosci: list[float],

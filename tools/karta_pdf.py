@@ -571,23 +571,6 @@ def _kratka_sily(roznica: float, polowka: str) -> str:
     return f"{calosc}{polowka}" if calosc else polowka
 
 
-def _rysuj_kratke(c: Canvas, srodek: float, y: float, roznica: float, polowka: str) -> None:
-    """Roznica w kratce: cyfry zawsze koncza sie w tym samym miejscu.
-
-    Gdyby napis byl po prostu wysrodkowany, "3" i "3½" mialyby cyfre w innym
-    miejscu i kolumna bylaby poszarpana. Dlatego calosc dosuwa sie do wspolnego
-    kresu, a polowka zwisa za nia. Kres stoi tam, gdzie koncza sie cyfry
-    wysrodkowanego najszerszego wpisu (dwie cyfry z polowka): krotsze wpisy
-    zostawiaja luz po lewej, a polowka nie dociska prawej krawedzi kratki.
-    """
-    polowka_w = c.stringWidth(polowka, FONT, 5.4)
-    kres = srodek + (c.stringWidth("00", FONT, 5.4) - polowka_w) / 2
-    calosc = int(roznica)
-    c.drawRightString(kres, y, str(calosc) if calosc or roznica == calosc else "")
-    if roznica != calosc:
-        c.drawString(kres, y, polowka)
-
-
 def draw_siatka(c: Canvas, p: Paleta, x: float, top: float, plansza: str,
                 polowka: str) -> float:
     """Jedna siatka wyrownania; zwraca jej szerokosc. `polowka` to zapis
@@ -636,7 +619,8 @@ def draw_siatka(c: Canvas, p: Paleta, x: float, top: float, plansza: str,
         for kolumna, j in enumerate(jency):
             c.setFillColor(p.sila)
             c.setFont(FONT, 5.4)
-            _rysuj_kratke(c, x + (kolumna + 0.5) * KRATKA_W, y, pola[(j, r)], polowka)
+            c.drawCentredString(x + (kolumna + 0.5) * KRATKA_W, y,
+                                _kratka_sily(pola[(j, r)], polowka))
         c.setFillColor(p.tusz)
         c.setFont(FONT_BOLD, 5.4)
         c.drawCentredString(x + szer - BRZEG_W / 2, y, str(r))

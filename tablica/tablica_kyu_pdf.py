@@ -101,7 +101,9 @@ ADRES_FS = 37
 # Dolny pas to jeden rzad kafli: trzy kolumny zasad i trzy tabele wyrownania
 # obok siebie — najwyzszy kafel (tabela 19x19) wyznacza jego wysokosc.
 DOLNY_PAS_H = 61 * mm
-ZASADY_KOL_W = 112 * mm
+ZASADY_KOL_W = 108 * mm
+ODSTEP_KOLUMN_ZASAD = 10 * mm
+ODSTEP_ZASADY_TABELE = 14 * mm
 KAFEL_W = 52 * mm                       # przelicznik sil na stopnie pod zasadami
 KAFEL_H = 18 * mm
 KAFEL_PAS = 20 * mm
@@ -119,7 +121,7 @@ PRZELICZNIK: list[tuple[str, str, int]] = [
 ZASADY_TYTUL_FS = 12
 ZASADY_FS = 10.5
 ZASADY_LINIA_H = 4.9 * mm
-WYR_SKALA = 2.15                        # tabele wyrownania; cyfry ~4,3 mm
+WYR_SKALA = 2.05                        # tabele wyrownania; cyfry ~4,1 mm
 TABELA_GAP = 13 * mm
 PODPIS_FS = 12                          # podpis wariantu na dole strony
 
@@ -384,23 +386,26 @@ def rysuj_dol(c: Canvas, gora_y: float, kolory: list[Color]) -> None:
     pelna szerokosc siatki i wysokosc najwyzszego kafla (tabeli 19x19).
     """
     wymiary = [tuple(w * WYR_SKALA for w in wymiary_siatki(p)) for p in PLANSZE]
-    kafli_w = (len(zasady_tablicy.KOLUMNY) * ZASADY_KOL_W
-               + sum(szer for szer, _ in wymiary))
-    przerw = len(zasady_tablicy.KOLUMNY) + len(wymiary) - 1
-    luz = (SIATKA_W - kafli_w) / przerw
-    assert luz >= 4 * mm, f"dolny pas nie zostawia przerw: {luz / mm:.1f} mm"
+    # Przerwy waza sie osobno: kolumny zasad i granice zasady/tabele maja
+    # oddech na sztywno, a reszta luzu rozchodzi sie miedzy tabele.
+    luz_tabel = (SIATKA_W - len(zasady_tablicy.KOLUMNY) * ZASADY_KOL_W
+                 - ODSTEP_KOLUMN_ZASAD - ODSTEP_ZASADY_TABELE
+                 - sum(szer for szer, _ in wymiary)) / (len(wymiary) - 1)
+    assert luz_tabel >= 5 * mm, f"tabele bez przerw: {luz_tabel / mm:.1f} mm"
     x = MARGINES_BOK
     for tytul in zasady_tablicy.KOLUMNY:
         rysuj_kolumne_zasad(c, x, gora_y - 1 * mm, tytul)
-        x += ZASADY_KOL_W + luz
-    rysuj_przelicznik(c, MARGINES_BOK, x - luz, gora_y - DOLNY_PAS_H - 2 * mm, kolory)
+        x += ZASADY_KOL_W + ODSTEP_KOLUMN_ZASAD
+    x += ODSTEP_ZASADY_TABELE - ODSTEP_KOLUMN_ZASAD
+    rysuj_przelicznik(c, MARGINES_BOK, x - ODSTEP_ZASADY_TABELE,
+                      gora_y - DOLNY_PAS_H - 2 * mm, kolory)
     for (szer, wys), plansza in zip(wymiary, PLANSZE):
         c.saveState()
         c.translate(x, gora_y)
         c.scale(WYR_SKALA, WYR_SKALA)
         karta_pdf.draw_siatka(c, karta_pdf.KOLOROWA, 0, 0, plansza, ",5")
         c.restoreState()
-        x += szer + luz
+        x += szer + luz_tabel
 
 
 def sekcje_tablicy() -> list[tuple[list[list[float]], float]]:

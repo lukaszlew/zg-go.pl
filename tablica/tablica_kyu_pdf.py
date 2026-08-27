@@ -46,19 +46,24 @@ import zasady_tablicy
 from wyrownanie.tabela_html import PLANSZE
 
 
-def _cwiartki(okragle: list[float]) -> list[list[float]]:
-    """Sekcja cwiartkowa: nad wierszem okraglych ida -0,25, -0,5 i -0,75 kyu —
-    kazda kolumna to ciagly odcinek skali, a okragla liczba stoi na dole."""
-    return [[k - p for k in okragle] for p in (0.75, 0.5, 0.25, 0.0)]
+def _cwiartki(okragle: list[float], przesuniecia: tuple[float, ...]) -> list[list[float]]:
+    """Sekcja cwiartkowa: nad wierszem okraglych ida wiersze przesuniete o
+    podane czesci kyu (od gory) — kazda kolumna to ciagly odcinek skali,
+    a okragla liczba stoi na dole."""
+    return [[k - p for k in okragle] for p in przesuniecia]
+
+
+PELNA = (0.75, 0.5, 0.25, 0.0)          # cztery wiersze cwiartek
+BEZ_CWIARTKI = (0.75, 0.5, 0.0)         # sekcja 40-44: bez wiersza ,25
 
 
 # Sekcje wierszy wartosci (kyu; na paskach stoi sila = 50 - kyu): piatka stopni
 # z progiem w lewym dolnym rogu (silniejszy po prawej, dan u gory);
 # (wiersze, czy pola podwojne). Skala konczy sie na 54,75 sily.
 GRUPY: list[tuple[list[list[float]], bool]] = [
-    (_cwiartki([0.0, -1.0, -2.0, -3.0, -4.0]), False),
-    (_cwiartki([5.0, 4.0, 3.0, 2.0, 1.0]), False),
-    (_cwiartki([10.0, 9.0, 8.0, 7.0, 6.0]), False),
+    (_cwiartki([0.0, -1.0, -2.0, -3.0, -4.0], PELNA), False),
+    (_cwiartki([5.0, 4.0, 3.0, 2.0, 1.0], PELNA), False),
+    (_cwiartki([10.0, 9.0, 8.0, 7.0, 6.0], BEZ_CWIARTKI), False),
     ([[14.5, 13.5, 12.5, 11.5, 10.5], [15.0, 14.0, 13.0, 12.0, 11.0]], True),
     ([[19.5, 18.5, 17.5, 16.5, 15.5], [20.0, 19.0, 18.0, 17.0, 16.0]], True),
     ([[25.0, 24.0, 23.0, 22.0, 21.0]], True),
@@ -69,8 +74,8 @@ GRUPY: list[tuple[list[list[float]], bool]] = [
 PAS_LICZBY = 24 * mm                    # kolorowy pasek z liczba, z lewej kratki
 POLE_BIALE = 83 * mm                    # samo biale pole na etykiety
 POLE_SZER = PAS_LICZBY + POLE_BIALE     # cala kratka
-POLE_WYS = 31 * mm                      # wymog: dokladnie 31
-POLE_WYS_2 = 61 * mm                    # wymog: dokladnie 61; miesci dwie etykiety
+POLE_WYS = 32 * mm                      # wymog: dokladnie 32
+POLE_WYS_2 = 63 * mm                    # dwa pola minus wspolna kreska; miesci dwie etykiety
 LICZBA_FS = 20
 LICZBA_PROG_FS = 30                     # progi: ta sama plakietka, wieksza czcionka
 TINT_POLA = 0.12                        # domieszka barwy sekcji w bialych polach
@@ -80,10 +85,12 @@ SZAROSC_KOMOREK = HexColor("#4f4f4f")
 ODSTEP_POZIOM = 5 * mm
 
 # Wydruk ma zawsze dokladnie rozmiar malej tablicy minus 2 mm z kazdego
-# wymiaru; odstep miedzy sekcjami liczy sie sam z tego, co zostaje.
+# wymiaru; wolna wysokosc idzie w marginesy — dwie trzecie na dol, jedna
+# trzecia na gore.
 PAGE_W = 668 * mm
 PAGE_H = 933 * mm
-MARGINES = 10 * mm
+MARGINES = 10 * mm                      # baza; reszte dokladaja marginesy()
+ODSTEP_GRUP = 8 * mm
 SEKCJA = 8 * mm
 NAGLOWEK_H = 50 * mm                    # jeden pas: logo, nazwa, podtytul, adres
 LOGO = 38 * mm
@@ -95,6 +102,20 @@ ADRES_FS = 37
 # obok siebie — najwyzszy kafel (tabela 19x19) wyznacza jego wysokosc.
 DOLNY_PAS_H = 61 * mm
 ZASADY_KOL_W = 112 * mm
+KAFEL_W = 52 * mm                       # przelicznik sil na stopnie pod zasadami
+KAFEL_H = 18 * mm
+KAFEL_PAS = 20 * mm
+KAFEL_GAP = 8 * mm
+KAFEL_FS = 13
+
+# Punkty zaczepienia skali do oficjalnych stopni; numer wskazuje sekcje,
+# ktorej barwa maluje kafelek.
+PRZELICZNIK: list[tuple[str, str, int]] = [
+    ("50", "≈ 1 dan", 0),
+    ("40", "≈ 10 kyu", 2),
+    ("30", "≈ 20 kyu", 4),
+    ("20", "≈ 30 kyu", 6),
+]
 ZASADY_TYTUL_FS = 12
 ZASADY_FS = 10.5
 ZASADY_LINIA_H = 4.9 * mm
@@ -318,8 +339,45 @@ def rysuj_kolumne_zasad(c: Canvas, x: float, gora_y: float, tytul: str) -> None:
     assert y >= gora_y - DOLNY_PAS_H, f"kolumna zasad '{tytul}' nie miesci sie w pasie"
 
 
-def rysuj_dol(c: Canvas, gora_y: float) -> None:
-    """Dolny pas jednym rzedem kafli: kolumny zasad, potem tabele wyrownania.
+def rysuj_przelicznik(c: Canvas, lewa: float, prawa: float, dol_y: float,
+                      kolory: list[Color]) -> None:
+    """Rzad mini-kafelkow "sila ≈ stopien" w barwach swoich sekcji,
+    wysrodkowany miedzy lewa a prawa."""
+    razem = len(PRZELICZNIK) * KAFEL_W + (len(PRZELICZNIK) - 1) * KAFEL_GAP
+    x = lewa + (prawa - lewa - razem) / 2
+    for sila, stopien, nr_sekcji in PRZELICZNIK:
+        barwa = kolory[nr_sekcji]
+        c.setFillColor(CARD)
+        c.drawPath(zaokraglony(c, x, dol_y, KAFEL_W, KAFEL_H, 2 * mm), stroke=0, fill=1)
+        c.saveState()
+        c.clipPath(zaokraglony(c, x, dol_y, KAFEL_W, KAFEL_H, 2 * mm), stroke=0, fill=0)
+        c.setFillColor(barwa)
+        c.rect(x, dol_y, KAFEL_PAS, KAFEL_H, stroke=0, fill=1)
+        c.restoreState()
+        c.setStrokeColor(SZAROSC_KOMOREK)
+        c.setLineWidth(KRESKA)
+        c.line(x + KAFEL_PAS, dol_y, x + KAFEL_PAS, dol_y + KAFEL_H)
+        c.drawPath(zaokraglony(c, x, dol_y, KAFEL_W, KAFEL_H, 2 * mm), stroke=1, fill=0)
+        # sila na bialej plakietce o proporcjach plakietek z glownej siatki:
+        # ciasno wokol liczby, duzo barwy paska dookola
+        szer_p = c.stringWidth(sila, FONT_BOLD, KAFEL_FS) + 4 * mm
+        wys_p = 0.72 * KAFEL_FS + 2.5 * mm
+        c.setFillColor(CARD)
+        c.roundRect(x + KAFEL_PAS / 2 - szer_p / 2, dol_y + KAFEL_H / 2 - wys_p / 2,
+                    szer_p, wys_p, 1.5 * mm, stroke=0, fill=1)
+        c.setFillColor(barwa)
+        c.setFont(FONT_BOLD, KAFEL_FS)
+        c.drawCentredString(x + KAFEL_PAS / 2, dol_y + KAFEL_H / 2 - 0.36 * KAFEL_FS, sila)
+        c.setFillColor(INK)
+        c.setFont(FONT, 12)
+        c.drawCentredString(x + KAFEL_PAS + (KAFEL_W - KAFEL_PAS) / 2,
+                            dol_y + KAFEL_H / 2 - 0.36 * 12, stopien)
+        x += KAFEL_W + KAFEL_GAP
+
+
+def rysuj_dol(c: Canvas, gora_y: float, kolory: list[Color]) -> None:
+    """Dolny pas jednym rzedem kafli: kolumny zasad, potem tabele wyrownania;
+    pod zasadami rzad kafelkow przelicznika sil na oficjalne stopnie.
 
     Kafle maja bardzo rozne szerokosci, wiec ida od lewej w naturalnych
     rozmiarach, a caly luz zbiera sie w odstepach po rowno — pas wykorzystuje
@@ -335,6 +393,7 @@ def rysuj_dol(c: Canvas, gora_y: float) -> None:
     for tytul in zasady_tablicy.KOLUMNY:
         rysuj_kolumne_zasad(c, x, gora_y - 1 * mm, tytul)
         x += ZASADY_KOL_W + luz
+    rysuj_przelicznik(c, MARGINES_BOK, x - luz, gora_y - DOLNY_PAS_H - 2 * mm, kolory)
     for (szer, wys), plansza in zip(wymiary, PLANSZE):
         c.saveState()
         c.translate(x, gora_y)
@@ -349,20 +408,22 @@ def sekcje_tablicy() -> list[tuple[list[list[float]], float]]:
     return [(grupa, POLE_WYS_2 if podwojne else POLE_WYS) for grupa, podwojne in GRUPY]
 
 
-def odstep_grup() -> float:
-    """Odstep miedzy sekcjami: reszta wysokosci strony podzielona po rowno.
+def margines_gorny() -> float:
+    """Margines gorny: baza plus jedna trzecia wolnej wysokosci strony.
 
-    Strona ma sztywny wymiar, a pola sztywne wysokosci — elastyczne sa tylko
-    przerwy miedzy sekcjami. Asserty pilnuja, ze zostaje ich sensowna ilosc.
+    Strona ma sztywny wymiar, a wszystkie elementy sztywne wysokosci — wolna
+    reszta idzie w biel: trzecia na gore, a dwie trzecie zostaja na dole samo
+    przez sie, bo tresc plynie od gory.
     """
     sekcje = sekcje_tablicy()
     pola = sum(len(grupa) * wys for grupa, wys in sekcje)
     assert max(wys * WYR_SKALA for _, wys in map(wymiary_siatki, PLANSZE)) <= DOLNY_PAS_H, \
         "tabela wyrownania wyzsza niz dolny pas"
-    reszta = PAGE_H - (2 * MARGINES + NAGLOWEK_H + SEKCJA + pola + SEKCJA + DOLNY_PAS_H)
-    odstep = reszta / (len(sekcje) - 1)
-    assert 2 * mm <= odstep <= 12 * mm, f"odstep sekcji poza rozsadkiem: {odstep / mm:.1f} mm"
-    return odstep
+    siatka_h = pola + (len(sekcje) - 1) * ODSTEP_GRUP
+    reszta = (PAGE_H - 2 * MARGINES
+              - (NAGLOWEK_H + SEKCJA + siatka_h + SEKCJA + DOLNY_PAS_H))
+    assert reszta >= 0, f"tresc wyzsza niz strona o {-reszta / mm:.0f} mm"
+    return MARGINES + reszta / 3
 
 
 def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
@@ -371,13 +432,12 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
     assert len(kolory) == len(sekcje), "paleta musi miec barwe dla kazdej sekcji"
     c.setFillColor(BG)
     c.rect(0, 0, PAGE_W, page_h, stroke=0, fill=1)
-    rysuj_naglowek_kyu(c, page_h - MARGINES)
+    rysuj_naglowek_kyu(c, page_h - margines_gorny())
 
-    y = page_h - MARGINES - NAGLOWEK_H - SEKCJA
-    odstep = odstep_grup()
+    y = page_h - margines_gorny() - NAGLOWEK_H - SEKCJA
     for nr, (grupa, wys_segmentu) in enumerate(sekcje):
         barwa = kolory[nr]
-        y -= (odstep if nr > 0 else 0) + len(grupa) * wys_segmentu
+        y -= (ODSTEP_GRUP if nr > 0 else 0) + len(grupa) * wys_segmentu
         for kolumna in range(KOLUMNY):
             segmenty = []
             for wiersz in grupa:
@@ -395,7 +455,7 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
             x = MARGINES_BOK + kolumna * (POLE_SZER + ODSTEP_POZIOM)
             rysuj_slupek(c, x, y, segmenty, wys_segmentu)
 
-    rysuj_dol(c, y - SEKCJA)
+    rysuj_dol(c, y - SEKCJA, kolory)
     if podpis is not None:
         c.setFillColor(MUTED)
         c.setFont(FONT, PODPIS_FS)
@@ -403,7 +463,7 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
 
 
 def generuj(sciezka: Path, palety: list[tuple[str, list[Color]]], podpisy: bool) -> None:
-    odstep_grup()                       # asserty ukladu pionowego przed rysowaniem
+    margines_gorny()                    # asserty ukladu pionowego przed rysowaniem
     page_h = PAGE_H
     zarejestruj_czcionki()
     c = Canvas(str(sciezka), pagesize=(PAGE_W, page_h))

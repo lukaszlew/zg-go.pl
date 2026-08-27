@@ -273,7 +273,7 @@ def rysuj_naglowek(c: Canvas, u: Uklad, gora_y: float) -> None:
         c.saveState()
         c.translate(tab_x, tab_y)
         c.scale(u.wyr_skala, u.wyr_skala)
-        karta_pdf.draw_siatka(c, karta_pdf.KOLOROWA, 0, 0, plansza)
+        karta_pdf.draw_siatka(c, karta_pdf.KOLOROWA, 0, 0, plansza, "½")
         c.restoreState()
 
     # nazwa klubu po lewej, wysrodkowana w pionie pasa

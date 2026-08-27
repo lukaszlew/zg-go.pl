@@ -16,16 +16,15 @@ w gore — stoi w lewym dolnym rogu sekcji i dostaje ciemny odcien barwy;
 w skali poczatkujacych progow nie ma. Sekcje odroznia wylacznie kolor
 i odstep — zadnych ramek wokol sekcji.
 
-Struktura kolorow: sekcja ma wlasna barwe paskow, a prog — zamiast calego
-paska — dostaje mala plakietke wokol liczby, w ciemniejszym odcieniu barwy
-swojej sekcji, z biala liczba. Liczby calkowite sekcji cwiartkowych
-(najnizsza komorka kolumny: 41-44, 46-49, 51-54) dostaja taka sama plakietke
-w negatywie pola (ciemna, z liczba w barwie paska) — kolor zostaje przy
-progach w pierwszej kolumnie.
+Struktura kolorow: sekcja ma wlasna barwe paskow, biale pola nosza jej
+lekki odcien, a liczby calkowite (najnizsza komorka kolumny) dostaja mala
+biala plakietke z liczba w barwie sekcji — negatyw barwnego paska. Progi
+w pierwszej kolumnie (25-50) maja te sama plakietke, tylko z wieksza czcionka.
 
-Naglowek: logo z nazwa i adresem zg-go.pl/ranking po lewej, tabele wyrownania
-wszystkich plansz (z karty gracza) po prawej — musza byc, bo z nich odczytuje
-sie wyrownanie przy stoliku.
+Naglowek to jeden pas: logo z nazwa i podtytulem po lewej, adres zg-go.pl
+dosuniety do prawej, gorne krawedzie pisma wyrownane. Tabele wyrownania
+wszystkich plansz stoja na samym dole, pod zasadami, rozlozone na szerokosc —
+musza byc na tablicy, bo z nich odczytuje sie wyrownanie przy stoliku.
 """
 
 import sys
@@ -34,12 +33,12 @@ from pathlib import Path
 
 from reportlab.lib.colors import Color, HexColor
 from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen.canvas import Canvas
 
 from tablica_pdf import (ACCENT, BG, CARD, CIEMNY, FONT, FONT_BOLD, FONT_SERIF,
-                         FONT_SERIF_BOLD, INK, KODY_QR, KRESKA, MUTED, PROMIEN, REPO,
-                         RULE, SILA, wymiary_siatki, zaokraglony,
-                         zarejestruj_czcionki)
+                         FONT_SERIF_BOLD, INK, KRESKA, MUTED, PROMIEN, REPO, RULE,
+                         SILA, wymiary_siatki, zaokraglony, zarejestruj_czcionki)
 
 import karta_pdf                        # sciezke do tools/ dodaje tablica_pdf
 import zasady_tablicy
@@ -67,34 +66,39 @@ GRUPY: list[tuple[list[list[float]], bool]] = [
 ]
 
 PAS_LICZBY = 24 * mm                    # kolorowy pasek z liczba, z lewej kratki
-POLE_BIALE = 82 * mm                    # samo biale pole na etykiety
+POLE_BIALE = 83 * mm                    # samo biale pole na etykiety
 POLE_SZER = PAS_LICZBY + POLE_BIALE     # cala kratka
-POLE_WYS = 30 * mm
-POLE_WYS_2 = 2 * POLE_WYS - 5 * mm      # pole podwojne — miesci dwie etykiety
+POLE_WYS = 31 * mm                      # wymog: dokladnie 31
+POLE_WYS_2 = 61 * mm                    # wymog: dokladnie 61; miesci dwie etykiety
 LICZBA_FS = 20
-ODSTEP_GRUP = 7 * mm                    # sekcje rozdziela sam odstep (i kolor)
+LICZBA_PROG_FS = 30                     # progi: ta sama plakietka, wieksza czcionka
+TINT_POLA = 0.12                        # domieszka barwy sekcji w bialych polach
+# Obrysy, kreski i czcionka wewnatrz komorek ida szaroscia, nie czernia —
+# czern zostaje w naglowku, zasadach i tabelach wyrownania.
+SZAROSC_KOMOREK = HexColor("#4f4f4f")
 ODSTEP_POZIOM = 5 * mm
 
-PAGE_W = 670 * mm                       # szerokosc malej tablicy, na styk
-MARGINES = 15 * mm
-SEKCJA = 10 * mm
-NAGLOWEK_H = 106 * mm                   # pas nazwy nad pasem tabel i kodu QR
-LOGO = 30 * mm
+# Wydruk ma zawsze dokladnie rozmiar malej tablicy minus 2 mm z kazdego
+# wymiaru; odstep miedzy sekcjami liczy sie sam z tego, co zostaje.
+PAGE_W = 668 * mm
+PAGE_H = 933 * mm
+MARGINES = 10 * mm
+SEKCJA = 8 * mm
+NAGLOWEK_H = 50 * mm                    # jeden pas: logo, nazwa, podtytul, adres
+LOGO = 38 * mm
 TYTUL_FS = 50
 PODTYTUL_FS = 18
-ADRES_FS = 22
-QR = 28 * mm
-QR_PODPIS_FS = 7
-PAS_NAZWY_H = 44 * mm                   # logo + Semedori + podtytul + adres
-PAS_ZASAD_H = 40 * mm                   # zasady rankingu na dole tablicy
-ZASADY_TYTUL_FS = 11
-ZASADY_FS = 9
-ZASADY_LINIA_H = 4.4 * mm
-ZASADY_GAP = 10 * mm                    # odstep miedzy kolumnami zasad
+ADRES_FS = 37
+# Dolny pas to jeden rzad kafli: trzy kolumny zasad i trzy tabele wyrownania
+# obok siebie — najwyzszy kafel (tabela 19x19) wyznacza jego wysokosc.
+DOLNY_PAS_H = 61 * mm
+ZASADY_KOL_W = 66 * mm
+ZASADY_TYTUL_FS = 10
+ZASADY_FS = 8.5
+ZASADY_LINIA_H = 3.9 * mm
 WYR_SKALA = 2.15                        # tabele wyrownania; cyfry ~4,3 mm
 TABELA_GAP = 13 * mm
 PODPIS_FS = 12                          # podpis wariantu na dole strony
-MAKS_H = 930 * mm
 
 KOLUMNY = 5
 SIATKA_W = KOLUMNY * POLE_SZER + (KOLUMNY - 1) * ODSTEP_POZIOM
@@ -106,8 +110,11 @@ assert MARGINES_BOK > 0, f"siatka szersza niz tablica: {SIATKA_W / mm:.0f} mm"
 
 
 def liczba_skali(kyu: float) -> str:
-    """Na paskach stoi sila klubowa: 50 - kyu (1 dan = 50, 50 kyu = 0)."""
-    return f"{50 - kyu:g}".replace(".", ",").replace("-", "−")
+    """Na paskach stoi sila klubowa (50 - kyu) zaokraglona w dol do polowki:
+    cwiartka dzieli etykiete z polowka pod soba, wiec komorki ida parami
+    ("50" i "50" nizej, "50,5" i "50,5" wyzej) — dwa sloty na te sama liczbe."""
+    sila = int((50 - kyu) * 2) / 2
+    return f"{sila:g}".replace(".", ",")
 
 
 def prog(kyu: float) -> bool:
@@ -188,120 +195,142 @@ WYBRANA = PALETY[0]                     # paleta wydruku: luk A, top przedluzony
 
 
 def rysuj_slupek(c: Canvas, x: float, y: float,
-                 segmenty: list[tuple[str, Color, Color, Color | None]],
+                 segmenty: list[tuple[str, Color, Color, Color | None, float]],
                  wys_segmentu: float) -> None:
-    """Slupek sekcji: segmenty (liczba, kolor paska, kolor liczby, plakietka)
-    od gory, wspolny obrys i kreski dzielace przez cala szerokosc.
+    """Slupek sekcji: segmenty (liczba, barwa, kolor liczby, plakietka, stopien
+    pisma) od gory, wspolny obrys i kreski dzielace przez cala szerokosc.
 
-    Prog nie barwi calego paska: dostaje mala plakietke wokol liczby
-    (kolor w czwartym polu segmentu) z biala liczba.
+    Pasek segmentu idzie pelna barwa, biale pole jej lekkim odcieniem; liczby
+    calkowite dostaja plakietke w negatywie (kolor w czwartym polu segmentu).
     """
     wys = len(segmenty) * wys_segmentu
-    c.setFillColor(CARD)
-    c.drawPath(zaokraglony(c, x, y, POLE_SZER, wys, PROMIEN), stroke=0, fill=1)
     c.saveState()
     c.clipPath(zaokraglony(c, x, y, POLE_SZER, wys, PROMIEN), stroke=0, fill=0)
-    for nr, (_, kolor, _, _) in enumerate(segmenty):
-        c.setFillColor(kolor)
-        c.rect(x, y + wys - (nr + 1) * wys_segmentu, PAS_LICZBY, wys_segmentu,
-               stroke=0, fill=1)
+    for nr, (_, barwa, _, _, _) in enumerate(segmenty):
+        dol = y + wys - (nr + 1) * wys_segmentu
+        c.setFillColor(mieszaj(CARD, barwa, TINT_POLA))
+        c.rect(x + PAS_LICZBY, dol, POLE_SZER - PAS_LICZBY, wys_segmentu, stroke=0, fill=1)
+        c.setFillColor(barwa)
+        c.rect(x, dol, PAS_LICZBY, wys_segmentu, stroke=0, fill=1)
     c.restoreState()
-    c.setStrokeColor(INK)
+    c.setStrokeColor(SZAROSC_KOMOREK)
     c.setLineWidth(KRESKA)
     c.line(x + PAS_LICZBY, y, x + PAS_LICZBY, y + wys)
     for nr in range(1, len(segmenty)):
         c.line(x, y + wys - nr * wys_segmentu, x + POLE_SZER, y + wys - nr * wys_segmentu)
     c.drawPath(zaokraglony(c, x, y, POLE_SZER, wys, PROMIEN), stroke=1, fill=0)
-    c.setFont(FONT_BOLD, LICZBA_FS)
-    for nr, (liczba, _, kolor_liczby, plakietka) in enumerate(segmenty):
+    for nr, (liczba, _, kolor_liczby, plakietka, fs) in enumerate(segmenty):
         srodek_x = x + PAS_LICZBY / 2
         srodek_y = y + wys - nr * wys_segmentu - wys_segmentu / 2
         if plakietka is not None:
-            szer = c.stringWidth(liczba, FONT_BOLD, LICZBA_FS) + 6 * mm
-            wys_p = 0.72 * LICZBA_FS + 5.5 * mm
+            szer = c.stringWidth(liczba, FONT_BOLD, fs) + 5 * mm
+            wys_p = 0.72 * fs + 5 * mm
             c.setFillColor(plakietka)
             c.roundRect(srodek_x - szer / 2, srodek_y - wys_p / 2, szer, wys_p,
                         2 * mm, stroke=0, fill=1)
         c.setFillColor(kolor_liczby)
-        c.drawCentredString(srodek_x, srodek_y - 0.36 * LICZBA_FS, liczba)
+        c.setFont(FONT_BOLD, fs)
+        c.drawCentredString(srodek_x, srodek_y - 0.36 * fs, liczba)
 
 
 def rysuj_naglowek_kyu(c: Canvas, gora_y: float) -> None:
-    """Dwa pasy: u gory logo, nazwa, podtytul i adres; pod nimi trzy tabele
-    wyrownania w rzedzie, a przy prawym marginesie kod QR do zasad."""
-    x = MARGINES_BOK
+    """Jeden pas: blok logo+nazwa na srodku strony, osadzony nizej; adres
+    wycentrowany nad ostatnia kolumna siatki, na linii podtytulu."""
     gora = gora_y - 2 * mm
-    karta_pdf.rysuj_logo(c, karta_pdf.SEMEDORI.logo, x, gora - LOGO - 4 * mm, LOGO, INK)
-    tx = x + LOGO + 7 * mm
+    blok_w = LOGO + 8 * mm + pdfmetrics.stringWidth("Semedori", FONT_SERIF_BOLD, TYTUL_FS)
+    x = (PAGE_W - blok_w) / 2
+    baza = gora - 30 * mm               # wspolna linia pisma nazwy i adresu
+    karta_pdf.rysuj_logo(c, karta_pdf.SEMEDORI.logo, x, gora - 6 * mm - LOGO, LOGO, INK)
+    tx = x + LOGO + 8 * mm
     c.setFillColor(INK)
     c.setFont(FONT_SERIF_BOLD, TYTUL_FS)
-    c.drawString(tx, gora - 15 * mm, "Semedori")
+    c.drawString(tx, baza, "Semedori")
     c.setFillColor(CIEMNY)
     c.setFont(FONT_SERIF, PODTYTUL_FS)
-    c.drawString(tx, gora - 25 * mm, "Gramy w Go w Zielonej Górze")
+    c.drawString(tx, baza - 10 * mm, "Gramy w Go w Zielonej Górze")
     c.setFillColor(ACCENT)
     c.setFont(FONT_SERIF_BOLD, ADRES_FS)
-    c.drawString(tx, gora - 35 * mm, "zg-go.pl/ranking")
+    srodek_ostatniej = (MARGINES_BOK + (KOLUMNY - 1) * (POLE_SZER + ODSTEP_POZIOM)
+                        + POLE_SZER / 2)
+    c.drawCentredString(srodek_ostatniej, baza - 10 * mm, "zg-go.pl")
 
-    gora_tabel = gora - PAS_NAZWY_H
+
+def rysuj_kolumne_zasad(c: Canvas, x: float, gora_y: float, tytul: str) -> None:
+    """Jedna kolumna zasad dolnego pasa: tytul, linia i punkty."""
+    c.setFillColor(INK)
+    c.setFont(FONT_BOLD, ZASADY_TYTUL_FS)
+    c.drawString(x, gora_y, tytul.upper())
+    c.setStrokeColor(RULE)
+    c.setLineWidth(0.8 * mm)
+    c.line(x, gora_y - 2 * mm, x + ZASADY_KOL_W, gora_y - 2 * mm)
+    y = gora_y - 7 * mm
+    spacja = pdfmetrics.stringWidth(" ", FONT, ZASADY_FS)
+    for zasada in zasady_tablicy.w_kolumnie(tytul):
+        c.setFillColor(MUTED)
+        c.setFont(FONT_BOLD, ZASADY_FS)
+        c.drawString(x, y, "•")
+        c.setFillColor(INK)
+        linia, szer = [], 0.0
+        for slowo in zasada.split():
+            w = pdfmetrics.stringWidth(slowo, FONT, ZASADY_FS)
+            if linia and szer + spacja + w > ZASADY_KOL_W - 4 * mm:
+                c.setFont(FONT, ZASADY_FS)
+                c.drawString(x + 4 * mm, y, " ".join(linia))
+                y -= ZASADY_LINIA_H
+                linia, szer = [], 0.0
+            linia.append(slowo)
+            szer += w + (spacja if len(linia) > 1 else 0)
+        c.setFont(FONT, ZASADY_FS)
+        c.drawString(x + 4 * mm, y, " ".join(linia))
+        y -= ZASADY_LINIA_H + 1 * mm
+    assert y >= gora_y - DOLNY_PAS_H, f"kolumna zasad '{tytul}' nie miesci sie w pasie"
+
+
+def rysuj_dol(c: Canvas, gora_y: float) -> None:
+    """Dolny pas jednym rzedem kafli: kolumny zasad, potem tabele wyrownania.
+
+    Kafle maja bardzo rozne szerokosci, wiec ida od lewej w naturalnych
+    rozmiarach, a caly luz zbiera sie w odstepach po rowno — pas wykorzystuje
+    pelna szerokosc siatki i wysokosc najwyzszego kafla (tabeli 19x19).
+    """
     wymiary = [tuple(w * WYR_SKALA for w in wymiary_siatki(p)) for p in PLANSZE]
-    tab_x = x
+    kafli_w = (len(zasady_tablicy.KOLUMNY) * ZASADY_KOL_W
+               + sum(szer for szer, _ in wymiary))
+    przerw = len(zasady_tablicy.KOLUMNY) + len(wymiary) - 1
+    luz = (SIATKA_W - kafli_w) / przerw
+    assert luz >= 4 * mm, f"dolny pas nie zostawia przerw: {luz / mm:.1f} mm"
+    x = MARGINES_BOK
+    for tytul in zasady_tablicy.KOLUMNY:
+        rysuj_kolumne_zasad(c, x, gora_y - 1 * mm, tytul)
+        x += ZASADY_KOL_W + luz
     for (szer, wys), plansza in zip(wymiary, PLANSZE):
         c.saveState()
-        c.translate(tab_x, gora_tabel)
+        c.translate(x, gora_y)
         c.scale(WYR_SKALA, WYR_SKALA)
-        karta_pdf.draw_siatka(c, karta_pdf.KOLOROWA, 0, 0, plansza)
+        karta_pdf.draw_siatka(c, karta_pdf.KOLOROWA, 0, 0, plansza, ",5")
         c.restoreState()
-        tab_x += szer + TABELA_GAP
-
-    url, podpis = KODY_QR[0]            # jeden kod: zasady rankingu na zg-go.pl
-    qx = PAGE_W - MARGINES_BOK - QR
-    assert qx > tab_x, "kod QR nachodzi na tabele wyrownania"
-    karta_pdf.draw_qr(c, qx, gora_tabel - QR, QR, url)
-    c.setFillColor(MUTED)
-    c.setFont(FONT, QR_PODPIS_FS)
-    c.drawCentredString(qx + QR / 2, gora_tabel - QR - 4 * mm, podpis)
-
-
-def rysuj_zasady(c: Canvas, gora_y: float) -> None:
-    """Pas zasad rankingu na dole tablicy: kolumna na kolumne zasad."""
-    kolumn = len(zasady_tablicy.KOLUMNY)
-    col_w = (SIATKA_W - (kolumn - 1) * ZASADY_GAP) / kolumn
-    for nr, tytul in enumerate(zasady_tablicy.KOLUMNY):
-        x = MARGINES_BOK + nr * (col_w + ZASADY_GAP)
-        c.setFillColor(INK)
-        c.setFont(FONT_BOLD, ZASADY_TYTUL_FS)
-        c.drawString(x, gora_y, tytul.upper())
-        c.setStrokeColor(RULE)
-        c.setLineWidth(0.8 * mm)
-        c.line(x, gora_y - 2.2 * mm, x + col_w, gora_y - 2.2 * mm)
-        y = gora_y - 8 * mm
-        for zasada in zasady_tablicy.w_kolumnie(tytul):
-            c.setFillColor(MUTED)
-            c.setFont(FONT_BOLD, ZASADY_FS)
-            c.drawString(x, y, "•")
-            c.setFillColor(INK)
-            linia, szer = [], 0.0
-            from reportlab.pdfbase import pdfmetrics
-            spacja = pdfmetrics.stringWidth(" ", FONT, ZASADY_FS)
-            for slowo in zasada.split():
-                w = pdfmetrics.stringWidth(slowo, FONT, ZASADY_FS)
-                if linia and szer + spacja + w > col_w - 5 * mm:
-                    c.setFont(FONT, ZASADY_FS)
-                    c.drawString(x + 5 * mm, y, " ".join(linia))
-                    y -= ZASADY_LINIA_H
-                    linia, szer = [], 0.0
-                linia.append(slowo)
-                szer += w + (spacja if len(linia) > 1 else 0)
-            c.setFont(FONT, ZASADY_FS)
-            c.drawString(x + 5 * mm, y, " ".join(linia))
-            y -= ZASADY_LINIA_H + 1.2 * mm
-        assert y >= gora_y - PAS_ZASAD_H, f"kolumna zasad '{tytul}' nie miesci sie w pasie"
+        x += szer + luz
 
 
 def sekcje_tablicy() -> list[tuple[list[list[float]], float]]:
     """Sekcje jako (wiersze kyu od gory, wysokosc segmentu slupka)."""
     return [(grupa, POLE_WYS_2 if podwojne else POLE_WYS) for grupa, podwojne in GRUPY]
+
+
+def odstep_grup() -> float:
+    """Odstep miedzy sekcjami: reszta wysokosci strony podzielona po rowno.
+
+    Strona ma sztywny wymiar, a pola sztywne wysokosci — elastyczne sa tylko
+    przerwy miedzy sekcjami. Asserty pilnuja, ze zostaje ich sensowna ilosc.
+    """
+    sekcje = sekcje_tablicy()
+    pola = sum(len(grupa) * wys for grupa, wys in sekcje)
+    assert max(wys * WYR_SKALA for _, wys in map(wymiary_siatki, PLANSZE)) <= DOLNY_PAS_H, \
+        "tabela wyrownania wyzsza niz dolny pas"
+    reszta = PAGE_H - (2 * MARGINES + NAGLOWEK_H + SEKCJA + pola + SEKCJA + DOLNY_PAS_H)
+    odstep = reszta / (len(sekcje) - 1)
+    assert 2 * mm <= odstep <= 12 * mm, f"odstep sekcji poza rozsadkiem: {odstep / mm:.1f} mm"
+    return odstep
 
 
 def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
@@ -313,27 +342,28 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
     rysuj_naglowek_kyu(c, page_h - MARGINES)
 
     y = page_h - MARGINES - NAGLOWEK_H - SEKCJA
+    odstep = odstep_grup()
     for nr, (grupa, wys_segmentu) in enumerate(sekcje):
         barwa = kolory[nr]
-        kolor_plakietki = mieszaj(barwa, INK, 0.55)
-        y -= (ODSTEP_GRUP if nr > 0 else 0) + len(grupa) * wys_segmentu
-        cwiartkowa = len(grupa) == 4
+        y -= (odstep if nr > 0 else 0) + len(grupa) * wys_segmentu
         for kolumna in range(KOLUMNY):
             segmenty = []
             for wiersz in grupa:
                 kyu = wiersz[kolumna]
                 if prog(kyu):
-                    segmenty.append((liczba_skali(kyu), barwa, CARD, kolor_plakietki))
-                elif cwiartkowa and kyu == int(kyu):
-                    # calkowite poza progiem: ta sama plakietka w negatywie pola
-                    segmenty.append((liczba_skali(kyu), barwa, barwa, INK))
+                    segmenty.append((liczba_skali(kyu), barwa, barwa, CARD, LICZBA_PROG_FS))
+                elif kyu == int(kyu):
+                    # kazda calkowita dostaje biala plakietke; 15 — jak progi,
+                    # bo zamyka skale od dolu
+                    fs = LICZBA_PROG_FS if kyu == 35.0 else LICZBA_FS
+                    segmenty.append((liczba_skali(kyu), barwa, barwa, CARD, fs))
                 else:
-                    liczba = INK if jasny(barwa) else CARD
-                    segmenty.append((liczba_skali(kyu), barwa, liczba, None))
+                    liczba = SZAROSC_KOMOREK if jasny(barwa) else CARD
+                    segmenty.append((liczba_skali(kyu), barwa, liczba, None, LICZBA_FS))
             x = MARGINES_BOK + kolumna * (POLE_SZER + ODSTEP_POZIOM)
             rysuj_slupek(c, x, y, segmenty, wys_segmentu)
 
-    rysuj_zasady(c, y - SEKCJA - 5 * mm)
+    rysuj_dol(c, y - SEKCJA)
     if podpis is not None:
         c.setFillColor(MUTED)
         c.setFont(FONT, PODPIS_FS)
@@ -341,13 +371,8 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
 
 
 def generuj(sciezka: Path, palety: list[tuple[str, list[Color]]], podpisy: bool) -> None:
-    sekcje = sekcje_tablicy()
-    siatka_h = (sum(len(grupa) * wys for grupa, wys in sekcje)
-                + (len(sekcje) - 1) * ODSTEP_GRUP)
-    page_h = (MARGINES + NAGLOWEK_H + SEKCJA + siatka_h + SEKCJA + PAS_ZASAD_H
-              + MARGINES)
-    assert page_h <= MAKS_H, f"tablica stopni za wysoka: {page_h / mm:.0f} mm"
-
+    odstep_grup()                       # asserty ukladu pionowego przed rysowaniem
+    page_h = PAGE_H
     zarejestruj_czcionki()
     c = Canvas(str(sciezka), pagesize=(PAGE_W, page_h))
     c.setTitle("Tablica stopni — Semedori")

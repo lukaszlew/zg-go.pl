@@ -563,15 +563,15 @@ def draw_qr(c: Canvas, x: float, y: float, size: float, url: str) -> None:
 KRATKA_W, BRZEG_W, WIERSZ_H = 6.0 * mm, 8.4 * mm, 2.8 * mm
 
 
-def _kratka_sily(roznica: float) -> str:
-    """Polowka jednym znakiem, tak jak w tabeli na stronie."""
+def _kratka_sily(roznica: float, polowka: str) -> str:
+    """Polowka zapisana znakiem `polowka` ("½" jak na stronie albo ",5")."""
     calosc = int(roznica)
     if roznica == calosc:
         return str(calosc)
-    return f"{calosc}½" if calosc else "½"
+    return f"{calosc}{polowka}" if calosc else polowka
 
 
-def _rysuj_kratke(c: Canvas, srodek: float, y: float, roznica: float) -> None:
+def _rysuj_kratke(c: Canvas, srodek: float, y: float, roznica: float, polowka: str) -> None:
     """Roznica w kratce: cyfry zawsze koncza sie w tym samym miejscu.
 
     Gdyby napis byl po prostu wysrodkowany, "3" i "3½" mialyby cyfre w innym
@@ -580,16 +580,18 @@ def _rysuj_kratke(c: Canvas, srodek: float, y: float, roznica: float) -> None:
     wysrodkowanego najszerszego wpisu (dwie cyfry z polowka): krotsze wpisy
     zostawiaja luz po lewej, a polowka nie dociska prawej krawedzi kratki.
     """
-    polowka_w = c.stringWidth("½", FONT, 5.4)
+    polowka_w = c.stringWidth(polowka, FONT, 5.4)
     kres = srodek + (c.stringWidth("00", FONT, 5.4) - polowka_w) / 2
     calosc = int(roznica)
     c.drawRightString(kres, y, str(calosc) if calosc or roznica == calosc else "")
     if roznica != calosc:
-        c.drawString(kres, y, "½")
+        c.drawString(kres, y, polowka)
 
 
-def draw_siatka(c: Canvas, p: Paleta, x: float, top: float, plansza: str) -> float:
-    """Jedna siatka wyrownania; zwraca jej szerokosc.
+def draw_siatka(c: Canvas, p: Paleta, x: float, top: float, plansza: str,
+                polowka: str) -> float:
+    """Jedna siatka wyrownania; zwraca jej szerokosc. `polowka` to zapis
+    polowek roznicy: "½" na karcie i planszy, ",5" na tablicy stopni.
 
     Liczby ida wprost z wyrownanie/zg.py — to samo zrodlo, co tabele na stronie,
     wiec karta nie ma jak sie z nia rozjechac.
@@ -634,7 +636,7 @@ def draw_siatka(c: Canvas, p: Paleta, x: float, top: float, plansza: str) -> flo
         for kolumna, j in enumerate(jency):
             c.setFillColor(p.sila)
             c.setFont(FONT, 5.4)
-            _rysuj_kratke(c, x + (kolumna + 0.5) * KRATKA_W, y, pola[(j, r)])
+            _rysuj_kratke(c, x + (kolumna + 0.5) * KRATKA_W, y, pola[(j, r)], polowka)
         c.setFillColor(p.tusz)
         c.setFont(FONT_BOLD, 5.4)
         c.drawCentredString(x + szer - BRZEG_W / 2, y, str(r))
@@ -687,7 +689,7 @@ def draw_siatki(c: Canvas, p: Paleta, x0: float, top: float, card_w: float) -> f
     assert gap >= 4 * mm, f"siatki nie zostawiaja przerw: {gap / mm:.1f} mm"
     x, najnizej = x0, top
     for plansza, szer in zip(PLANSZE, szerokosci):
-        narysowana = draw_siatka(c, p, x, top, plansza)
+        narysowana = draw_siatka(c, p, x, top, plansza, "½")
         assert abs(narysowana - szer) < 0.01, f"szerokosc siatki {plansza} rozjechala sie z rachubka"
         x += szer + gap
         najnizej = min(najnizej, top - (len({r for _, r in siatka(plansza)}) + 2) * WIERSZ_H)

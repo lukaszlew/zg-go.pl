@@ -603,4 +603,4 @@ class SiatkiNaKarcie(unittest.TestCase):
         for roznica_sily in (0.5, 3.0, 12.5):
             with self.subTest(roznica_sily=roznica_sily):
                 ze_strony = tabela_html._kratka_sily(roznica_sily).replace(tabela_html.POLOWKA, "½")
-                self.assertEqual(karta_pdf._kratka_sily(roznica_sily), ze_strony)
+                self.assertEqual(karta_pdf._kratka_sily(roznica_sily, "½"), ze_strony)

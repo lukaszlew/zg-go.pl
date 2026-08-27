@@ -9,16 +9,21 @@ Pas z tymi zdaniami drukuje sie na dole tablicy (tablica_kyu_pdf.py);
 docelowo z tego samego zrodla powstanie tresc strony ranking.
 """
 
-KOLUMNY: tuple[str, ...] = ("wyrównanie", "po grze", "wyjątki")
+KOLUMNY: tuple[str, ...] = ("gra", "magnes")
+
+# Naglowki kolumn w formie do druku (dopisek przy magnesie malymi literami).
+NAGLOWKI: dict[str, str] = {
+    "gra": "GRA",
+    "magnes": "MAGNES (własny, zaraz po grze)",
+}
 
 ZASADY: list[tuple[str, str]] = [
-    ("wyrównanie", "Różnica siły to liczba silniejszego minus liczba słabszego; silniejszy gra Białymi."),
-    ("wyrównanie", "Startowe ruchy Czarnego i dodatkowych jeńców, liczonych na koniec jak zbite w grze, odczytajcie z tabeli swojej planszy."),
-    ("wyrównanie", "Jeżeli różnica siły jest mniejsza niż pierwsza kratka tabeli, gra jest równa: kolory rozstrzyga nigiri, a Biały dostaje 6,5 jeńca — połówka wyklucza remis."),
-    ("po grze", "Zwycięzca przesuwa swój magnes o kratkę w górę, przegrany o kratkę w dół."),
-    ("po grze", "Wygrana o 20 punktów lub więcej albo przez poddanie przesuwa zwycięzcę o dwie kratki; przegrany schodzi o jedną jak zawsze."),
-    ("wyjątki", "Pierwsza przegrana w danym tygodniu nie zsuwa magnesa; każda następna kosztuje kratkę jak zawsze."),
-    ("wyjątki", "Przy różnicy siły 10 lub większej silniejszy stoi w miejscu — rusza się tylko słabszy."),
+    ("gra", "Różnica siły to liczba silniejszego minus liczba słabszego; silniejszy gra Białymi."),
+    ("gra", "Tabela wyznacza liczbę ruchów startowych Czarnego i jeńców, których dostaje przed grą od Białego."),
+    ("gra", "Jeżeli różnicy nie ma w tabeli, losujemy kolory nigiri; Biały dostaje 6,5 jeńca i wygrywa remisy."),
+    ("magnes", "Wygrana to pole wyżej (lub w prawo), wygrana o 20+ punktów albo poddaniem — o dwa pola wyżej."),
+    ("magnes", "Przegrana to pole niżej. Pierwsza przegrana w tygodniu lub remis — bez zmiany pola."),
+    ("magnes", "Gra szkoleniowa (przy różnicy siły 10 i większej) — silniejszy nigdy nie zmienia pola."),
 ]
 
 assert [k for k, _ in ZASADY] == sorted(

@@ -27,6 +27,7 @@ wszystkich plansz stoja na samym dole, pod zasadami, rozlozone na szerokosc —
 musza byc na tablicy, bo z nich odczytuje sie wyrownanie przy stoliku.
 """
 
+import re
 import sys
 from colorsys import hls_to_rgb
 from pathlib import Path
@@ -87,15 +88,16 @@ SEKCJA = 8 * mm
 NAGLOWEK_H = 50 * mm                    # jeden pas: logo, nazwa, podtytul, adres
 LOGO = 38 * mm
 TYTUL_FS = 50
+TYTUL_ROZSTRZELENIE = 5                 # odstep miedzy literami "Semedori" (pt)
 PODTYTUL_FS = 18
 ADRES_FS = 37
 # Dolny pas to jeden rzad kafli: trzy kolumny zasad i trzy tabele wyrownania
 # obok siebie — najwyzszy kafel (tabela 19x19) wyznacza jego wysokosc.
 DOLNY_PAS_H = 61 * mm
-ZASADY_KOL_W = 66 * mm
-ZASADY_TYTUL_FS = 10
-ZASADY_FS = 8.5
-ZASADY_LINIA_H = 3.9 * mm
+ZASADY_KOL_W = 112 * mm
+ZASADY_TYTUL_FS = 12
+ZASADY_FS = 10.5
+ZASADY_LINIA_H = 4.9 * mm
 WYR_SKALA = 2.15                        # tabele wyrownania; cyfry ~4,3 mm
 TABELA_GAP = 13 * mm
 PODPIS_FS = 12                          # podpis wariantu na dole strony
@@ -234,20 +236,28 @@ def rysuj_slupek(c: Canvas, x: float, y: float,
 
 
 def rysuj_naglowek_kyu(c: Canvas, gora_y: float) -> None:
-    """Jeden pas: blok logo+nazwa na srodku strony, osadzony nizej; adres
-    wycentrowany nad ostatnia kolumna siatki, na linii podtytulu."""
+    """Jeden pas: napis Semedori (rozstrzelony) wycentrowany nad srodkowa
+    kolumna siatki, logo wysuniete na lewo od niego; adres wycentrowany nad
+    ostatnia kolumna, na linii podtytulu."""
     gora = gora_y - 2 * mm
-    blok_w = LOGO + 8 * mm + pdfmetrics.stringWidth("Semedori", FONT_SERIF_BOLD, TYTUL_FS)
-    x = (PAGE_W - blok_w) / 2
     baza = gora - 30 * mm               # wspolna linia pisma nazwy i adresu
-    karta_pdf.rysuj_logo(c, karta_pdf.SEMEDORI.logo, x, gora - 6 * mm - LOGO, LOGO, INK)
-    tx = x + LOGO + 8 * mm
+    srodek = PAGE_W / 2                 # srodek srodkowej kolumny siatki
+    tytul = "Semedori"
+    tytul_w = (pdfmetrics.stringWidth(tytul, FONT_SERIF_BOLD, TYTUL_FS)
+               + (len(tytul) - 1) * TYTUL_ROZSTRZELENIE)
+    tx = srodek - tytul_w / 2
+    karta_pdf.rysuj_logo(c, karta_pdf.SEMEDORI.logo, tx - 8 * mm - LOGO,
+                         gora - 6 * mm - LOGO, LOGO, INK)
     c.setFillColor(INK)
-    c.setFont(FONT_SERIF_BOLD, TYTUL_FS)
-    c.drawString(tx, baza, "Semedori")
+    tekst = c.beginText(tx, baza)
+    tekst.setFont(FONT_SERIF_BOLD, TYTUL_FS)
+    tekst.setCharSpace(TYTUL_ROZSTRZELENIE)
+    tekst.textOut(tytul)
+    tekst.setCharSpace(0)               # rozstrzelenie zostaje w stanie PDF — wyzeruj
+    c.drawText(tekst)
     c.setFillColor(CIEMNY)
     c.setFont(FONT_SERIF, PODTYTUL_FS)
-    c.drawString(tx, baza - 10 * mm, "Gramy w Go w Zielonej Górze")
+    c.drawCentredString(srodek, baza - 10 * mm, "Gramy w Go w Zielonej Górze")
     c.setFillColor(ACCENT)
     c.setFont(FONT_SERIF_BOLD, ADRES_FS)
     srodek_ostatniej = (MARGINES_BOK + (KOLUMNY - 1) * (POLE_SZER + ODSTEP_POZIOM)
@@ -255,34 +265,56 @@ def rysuj_naglowek_kyu(c: Canvas, gora_y: float) -> None:
     c.drawCentredString(srodek_ostatniej, baza - 10 * mm, "zg-go.pl")
 
 
+def _polam(zasada: str, szerokosc: float) -> list[list[str]]:
+    """Zasada polamana na linie slow miesczace sie w szerokosci."""
+    spacja = pdfmetrics.stringWidth(" ", FONT, ZASADY_FS)
+    linie, linia, szer = [], [], 0.0
+    for slowo in zasada.split():
+        w = pdfmetrics.stringWidth(slowo, FONT, ZASADY_FS)
+        if linia and szer + spacja + w > szerokosc:
+            linie.append(linia)
+            linia, szer = [], 0.0
+        linia.append(slowo)
+        szer += w + (spacja if len(linia) > 1 else 0)
+    linie.append(linia)
+    return linie
+
+
 def rysuj_kolumne_zasad(c: Canvas, x: float, gora_y: float, tytul: str) -> None:
-    """Jedna kolumna zasad dolnego pasa: tytul, linia i punkty."""
+    """Jedna kolumna zasad dolnego pasa: naglowek, linia i wyjustowane punkty.
+
+    Kazda linia poza ostatnia w punkcie jest justowana do prawej krawedzi
+    kolumny (luz rozchodzi sie po spacjach); zdania sa tak dobrane, zeby
+    punkt konczyl sie w dwoch liniach — pilnuje tego assert.
+    """
     c.setFillColor(INK)
     c.setFont(FONT_BOLD, ZASADY_TYTUL_FS)
-    c.drawString(x, gora_y, tytul.upper())
+    c.drawString(x, gora_y, zasady_tablicy.NAGLOWKI[tytul])
     c.setStrokeColor(RULE)
     c.setLineWidth(0.8 * mm)
     c.line(x, gora_y - 2 * mm, x + ZASADY_KOL_W, gora_y - 2 * mm)
-    y = gora_y - 7 * mm
+    y = gora_y - 7.5 * mm
     spacja = pdfmetrics.stringWidth(" ", FONT, ZASADY_FS)
+    szerokosc = ZASADY_KOL_W - 4 * mm
     for zasada in zasady_tablicy.w_kolumnie(tytul):
         c.setFillColor(MUTED)
         c.setFont(FONT_BOLD, ZASADY_FS)
         c.drawString(x, y, "•")
         c.setFillColor(INK)
-        linia, szer = [], 0.0
-        for slowo in zasada.split():
-            w = pdfmetrics.stringWidth(slowo, FONT, ZASADY_FS)
-            if linia and szer + spacja + w > ZASADY_KOL_W - 4 * mm:
-                c.setFont(FONT, ZASADY_FS)
-                c.drawString(x + 4 * mm, y, " ".join(linia))
-                y -= ZASADY_LINIA_H
-                linia, szer = [], 0.0
-            linia.append(slowo)
-            szer += w + (spacja if len(linia) > 1 else 0)
         c.setFont(FONT, ZASADY_FS)
-        c.drawString(x + 4 * mm, y, " ".join(linia))
-        y -= ZASADY_LINIA_H + 1 * mm
+        linie = _polam(zasada, szerokosc)
+        assert len(linie) <= 2, f"zasada lamie sie na {len(linie)} linie: {zasada[:40]}..."
+        for nr, linia in enumerate(linie):
+            slow_w = [pdfmetrics.stringWidth(slowo, FONT, ZASADY_FS) for slowo in linia]
+            ostatnia = nr == len(linie) - 1
+            odstep = (spacja if ostatnia or len(linia) < 2
+                      else (szerokosc - sum(slow_w)) / (len(linia) - 1))
+            lx = x + 4 * mm
+            for slowo, w in zip(linia, slow_w):
+                c.drawString(lx, y, slowo)
+                lx += w + odstep
+            y -= ZASADY_LINIA_H
+        y -= 1.2 * mm
     assert y >= gora_y - DOLNY_PAS_H, f"kolumna zasad '{tytul}' nie miesci sie w pasie"
 
 

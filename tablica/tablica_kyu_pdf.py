@@ -43,7 +43,7 @@ from tablica_pdf import (ACCENT, BG, CARD, CIEMNY, FONT, FONT_BOLD, FONT_SERIF,
 
 import karta_pdf                        # sciezke do tools/ dodaje tablica_pdf
 import zasady_tablicy
-from wyrownanie.tabela_html import PLANSZE
+from wyrownanie.tabela_html import PLANSZE, siatka
 
 
 def _cwiartki(okragle: list[float], przesuniecia: tuple[float, ...]) -> list[list[float]]:
@@ -82,11 +82,11 @@ LICZBA_FS = 20
 TINT_POLA = 0.12                        # domieszka barwy sekcji w bialych polach
 ODSTEP_POZIOM = 5 * mm
 
-# Wydruk ma zawsze dokladnie rozmiar malej tablicy minus 2 mm z kazdego
-# wymiaru; wolna wysokosc idzie w marginesy — dwie trzecie na dol, jedna
-# trzecia na gore.
-PAGE_W = 668 * mm
-PAGE_H = 933 * mm
+# Wydruk: 660 mm szerokosci (weziej niz tablica, marginesy boczne przyciete)
+# na 950 mm wysokosci; wolna wysokosc idzie w marginesy — dwie trzecie na
+# dol, jedna trzecia na gore, wiec dol dostaje wyrazny oddech.
+PAGE_W = 660 * mm
+PAGE_H = 950 * mm
 MARGINES = 9 * mm                       # baza; reszte doklada margines_gorny()
 ODSTEP_GRUP = 7 * mm
 SEKCJA = 8 * mm
@@ -124,6 +124,10 @@ ZASADY_FS = 10.5
 ZASADY_LINIA_H = 4.9 * mm
 WYR_SKALA = 2.05                        # tabele wyrownania; cyfry ~4,1 mm
 TABELA_GAP = 13 * mm
+# Tla tabel wyrownania: trzy stonowane barwy spoza palety sekcji — roznice
+# sily to inne znaczenie niz sily, wiec nie wolno im wygladac jak sekcje;
+# przygaszone nasycenie trzyma je w tle. Kolejnosc jak PLANSZE (19, 13, 9).
+TABELE_BARWY = (HexColor("#c8ab72"), HexColor("#a8b077"), HexColor("#93aec0"))
 PODPIS_FS = 12                          # podpis wariantu na dole strony
 
 KOLUMNY = 5
@@ -392,6 +396,64 @@ def rysuj_przelicznik(c: Canvas, lewa: float, prawa: float, dol_y: float,
         x += KAFEL_W + KAFEL_GAP
 
 
+def rysuj_tabele_stopni(c: Canvas, x: float, gora: float, plansza: str,
+                        barwa: Color) -> None:
+    """Tabela wyrownania w jezyku tablicy: pelna barwa na brzegach z ruchami
+    i jencami (jak paski sekcji), wnetrze z roznicami w tincie barwy, liczby
+    ciemna wersja barwy. Rysowana w jednostkach karty — wola sie pod skala."""
+    pola = siatka(plansza)
+    jency = sorted({j for j, _ in pola})
+    ruchy = sorted({r for _, r in pola})
+    KRATKA_W, BRZEG_W, WIERSZ_H = karta_pdf.KRATKA_W, karta_pdf.BRZEG_W, karta_pdf.WIERSZ_H
+    szer = len(jency) * KRATKA_W + BRZEG_W
+    wys = (len(ruchy) + 2) * WIERSZ_H
+    ciemna = mieszaj(barwa, INK, 0.55)
+
+    c.setFillColor(mieszaj(CARD, barwa, 0.22))
+    c.rect(x, gora - wys, szer, wys, stroke=0, fill=1)
+    c.setFillColor(barwa)                       # brzeg z ruchami i wiersz jencow
+    c.rect(x + szer - BRZEG_W, gora - wys + WIERSZ_H, BRZEG_W, wys - WIERSZ_H,
+           stroke=0, fill=1)
+    c.rect(x, gora - wys, szer, WIERSZ_H, stroke=0, fill=1)
+
+    c.setFillColor(ciemna)                      # plakietka nazwy planszy
+    PLAKIETKA_FS = 5.6
+    plakietka_w = c.stringWidth(plansza, FONT_BOLD, PLAKIETKA_FS) + 3 * mm
+    c.roundRect(x + (len(jency) * KRATKA_W - plakietka_w) / 2, gora - WIERSZ_H + 0.35 * mm,
+                plakietka_w, WIERSZ_H - 0.7 * mm, 0.45 * mm, stroke=0, fill=1)
+    c.setFillColor(CARD)
+    c.setFont(FONT_BOLD, PLAKIETKA_FS)
+    c.drawCentredString(x + len(jency) * KRATKA_W / 2, gora - WIERSZ_H + 0.9 * mm, plansza)
+    c.setFillColor(ciemna)
+    c.setFont(FONT, 4.4)
+    c.drawCentredString(x + szer - BRZEG_W / 2, gora - WIERSZ_H + 1.0 * mm, "↓ ruchy")
+
+    for numer, r in enumerate(ruchy):
+        y = gora - (numer + 2) * WIERSZ_H + 1.0 * mm
+        c.setFont(FONT, 5.4)
+        for kolumna, j in enumerate(jency):
+            c.drawCentredString(x + (kolumna + 0.5) * KRATKA_W, y,
+                                karta_pdf._kratka_sily(pola[(j, r)], ",5"))
+        c.setFont(FONT_BOLD, 5.4)
+        c.drawCentredString(x + szer - BRZEG_W / 2, y, str(r))
+    dol = gora - (len(ruchy) + 2) * WIERSZ_H + 1.0 * mm
+    for kolumna, j in enumerate(jency):
+        c.setFont(FONT_BOLD, 5.4)
+        c.drawCentredString(x + (kolumna + 0.5) * KRATKA_W, dol, str(j))
+    c.setFont(FONT, 4.4)
+    c.drawCentredString(x + szer - BRZEG_W / 2, dol, "← jeńcy")
+
+    c.setStrokeColor(ciemna)
+    c.setLineWidth(0.3)
+    for numer in range(len(ruchy) + 2):
+        ly = gora - (numer + 1) * WIERSZ_H
+        c.line(x, ly, x + szer, ly)
+    for kolumna in range(1, len(jency) + 1):
+        c.line(x + kolumna * KRATKA_W, gora - WIERSZ_H, x + kolumna * KRATKA_W, gora - wys)
+    c.setLineWidth(0.7)
+    c.rect(x, gora - wys, szer, wys, stroke=1, fill=0)
+
+
 def rysuj_dol(c: Canvas, gora_y: float, kolory: list[Color]) -> None:
     """Dolny pas jednym rzedem kafli: kolumny zasad, potem tabele wyrownania;
     pod zasadami rzad kafelkow przelicznika sil na oficjalne stopnie.
@@ -414,11 +476,11 @@ def rysuj_dol(c: Canvas, gora_y: float, kolory: list[Color]) -> None:
     x += ODSTEP_ZASADY_TABELE - ODSTEP_KOLUMN_ZASAD
     rysuj_przelicznik(c, MARGINES_BOK, x - ODSTEP_ZASADY_TABELE,
                       gora_y - DOLNY_PAS_H - 2 * mm, kolory)
-    for (szer, wys), plansza in zip(wymiary, PLANSZE):
+    for ((szer, wys), plansza), barwa in zip(zip(wymiary, PLANSZE), TABELE_BARWY):
         c.saveState()
         c.translate(x, gora_y)
         c.scale(WYR_SKALA, WYR_SKALA)
-        karta_pdf.draw_siatka(c, karta_pdf.KOLOROWA, 0, 0, plansza, ",5")
+        rysuj_tabele_stopni(c, 0, 0, plansza, barwa)
         c.restoreState()
         x += szer + luz_tabel
 

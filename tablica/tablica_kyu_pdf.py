@@ -64,11 +64,13 @@ GRUPY: list[tuple[list[list[float]], bool]] = [
     (_cwiartki([0.0, -1.0, -2.0, -3.0, -4.0], PELNA), False),
     (_cwiartki([5.0, 4.0, 3.0, 2.0, 1.0], PELNA), False),
     (_cwiartki([10.0, 9.0, 8.0, 7.0, 6.0], BEZ_CWIARTKI), False),
-    ([[14.5, 13.5, 12.5, 11.5, 10.5], [15.0, 14.0, 13.0, 12.0, 11.0]], True),
-    ([[19.5, 18.5, 17.5, 16.5, 15.5], [20.0, 19.0, 18.0, 17.0, 16.0]], True),
+    ([[14.5, 13.5, 12.5, 11.5, 10.5], [15.0, 14.0, 13.0, 12.0, 11.0]], False),
+    ([[20.0, 19.0, 18.0, 17.0, 16.0]], True),
     ([[25.0, 24.0, 23.0, 22.0, 21.0]], True),
-    # Ostatni wiersz to osobna sekcja: skala poczatkujacych o wiekszych skokach.
-    ([[35.0, 32.0, 30.0, 28.0, 26.0]], True),
+    ([[30.0, 29.0, 28.0, 27.0, 26.0]], True),
+    # Skala poczatkujacych: dwa osobne wiersze co 2, w dol az do zera.
+    ([[40.0, 38.0, 36.0, 34.0, 32.0]], True),
+    ([[50.0, 48.0, 46.0, 44.0, 42.0]], True),
 ]
 
 PAS_LICZBY = 24 * mm                    # kolorowy pasek z liczba, z lewej kratki
@@ -89,8 +91,8 @@ ODSTEP_POZIOM = 5 * mm
 # trzecia na gore.
 PAGE_W = 668 * mm
 PAGE_H = 933 * mm
-MARGINES = 10 * mm                      # baza; reszte dokladaja marginesy()
-ODSTEP_GRUP = 8 * mm
+MARGINES = 9 * mm                       # baza; reszte doklada margines_gorny()
+ODSTEP_GRUP = 7 * mm
 SEKCJA = 8 * mm
 NAGLOWEK_H = 50 * mm                    # jeden pas: logo, nazwa, podtytul, adres
 LOGO = 38 * mm
@@ -113,10 +115,10 @@ KAFEL_FS = 13
 # Punkty zaczepienia skali do oficjalnych stopni; numer wskazuje sekcje,
 # ktorej barwa maluje kafelek.
 PRZELICZNIK: list[tuple[str, str, int]] = [
-    ("50", "≈ 1 dan", 0),
-    ("40", "≈ 10 kyu", 2),
-    ("30", "≈ 20 kyu", 4),
     ("20", "≈ 30 kyu", 6),
+    ("30", "≈ 20 kyu", 4),
+    ("40", "≈ 10 kyu", 2),
+    ("50", "≈ 1 dan", 0),
 ]
 ZASADY_TYTUL_FS = 12
 ZASADY_FS = 10.5
@@ -143,10 +145,8 @@ def liczba_skali(kyu: float) -> str:
 
 
 def prog(kyu: float) -> bool:
-    """Progiem jest sila podzielna przez 5, od 25 w gore — skala poczatkujacych
-    (15 i 20 w ostatnim wierszu) progow nie ma."""
-    sila = 50 - kyu
-    return sila % 5 == 0 and sila >= 25
+    """Progiem jest kazda sila podzielna przez 5 — jej liczba idzie wieksza czcionka."""
+    return (50 - kyu) % 5 == 0
 
 
 def mieszaj(a: Color, b: Color, t: float) -> Color:
@@ -195,7 +195,7 @@ LUK_E = (90, 300)                       # zielen -> blekit -> sliwka
 
 
 def _paleta(top: Color, h_od: float, h_do: float, s_: float, l_: float) -> list[Color]:
-    return [top] + przejscie(h_od, h_do, s_, l_, 6)
+    return [top] + przejscie(h_od, h_do, s_, l_, len(GRUPY) - 1)
 
 
 def _top_ciemny(h: float, s_: float, l_: float) -> Color:
@@ -210,8 +210,16 @@ def _top_przedluzony(h_od: float, h_do: float) -> Color:
 
 # Palety do porownywania (--palety); top danow akcentuje delikatnie —
 # w natezeniu zblizonym do reszty luku, nie mocniej.
+# Rowne kroki w stopniach kola nie sa rowne dla oka: zielenie i niebieskosci
+# zlewaja sie w jedno, a pomarancz z zolcia skacza. Odcienie sa wiec dobrane
+# recznie — szersze przeskoki w zieleniach i miedzy turkusem a fioletem,
+# ciasniejsze na cieplym poczatku; koniec dochodzi do granicy fioletu (300),
+# bo dalej zaczyna sie roz, ktorego na skali nie chcemy.
+ODCIENIE = (30, 58, 92, 135, 172, 202, 234, 267, 300)
+
 PALETY: list[tuple[str, list[Color]]] = [
-    ("luk A, top przedluzony", _paleta(hsl(15, 0.44, 0.70), *LUK_A, 0.44, 0.70)),
+    ("luk ciagly, kroki wyrownane optycznie",
+     [hsl(h, 0.44, 0.70) for h in ODCIENIE]),
     ("luk A odwrocony, top wino", _paleta(hsl(350, 0.40, 0.68), LUK_A[1], LUK_A[0], 0.44, 0.70)),
     ("luk A gleboki, top wino", _paleta(hsl(350, 0.44, 0.60), *LUK_A, 0.50, 0.62)),
 ]
@@ -447,12 +455,9 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
             segmenty = []
             for wiersz in grupa:
                 kyu = wiersz[kolumna]
-                if prog(kyu):
-                    segmenty.append((liczba_skali(kyu), barwa, barwa, CARD, LICZBA_PROG_FS))
-                elif kyu == int(kyu):
-                    # kazda calkowita dostaje biala plakietke; 15 — jak progi,
-                    # bo zamyka skale od dolu
-                    fs = LICZBA_PROG_FS if kyu == 35.0 else LICZBA_FS
+                if kyu == int(kyu):
+                    # kazda liczba calkowita na bialej plakietce; progi wieksza czcionka
+                    fs = LICZBA_PROG_FS if prog(kyu) else LICZBA_FS
                     segmenty.append((liczba_skali(kyu), barwa, barwa, CARD, fs))
                 else:
                     liczba = SZAROSC_KOMOREK if jasny(barwa) else CARD

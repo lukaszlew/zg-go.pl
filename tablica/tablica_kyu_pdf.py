@@ -79,11 +79,7 @@ POLE_SZER = PAS_LICZBY + POLE_BIALE     # cala kratka
 POLE_WYS = 32 * mm                      # wymog: dokladnie 32
 POLE_WYS_2 = 63 * mm                    # dwa pola minus wspolna kreska; miesci dwie etykiety
 LICZBA_FS = 20
-LICZBA_PROG_FS = 30                     # progi: ta sama plakietka, wieksza czcionka
 TINT_POLA = 0.12                        # domieszka barwy sekcji w bialych polach
-# Obrysy, kreski i czcionka wewnatrz komorek ida szaroscia, nie czernia —
-# czern zostaje w naglowku, zasadach i tabelach wyrownania.
-SZAROSC_KOMOREK = HexColor("#4f4f4f")
 ODSTEP_POZIOM = 5 * mm
 
 # Wydruk ma zawsze dokladnie rozmiar malej tablicy minus 2 mm z kazdego
@@ -100,6 +96,9 @@ TYTUL_FS = 50
 TYTUL_ROZSTRZELENIE = 5                 # odstep miedzy literami "Semedori" (pt)
 PODTYTUL_FS = 18
 ADRES_FS = 37
+# Ciemne zloto adresu (hsl 33/48%/36%): ciemniejsza wersja cieplego poczatku
+# gradientu tablicy, spokojnie gra z kremowym tlem.
+ZLOTO_ADRESU = HexColor("#886030")
 # Dolny pas to jeden rzad kafli: trzy kolumny zasad i trzy tabele wyrownania
 # obok siebie — najwyzszy kafel (tabela 19x19) wyznacza jego wysokosc.
 DOLNY_PAS_H = 61 * mm
@@ -228,39 +227,47 @@ WYBRANA = PALETY[0]                     # paleta wydruku: luk A, top przedluzony
 
 
 def rysuj_slupek(c: Canvas, x: float, y: float,
-                 segmenty: list[tuple[str, Color, Color, Color | None, float]],
+                 segmenty: list[tuple[str, Color, Color, Color | None, float, bool]],
                  wys_segmentu: float) -> None:
     """Slupek sekcji: segmenty (liczba, barwa, kolor liczby, plakietka, stopien
-    pisma) od gory, wspolny obrys i kreski dzielace przez cala szerokosc.
+    pisma, czy prog) od gory, wspolny obrys i kreski dzielace.
 
     Pasek segmentu idzie pelna barwa, biale pole jej lekkim odcieniem; liczby
-    calkowite dostaja plakietke w negatywie (kolor w czwartym polu segmentu).
+    calkowite dostaja biala plakietke. Progi (piatki) wyroznia biale halo
+    wokol plakietki.
     """
     wys = len(segmenty) * wys_segmentu
     c.saveState()
     c.clipPath(zaokraglony(c, x, y, POLE_SZER, wys, PROMIEN), stroke=0, fill=0)
-    for nr, (_, barwa, _, _, _) in enumerate(segmenty):
+    for nr, (_, barwa, _, _, _, _) in enumerate(segmenty):
         dol = y + wys - (nr + 1) * wys_segmentu
         c.setFillColor(mieszaj(CARD, barwa, TINT_POLA))
         c.rect(x + PAS_LICZBY, dol, POLE_SZER - PAS_LICZBY, wys_segmentu, stroke=0, fill=1)
         c.setFillColor(barwa)
         c.rect(x, dol, PAS_LICZBY, wys_segmentu, stroke=0, fill=1)
     c.restoreState()
-    c.setStrokeColor(SZAROSC_KOMOREK)
+    # Obrysy i kreski w ciemnej wersji barwy sekcji — tej samej, ktora pisze
+    # polowki; slupek trzyma sie jednej rodziny koloru.
+    c.setStrokeColor(mieszaj(segmenty[0][1], INK, 0.55))
     c.setLineWidth(KRESKA)
     c.line(x + PAS_LICZBY, y, x + PAS_LICZBY, y + wys)
     for nr in range(1, len(segmenty)):
         c.line(x, y + wys - nr * wys_segmentu, x + POLE_SZER, y + wys - nr * wys_segmentu)
     c.drawPath(zaokraglony(c, x, y, POLE_SZER, wys, PROMIEN), stroke=1, fill=0)
-    for nr, (liczba, _, kolor_liczby, plakietka, fs) in enumerate(segmenty):
+    for nr, (liczba, barwa, kolor_liczby, plakietka, fs, prog_) in enumerate(segmenty):
         srodek_x = x + PAS_LICZBY / 2
         srodek_y = y + wys - nr * wys_segmentu - wys_segmentu / 2
         if plakietka is not None:
             szer = c.stringWidth(liczba, FONT_BOLD, fs) + 5 * mm
             wys_p = 0.72 * fs + 5 * mm
+            lewa_p, dol_p = srodek_x - szer / 2, srodek_y - wys_p / 2
             c.setFillColor(plakietka)
-            c.roundRect(srodek_x - szer / 2, srodek_y - wys_p / 2, szer, wys_p,
-                        2 * mm, stroke=0, fill=1)
+            c.roundRect(lewa_p, dol_p, szer, wys_p, 2 * mm, stroke=0, fill=1)
+            if prog_:                           # biale halo wokol plakietki progu
+                c.setStrokeColor(CARD)
+                c.setLineWidth(2 * KRESKA)
+                c.roundRect(lewa_p - 1 * mm, dol_p - 1 * mm, szer + 2 * mm,
+                            wys_p + 2 * mm, 3 * mm, stroke=1, fill=0)
         c.setFillColor(kolor_liczby)
         c.setFont(FONT_BOLD, fs)
         c.drawCentredString(srodek_x, srodek_y - 0.36 * fs, liczba)
@@ -289,7 +296,7 @@ def rysuj_naglowek_kyu(c: Canvas, gora_y: float) -> None:
     c.setFillColor(CIEMNY)
     c.setFont(FONT_SERIF, PODTYTUL_FS)
     c.drawCentredString(srodek, baza - 10 * mm, "Gramy w Go w Zielonej Górze")
-    c.setFillColor(ACCENT)
+    c.setFillColor(ZLOTO_ADRESU)
     c.setFont(FONT_SERIF_BOLD, ADRES_FS)
     srodek_ostatniej = (MARGINES_BOK + (KOLUMNY - 1) * (POLE_SZER + ODSTEP_POZIOM)
                         + POLE_SZER / 2)
@@ -364,7 +371,7 @@ def rysuj_przelicznik(c: Canvas, lewa: float, prawa: float, dol_y: float,
         c.setFillColor(barwa)
         c.rect(x, dol_y, KAFEL_PAS, KAFEL_H, stroke=0, fill=1)
         c.restoreState()
-        c.setStrokeColor(SZAROSC_KOMOREK)
+        c.setStrokeColor(mieszaj(barwa, INK, 0.55))
         c.setLineWidth(KRESKA)
         c.line(x + KAFEL_PAS, dol_y, x + KAFEL_PAS, dol_y + KAFEL_H)
         c.drawPath(zaokraglony(c, x, dol_y, KAFEL_W, KAFEL_H, 2 * mm), stroke=1, fill=0)
@@ -455,13 +462,16 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
             segmenty = []
             for wiersz in grupa:
                 kyu = wiersz[kolumna]
+                # Wszystkie liczby w ciemnej wersji barwy sekcji — na
+                # plakietkach (calkowite, progi z halo) i wprost na pasku
+                # (polowki i powtorki par).
+                ciemna = mieszaj(barwa, INK, 0.55)
                 if kyu == int(kyu):
-                    # kazda liczba calkowita na bialej plakietce; progi wieksza czcionka
-                    fs = LICZBA_PROG_FS if prog(kyu) else LICZBA_FS
-                    segmenty.append((liczba_skali(kyu), barwa, barwa, CARD, fs))
+                    segmenty.append((liczba_skali(kyu), barwa, ciemna, CARD,
+                                     LICZBA_FS, prog(kyu)))
                 else:
-                    liczba = SZAROSC_KOMOREK if jasny(barwa) else CARD
-                    segmenty.append((liczba_skali(kyu), barwa, liczba, None, LICZBA_FS))
+                    segmenty.append((liczba_skali(kyu), barwa, ciemna, None,
+                                     LICZBA_FS, False))
             x = MARGINES_BOK + kolumna * (POLE_SZER + ODSTEP_POZIOM)
             rysuj_slupek(c, x, y, segmenty, wys_segmentu)
 

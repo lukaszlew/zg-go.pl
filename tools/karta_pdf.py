@@ -96,7 +96,7 @@ FONT_HAND = "Caveat"                    # "odreczne" wpisy na kartach przykladow
 HAND_FS = 14                            # rozmiar wpisow w wierszach
 HAND_FS_FIELDS = 16                     # rozmiar wpisow w rubrykach naglowka
 
-WERSJA = "25.08.2026a"                   # dopiska na karcie; podbij przy zmianie zasad/ukladu
+WERSJA = "30.08.2026a"                   # dopiska na karcie; podbij przy zmianie zasad/ukladu
 
 ROWS = 18                               # wysoki naglowek, trzy siatki wyrownania i 13 zasad w sciadze kosztuja reszte strony
 # 7,7 mm zamiast 8: jedenasta zasada wypchnela stopke poza strone, a wiersz nizszy

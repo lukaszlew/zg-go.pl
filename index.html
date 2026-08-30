@@ -222,14 +222,16 @@
       const img = document.getElementById('banner-img');
       if (!img) return;
       // Bachus pojawia się tylko w sezonie Winobrania w Zielonej Górze.
-      // Święto zaczyna się w pierwszą albo drugą sobotę września i trwa ok. 9 dni,
-      // więc baner żyje od pierwszej wrześniowej soboty przez 16 dni — obejmuje
-      // oba warianty startu i nie wyprzedza święta.
+      // Święto zaczyna się w pierwszą sobotę września (czasem dzień wcześniej)
+      // i kończy w niedzielę po 9 dniach. Baner wisi od soboty tydzień przed
+      // świętem do soboty tydzień po nim włącznie: [pierwsza sobota − 7, +14].
       const dzis = new Date();
-      const start = new Date(dzis.getFullYear(), 8, 1);
-      start.setDate(1 + (6 - start.getDay() + 7) % 7);   // pierwsza sobota września
-      const koniec = new Date(start);
-      koniec.setDate(start.getDate() + 16);
+      const sobota = new Date(dzis.getFullYear(), 8, 1);
+      sobota.setDate(1 + (6 - sobota.getDay() + 7) % 7);   // pierwsza sobota września
+      const start = new Date(sobota);
+      start.setDate(sobota.getDate() - 7);
+      const koniec = new Date(sobota);
+      koniec.setDate(sobota.getDate() + 15);
       const winobranie = dzis >= start && dzis < koniec;
       img.src = winobranie ? 'img/bachus.webp' : 'img/grapes.webp';
     })();

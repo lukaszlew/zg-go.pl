@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Tablica stopni na mala tablice magnetyczna (67 x 93,5 cm).
+"""Tablica stopni klubu Semedori — wydruk 660 x 950 mm na mala tablice magnetyczna.
 
-Uruchomienie: python3 tablica/tablica_kyu_pdf.py   (zapisuje tablica/tablica-kyu.pdf
-w wybranej palecie); z opcja --palety pisze tablica-kyu-palety.pdf — strona na
+Uruchomienie: python3 tablica/tablica_kyu_pdf.py   (zapisuje tablica/ranking_table-660x950mm.pdf
+w wybranej palecie); z opcja --palety pisze ranking_table-660x950mm-palety.pdf — strona na
 kazda palete z PALETY, z podpisami, do porownywania kolorow.
 
 Siatka 5 kolumn kratek: kolorowy pasek z liczba sily klubowej z lewej
@@ -35,15 +35,67 @@ from pathlib import Path
 from reportlab.lib.colors import Color, HexColor
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
+from reportlab.pdfgen.pathobject import PDFPathObject
 
-from tablica_pdf import (ACCENT, BG, CARD, CIEMNY, FONT, FONT_BOLD, FONT_SERIF,
-                         FONT_SERIF_BOLD, INK, KRESKA, MUTED, PROMIEN, REPO, RULE,
-                         SILA, wymiary_siatki, zaokraglony, zarejestruj_czcionki)
+REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / "tools"))
 
-import karta_pdf                        # sciezke do tools/ dodaje tablica_pdf
+import karta_pdf
 import zasady_tablicy
 from wyrownanie.tabela_html import PLANSZE, siatka
+
+# paleta ze style.css — ta sama co strona i karta gracza
+BG = HexColor("#f4e9cf")                # --bg: krem calej tablicy
+INK = HexColor("#1a1a1a")               # --fg: krawedzie i logo
+MUTED = HexColor("#666666")             # --muted: podpisy i notki
+CIEMNY = HexColor("#444444")            # podtytul: ciemniejszy od --muted
+ACCENT = HexColor("#9c2a2a")            # --accent: wyeksponowany adres zg-go.pl
+RULE = HexColor("#d9c896")              # --rule: zloty
+CARD = HexColor("#ffffff")              # --card: biale pola na etykiety
+SILA = karta_pdf.KOLOROWA.sila          # kolor sily, ten sam co na karcie
+
+FONT = "DejaVu"
+FONT_BOLD = "DejaVu-Bold"
+FONT_SERIF = "DejaVu-Serif"
+FONT_SERIF_BOLD = "DejaVu-Serif-Bold"
+
+PROMIEN = 3 * mm                        # zaokraglenie rogow slupkow
+KRESKA = 0.5 * mm                       # grubosc krawedzi
+
+
+def zarejestruj_czcionki() -> None:
+    dejavu = Path("/usr/share/fonts/truetype/dejavu")
+    assert dejavu.is_dir(), f"brak katalogu czcionek DejaVu: {dejavu}"
+    pdfmetrics.registerFont(TTFont(FONT, str(dejavu / "DejaVuSans.ttf")))
+    pdfmetrics.registerFont(TTFont(FONT_BOLD, str(dejavu / "DejaVuSans-Bold.ttf")))
+    pdfmetrics.registerFont(TTFont(FONT_SERIF, str(dejavu / "DejaVuSerif.ttf")))
+    pdfmetrics.registerFont(TTFont(FONT_SERIF_BOLD, str(dejavu / "DejaVuSerif-Bold.ttf")))
+
+
+def wymiary_siatki(plansza: str) -> tuple[float, float]:
+    """(szerokosc, wysokosc) jednej siatki wyrownania w jednostkach karty gracza."""
+    pola = siatka(plansza)
+    jency = len({j for j, _ in pola})
+    ruchy = len({r for _, r in pola})
+    return (jency * karta_pdf.KRATKA_W + karta_pdf.BRZEG_W,
+            (ruchy + 2) * karta_pdf.WIERSZ_H)
+
+
+def zaokraglony(c: Canvas, x: float, y: float, w: float, h: float, r: float) -> PDFPathObject:
+    p = c.beginPath()
+    p.moveTo(x + r, y)
+    p.lineTo(x + w - r, y)
+    p.arcTo(x + w - 2 * r, y, x + w, y + 2 * r, 270, 90)
+    p.lineTo(x + w, y + h - r)
+    p.arcTo(x + w - 2 * r, y + h - 2 * r, x + w, y + h, 0, 90)
+    p.lineTo(x + r, y + h)
+    p.arcTo(x, y + h - 2 * r, x + 2 * r, y + h, 90, 90)
+    p.lineTo(x, y + r)
+    p.arcTo(x, y, x + 2 * r, y + 2 * r, 180, 90)
+    p.close()
+    return p
 
 
 def _cwiartki(okragle: list[float], przesuniecia: tuple[float, ...]) -> list[list[float]]:
@@ -561,6 +613,6 @@ def generuj(sciezka: Path, palety: list[tuple[str, list[Color]]], podpisy: bool)
 if __name__ == "__main__":
     assert sys.argv[1:] in ([], ["--palety"]), "jedyna opcja to --palety"
     if sys.argv[1:] == ["--palety"]:
-        generuj(REPO / "tablica" / "tablica-kyu-palety.pdf", PALETY, podpisy=True)
+        generuj(REPO / "tablica" / "ranking_table-660x950mm-palety.pdf", PALETY, podpisy=True)
     else:
-        generuj(REPO / "tablica" / "tablica-kyu.pdf", [WYBRANA], podpisy=False)
+        generuj(REPO / "tablica" / "ranking_table-660x950mm.pdf", [WYBRANA], podpisy=False)

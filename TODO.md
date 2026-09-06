@@ -47,10 +47,12 @@
 
 ## Poza repo
 
-- [ ] **Tablica rankingowa na małą tablicę magnetyczną.** Mamy dwie tablice: mała
+- [ ] **Tablica stopni na małą tablicę magnetyczną.** Mamy dwie tablice: mała
       67 × 93,5 cm (można przylepić coś na stałe), duża 149 × 99 cm (na razie odpada).
-      Plik jest gotowy: `tablica/tablica-mala.pdf` (67 × 67 cm, etykiety 50 × 25 mm);
-      zostało wydrukować i przylepić na stałe na małej tablicy
+      Plik jest gotowy: `tablica/ranking_table-660x950mm.pdf` (66 × 95 cm, etykiety 50 × 25 mm);
+      zostało wydrukować i przylepić na stałe na małej tablicy.
+      Uwaga: mała tablica (93,5 cm wysokości) jest za mała na wydruk 950 mm —
+      przed drukiem trzeba skrócić wydruk albo zdobyć większą tablicę
 
 - [ ] **Bus factor** — drugi administrator na OVH, GitHubie, Google Cloud, kalendarzu
       i Discordzie. Dziś klub traci stronę razem z jedną osobą

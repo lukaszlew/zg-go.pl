@@ -37,7 +37,7 @@ from .tabela import KATALOG_PAKIETU
 PLIK = KATALOG_PAKIETU / "tabela-zg.html"
 
 SKOK = 0.5              # o tyle rosnie roznica w kolejnym wierszu
-# Polowka po przecinku, tak jak na tablicy stopni — jeden zapis liczb w calym
+# Polowka po przecinku, tak jak na tablicy siły — jeden zapis liczb w calym
 # klubie. Span o stalej szerokosci trzyma kolumny rowno.
 POLOWKA = '<span class="dz">,5</span>'
 # Pusta koncowka zajmuje tyle samo miejsca, co pelna. Bez niej cyfra w kratce bez

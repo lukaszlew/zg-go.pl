@@ -574,7 +574,7 @@ def _kratka_sily(roznica: float, polowka: str) -> str:
 def draw_siatka(c: Canvas, p: Paleta, x: float, top: float, plansza: str,
                 polowka: str) -> float:
     """Jedna siatka wyrownania; zwraca jej szerokosc. `polowka` to zapis
-    polowek roznicy: "½" na karcie i planszy, ",5" na tablicy stopni.
+    polowek roznicy: "½" na karcie i planszy, ",5" na tablicy siły.
 
     Liczby ida wprost z wyrownanie/zg.py — to samo zrodlo, co tabele na stronie,
     wiec karta nie ma jak sie z nia rozjechac.

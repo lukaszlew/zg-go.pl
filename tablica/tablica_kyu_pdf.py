@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tablica stopni klubu Semedori — wydruk 660 x 950 mm na mala tablice magnetyczna.
+"""Tablica siły klubu Semedori — wydruk 660 x 950 mm na mala tablice magnetyczna.
 
 Uruchomienie: python3 tablica/tablica_kyu_pdf.py   (zapisuje tablica/ranking_table-660x950mm.pdf
 w wybranej palecie); z opcja --palety pisze ranking_table-660x950mm-palety.pdf — strona na
@@ -317,36 +317,63 @@ def wysokosc_slupka(segmentow: int, wys_segmentu: float) -> float:
 
 def rysuj_strzalke(c: Canvas, x: float, dol: float, wys_seg: float,
                    kierunek: str, kolor: Color) -> None:
-    """Strzalka na srodku krawedzi bialego pola kafla.
+    """Strzalka na krawedzi bialego pola kafla, w barwie pola docelowego.
 
-    Pokazuje, gdzie na tablicy lezy sasiednie pole skali — awans na krawedzi
-    gornej albo prawej, spadek na dolnej albo lewej — i nosi barwe sekcji
-    tego sasiada, wiec na styku sekcji zapowiada jej kolor. Grot na cala
-    szerokosc, trzonek krotki: strzalka lezy plasko przy krawedzi."""
-    WZDLUZ, W_GLAB, WCIECIE = 7.2 * mm, 4.8 * mm, 0.9 * mm   # proporcje 3:2
-    GROT, TRZONEK = 2.9 * mm, 2.9 * mm   # glebokosc grotu i szerokosc trzonka
+    Wszystkie strzalki maja ten sam plaski grot prostopadly do krawedzi
+    i te sama kreske. Sasiad na tym samym pietrze skali dostaje prosta
+    strzalke ("gora"/"dol"/"prawo"/"lewo"). Skoki rysuja zygzak o zrodle
+    na srodku pola: krotki was od srodka, bieg wzdluz krawedzi w strone
+    celu, krotki odcinek ku krawedzi i grot. Kierunki: "prawo-dol"
+    i "lewo-gora" na wejscie w slupek wielosegmentowy, "gora-lewo"
+    i "dol-prawo" na styk sekcji."""
+    GRUB, KROTKI = 1.0 * mm, 1.5 * mm
+    RUN_PION, RUN_POZIOM = 10 * mm, 30 * mm   # bieg wzdluz boku / wzdluz gory-dolu
+    HEAD_W, HEAD_G = 3.6 * mm, 1.6 * mm   # wspolny grot: szeroki i plaski
+    WCIECIE, NAKLADKA = 0.9 * mm, 0.2 * mm
     cx = x + PAS_LICZBY + (POLE_SZER - PAS_LICZBY) / 2
     cy = dol + wys_seg / 2
-    czubek, kat = {
-        "gora": ((cx, dol + wys_seg - WCIECIE), 0),
-        "prawo": ((x + POLE_SZER - WCIECIE, cy), -90),
-        "dol": ((cx, dol + WCIECIE), 180),
-        "lewo": ((x + PAS_LICZBY + WCIECIE, cy), 90),
-    }[kierunek]
+    yg, yd = dol + wys_seg - WCIECIE, dol + WCIECIE
+    xp, xl = x + POLE_SZER - WCIECIE, x + PAS_LICZBY + WCIECIE
+    y_gora, y_dol = yg - HEAD_G - KROTKI, yd + HEAD_G + KROTKI   # biegi przy krawedziach
+    x_prawo, x_lewo = xp - HEAD_G - KROTKI, xl + HEAD_G + KROTKI
+    trasy: dict[str, tuple[list[tuple[float, float]], tuple[float, float], tuple[int, int]]] = {
+        # Proste siegaja tak samo gleboko jak zygzaki, tylko bez zygzaka.
+        "gora": ([(cx, y_gora - KROTKI), (cx, yg - HEAD_G + NAKLADKA)],
+                 (cx, yg), (0, 1)),
+        "dol": ([(cx, y_dol + KROTKI), (cx, yd + HEAD_G - NAKLADKA)],
+                (cx, yd), (0, -1)),
+        "prawo": ([(x_prawo - KROTKI, cy), (xp - HEAD_G + NAKLADKA, cy)],
+                  (xp, cy), (1, 0)),
+        "lewo": ([(x_lewo + KROTKI, cy), (xl + HEAD_G - NAKLADKA, cy)],
+                 (xl, cy), (-1, 0)),
+        "gora-lewo": ([(cx, y_gora - KROTKI), (cx, y_gora), (cx - RUN_POZIOM, y_gora),
+                       (cx - RUN_POZIOM, yg - HEAD_G + NAKLADKA)], (cx - RUN_POZIOM, yg), (0, 1)),
+        "dol-prawo": ([(cx, y_dol + KROTKI), (cx, y_dol), (cx + RUN_POZIOM, y_dol),
+                       (cx + RUN_POZIOM, yd + HEAD_G - NAKLADKA)], (cx + RUN_POZIOM, yd), (0, -1)),
+        "prawo-dol": ([(x_prawo - KROTKI, cy), (x_prawo, cy), (x_prawo, cy - RUN_PION),
+                       (xp - HEAD_G + NAKLADKA, cy - RUN_PION)], (xp, cy - RUN_PION), (1, 0)),
+        "lewo-gora": ([(x_lewo + KROTKI, cy), (x_lewo, cy), (x_lewo, cy + RUN_PION),
+                       (xl + HEAD_G - NAKLADKA, cy + RUN_PION)], (xl, cy + RUN_PION), (-1, 0)),
+    }
+    punkty, (tx, ty), (dx, dy) = trasy[kierunek]
     c.saveState()
-    c.translate(*czubek)
-    c.rotate(kat)
+    c.setStrokeColor(kolor)
+    c.setLineWidth(GRUB)
+    c.setLineCap(1)
+    c.setLineJoin(1)
     p = c.beginPath()
-    p.moveTo(0, 0)
-    p.lineTo(-WZDLUZ / 2, -GROT)
-    p.lineTo(-TRZONEK / 2, -GROT)
-    p.lineTo(-TRZONEK / 2, -W_GLAB)
-    p.lineTo(TRZONEK / 2, -W_GLAB)
-    p.lineTo(TRZONEK / 2, -GROT)
-    p.lineTo(WZDLUZ / 2, -GROT)
-    p.close()
+    p.moveTo(*punkty[0])
+    for punkt in punkty[1:]:
+        p.lineTo(*punkt)
+    c.drawPath(p, stroke=1, fill=0)
+    bx, by = tx - dx * HEAD_G, ty - dy * HEAD_G   # srodek podstawy grotu
+    g = c.beginPath()
+    g.moveTo(tx, ty)
+    g.lineTo(bx - dy * HEAD_W / 2, by + dx * HEAD_W / 2)
+    g.lineTo(bx + dy * HEAD_W / 2, by - dx * HEAD_W / 2)
+    g.close()
     c.setFillColor(kolor)
-    c.drawPath(p, stroke=0, fill=1)
+    c.drawPath(g, stroke=0, fill=1)
     c.restoreState()
 
 
@@ -516,16 +543,15 @@ def rysuj_przelicznik(c: Canvas, prawa: float, dol_y: float,
         c.drawPath(zaokraglony(c, x, dol_y, KAFEL_W, KAFEL_H, 2 * mm), stroke=1, fill=0)
         # sila na bialej plakietce o proporcjach plakietek z glownej siatki:
         # ciasno wokol liczby, duzo barwy paska dookola
-        szer_p = c.stringWidth(sila, FONT_BOLD, KAFEL_FS) + 4 * mm
+        # Krój jak w tabelach wyrownania obok — DejaVu bez pogrubienia.
+        szer_p = c.stringWidth(sila, FONT, KAFEL_FS) + 4 * mm
         wys_p = 0.72 * KAFEL_FS + 2.5 * mm
         c.setFillColor(CARD)
         c.roundRect(x + KAFEL_PAS / 2 - szer_p / 2, dol_y + KAFEL_H / 2 - wys_p / 2,
                     szer_p, wys_p, 1.5 * mm, stroke=0, fill=1)
         c.setFillColor(barwa)
-        c.setFont(FONT_BOLD, KAFEL_FS)
+        c.setFont(FONT, KAFEL_FS)
         c.drawCentredString(x + KAFEL_PAS / 2, dol_y + KAFEL_H / 2 - 0.36 * KAFEL_FS, sila)
-        c.setFillColor(barwa)
-        c.setFont(FONT_BOLD, KAFEL_FS)
         c.drawCentredString(x + KAFEL_PAS + (KAFEL_W - KAFEL_PAS) / 2,
                             dol_y + KAFEL_H / 2 - 0.36 * KAFEL_FS, stopien)
         x += KAFEL_W + KAFEL_GAP
@@ -681,17 +707,21 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
                 if idx > 0:
                     awans = ("gora", barwa)
                 elif kolumna < KOLUMNY - 1:
-                    awans = ("prawo", barwa)
+                    # W sekcji jednorzedowej sasiednia kolumna to to samo
+                    # pietro skali (wysokie pole tylko miesci wiecej
+                    # magnesow) — strzalka prosta; w wielorzedowej wchodzi
+                    # sie na dol sasiedniego slupka — zygzak.
+                    awans = ("prawo-dol" if len(grupa) > 1 else "prawo", barwa)
                 elif nr > 0:
-                    awans = ("gora", kolory[nr - 1])
+                    awans = ("gora-lewo", kolory[nr - 1])
                 else:
                     awans = None
                 if idx < len(grupa) - 1:
                     spadek = ("dol", barwa)
                 elif kolumna > 0:
-                    spadek = ("lewo", barwa)
+                    spadek = ("lewo-gora" if len(grupa) > 1 else "lewo", barwa)
                 elif nr < len(sekcje) - 1:
-                    spadek = ("dol", kolory[nr + 1])
+                    spadek = ("dol-prawo", kolory[nr + 1])
                 else:
                     spadek = None
                 for strzalka in (awans, spadek):
@@ -705,7 +735,7 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
         c.drawString(MARGINES_BOK, 4 * mm, podpis)
 
 
-WERSJA = "06.09.2026o"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
+WERSJA = "07.09.2026d"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
 ZAMEK = Path(__file__).resolve().parent / "tablica.lock"
 
 
@@ -762,7 +792,7 @@ def generuj(sciezka: Path, palety: list[tuple[str, list[Color]]], podpisy: bool)
     margines_gorny()                    # asserty ukladu pionowego przed rysowaniem
     page_h = PAGE_H
     c = Canvas(str(sciezka), pagesize=(PAGE_W, page_h))
-    c.setTitle("Tablica stopni — Semedori")
+    c.setTitle("Tablica siły — Semedori")
     for nr, (nazwa, kolory) in enumerate(palety, start=1):
         rysuj_strone(c, page_h, f"paleta {nr}: {nazwa}" if podpisy else None, kolory)
         c.showPage()

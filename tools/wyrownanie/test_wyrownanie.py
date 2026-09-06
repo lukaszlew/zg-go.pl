@@ -500,7 +500,7 @@ class Drabinka(unittest.TestCase):
 
 
 class Polowki(unittest.TestCase):
-    """Polowka pisze sie po przecinku (,5) — tym samym zapisem, co tablica stopni."""
+    """Polowka pisze sie po przecinku (,5) — tym samym zapisem, co tablica siły."""
 
     def test_kratka_pisze_sie_najkrocej_jak_sie_da(self):
         pol = tabela_html.POLOWKA
@@ -549,31 +549,6 @@ class BezPierwszegoRuchu(unittest.TestCase):
         """Decyzja kosztuje: przy roznicy 1 Czarny mialby 7 jencow, a gra rowno."""
         self.assertEqual([-zg.wiersz("19x19", r)[2] for r in (0.5, 1.0)], [0, 7])
         self.assertEqual(tabela_html.rowne("19x19"), [0.0, 0.5, 1.0])
-
-
-class NaStronie(unittest.TestCase):
-    """ranking.html nie ma build-stepu, wiec markup wklejamy — i pilnujemy testem."""
-
-    def test_tabele_na_stronie_sa_te_z_generatora(self):
-        strona = (pathlib.Path(tabela_html.KATALOG_PAKIETU).parents[1] / "ranking.html")
-        html = strona.read_text(encoding="utf-8")
-        for plansza in tabela_html.PLANSZE:
-            with self.subTest(plansza=plansza):
-                oczekiwana = tabela_html.tabela(plansza).replace("\n        ", "\n          ")
-                self.assertIn(
-                    oczekiwana, html,
-                    f"tabela {plansza} na ranking.html rozjechala sie z generatorem "
-                    "— wklej ja jeszcze raz zamiast poprawiac recznie",
-                )
-        self.assertIn('<div class="tabele">', html, "trzy siatki stoja w jednym rzedzie")
-
-    def test_strona_ma_style_dla_klas_z_generatora(self):
-        """Markup przynosi wlasne klasy; bez regul w style.css tabela sie rozsypie."""
-        arkusz = (pathlib.Path(tabela_html.KATALOG_PAKIETU).parents[1] / "style.css")
-        tresc = arkusz.read_text(encoding="utf-8")
-        for klasa in ("th.rog", "th.plansza", "span.dz", "col.brzeg"):
-            with self.subTest(klasa=klasa):
-                self.assertIn(klasa, tresc)
 
 
 class SiatkiNaKarcie(unittest.TestCase):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Zrodlo prawdy dla zasad rankingu prowadzonego na tablicy stopni.
+"""Zrodlo prawdy dla zasad rankingu prowadzonego na tablicy siły.
 
 Kazda zasada to jedno zdanie plus metadana: na ile linii wolno mu sie zlamac
 na wydruku. Z limitow linii generator (tablica_kyu_pdf.py) sam liczy najwezsza
@@ -27,17 +27,15 @@ NAGLOWKI: dict[str, str] = {
 ZASADY: list[tuple[str, str, int]] = [
     ("gra", "Różnica siły to liczba silniejszego minus liczba słabszego; silniejszy gra Białymi.", 2),
     ("gra", "Tabela wyznacza liczbę ruchów startowych Czarnego i jeńców, których dostaje przed grą od Białego.", 2),
-    ("gra", "Jeżeli różnicy nie ma w tabeli, losujemy kolory nigiri i zaczyna Czarny.", 2),
-    ("gra", "Biały dostaje wtedy od razu 6 jeńców i wygrywa remisy (tak jakby 6,5).", 2),
-    ("magnes", "Pole to pół siły, a od siły 40 w górę — ćwiartka.", 1),
-    ("magnes", "Wygrana to pole wyżej (lub w prawo), przegrana — pole niżej, remis — bez zmiany.", 2),
-    ("magnes", "Wyraźny wynik to poddanie albo 15 punktów na 9×9, 30 na 13×13, 60 na 19×19.", 2),
-    ("magnes", "Wyraźna wygrana to dwa pola w górę, wyraźna przegrana — dwa pola w dół.", 2),
+    ("gra", "Jeżeli różnicy nie ma w tabeli, losujemy kolory nigiri i zaczyna Czarny; Biały dostaje od razu 6 jeńców i wygrywa remisy (tak jakby 6,5).", 3),
+    ("magnes", "Wygrana to strzałka w górę (lub w prawo), przegrana — strzałka w dół (lub w lewo), remis — bez zmiany.", 2),
+    ("magnes", "Wyraźny wynik to poddanie albo dużo punktów: 15 na 9×9, 30 na 13×13, 60 na 19×19.", 2),
+    ("magnes", "Wyraźna wygrana/przegrana to 2 strzałki w górę/dół.", 1),
     ("magnes", "Pierwsza przegrana w tygodniu nie zsuwa magnesu.", 1),
-    ("magnes", "Przy różnicy siły 10+, silniejszy nie przesuwa magnesu.", 1),
+    ("magnes", "Gra szkoleniowa — od 4 ruchów startowych na 9×9, 6 na 13×13, 8 na 19×19 — silniejszy nie przesuwa w niej magnesu.", 2),
     ("gosc", "Gość wiesza magnes na zerze.", 1),
-    ("gosc", "Po 2-3 przegranych gość zostaje klubowiczem.", 1),
     ("gosc", "Po grze gościa z klubowiczem magnes przesuwa tylko gość.", 2),
+    ("gosc", "Po 2-3 przegranych gość zostaje klubowiczem.", 1),
     ("gosc", "Silny klubowicz może przewiesić każdy magnes na pole prawdziwej siły gracza — to szybka korekta.", 3),
 ]
 

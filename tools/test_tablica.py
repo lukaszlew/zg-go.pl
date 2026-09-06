@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lancuch jednego zrodla prawdy dla tablicy stopni.
+"""Lancuch jednego zrodla prawdy dla tablicy siły.
 
 Uruchomienie:  python3 -m unittest discover -s tools
 Zrodlem zasad tablicy jest tablica/zasady_tablicy.py; z niego powstaje wydruk
@@ -47,23 +47,7 @@ class TestZasadyNaStronie(unittest.TestCase):
         import re
         cls.re = re
         cls.html = STRONA.read_text()
-        cls.spis = sekcja(cls.html, "zasady")
         cls.zdania = [z for _, z, _ in zasady_tablicy.ZASADY]
-
-    def test_spis_wymienia_zasady_w_kolejnosci(self) -> None:
-        pozycje = [tekst(m) for blok in self.re.findall(
-                       r'<ul class="zasady"[^>]*>(.*?)</ul>', self.spis, self.re.S)
-                   for m in self.re.findall(r"<li>(.*?)</li>", blok, self.re.S)]
-        self.assertEqual(pozycje, self.zdania)
-
-    def test_spis_linkuje_kazda_zasade_do_jej_rozwiniecia(self) -> None:
-        cele = self.re.findall(r'<li><a href="#(zasada-[\w-]+)">', self.spis)
-        self.assertEqual(len(cele), len(self.zdania), "tyle linkow, ile zasad")
-        self.assertEqual(len(set(cele)), len(cele), "kazda zasada ma wlasna kotwice")
-        for cel in cele:
-            self.assertIn(f'id="{cel}"', self.html, f"kotwica {cel} bez celu")
-        w_rozdzialach = self.re.findall(r'<p class="zasada" id="(zasada-[\w-]+)"', self.html)
-        self.assertEqual(w_rozdzialach, cele, "rozwiniecia w kolejnosci spisu")
 
     def test_rozdzialy_maja_dokladnie_te_zasady(self) -> None:
         naglowki = [

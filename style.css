@@ -463,8 +463,6 @@ table.komp th.plansza span { display: inline-block; background: var(--fg); color
 /* Stala szerokosc, takze gdy pusta: kratka bez ulamka ma trzymac cyfre w tym
    samym miejscu, co kratka z ulamkiem — inaczej kolumna jest poszarpana. */
 span.ca { display: inline-block; width: 1.15em; text-align: right; }
-/* Koncowka ,5 w tabelach wyrownania; stala szerokosc trzyma kolumny rowno. */
-span.dz { display: inline-block; width: 1.05em; text-align: left; }
 span.pol { display: inline-block; width: 0.85em; font-size: 0.5em; line-height: 1.06;
            vertical-align: middle; text-align: center; }
 span.pol span { display: block; padding: 0 0.1em; }
@@ -702,3 +700,15 @@ table.kalk-karta ::placeholder { color: var(--muted); opacity: 1; }
   border-radius: 6px;
   padding: 10px 14px;
 }
+
+/* Wycinki tablicy siły na stronie ranking: osobne pliki SVG z kadrem
+   liczonym przez tablica/wycinki_svg.py z geometrii generatora — zmiana
+   ukladu tablicy przesuwa kadry automatycznie. Klik prowadzi do PDF-u. */
+.wycinki { display: grid; gap: 0.7rem; margin: 0.9rem 0; }
+.wycinek-tablicy {
+  display: block;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.wycinek-tablicy img { display: block; width: 100%; height: auto; }

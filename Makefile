@@ -17,9 +17,19 @@ karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf img/lo
 karta-klub-przyklad.pdf: tools/karta_klub.py tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 	python3 tools/karta_klub.py
 
-tablica-pdf: tablica/ranking_table-660x950mm.pdf  ## przegeneruj tablice stopni
+WYCINKI = tablica/wycinek-zasady.svg tablica/wycinek-tabele.svg tablica/wycinek-tablica.svg
 
-# tablica stopni (slupki progresji sily z cwiartkami), wydruk 660 x 950 mm na mala
+tablica-pdf: tablica/ranking_table-660x950mm.pdf tablica/tablica.svg $(WYCINKI)  ## przegeneruj tablice siły
+
+# podglad tablicy na stronie ranking: ten sam wydruk jako SVG (glify ida w sciezki)
+tablica/tablica.svg: tablica/ranking_table-660x950mm.pdf
+	pdftocairo -svg $< $@
+
+# trzy wycinki dla strony ranking: pelny SVG z kadrem liczonym z geometrii generatora
+$(WYCINKI) &: tablica/tablica.svg tablica/wycinki_svg.py tablica/tablica_kyu_pdf.py tablica/zasady_tablicy.py
+	python3 tablica/wycinki_svg.py
+
+# tablica siły (slupki progresji sily z cwiartkami), wydruk 660 x 950 mm na mala
 # tablice magnetyczna; generator importuje draw_siatka z karta_pdf, wiec zmiana karty
 # odswieza tez tablice
 tablica/ranking_table-660x950mm.pdf: tablica/tablica_kyu_pdf.py tablica/zasady_tablicy.py tools/karta_pdf.py img/logo.svg

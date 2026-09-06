@@ -47,7 +47,7 @@
 
 ## Poza repo
 
-- [ ] **Tablica stopni na małą tablicę magnetyczną.** Mamy dwie tablice: mała
+- [ ] **Tablica siły na małą tablicę magnetyczną.** Mamy dwie tablice: mała
       67 × 93,5 cm (można przylepić coś na stałe), duża 149 × 99 cm (na razie odpada).
       Plik jest gotowy: `tablica/ranking_table-660x950mm.pdf` (66 × 95 cm, etykiety 50 × 25 mm);
       zostało wydrukować i przylepić na stałe na małej tablicy.

@@ -435,12 +435,12 @@ p.zasada-cd, table.zasada-cd { margin-left: 1.9rem; }
    nowrap, bo kratka ma miescic "41" z polowka w jednej linii — przy szerszym
    marginesie ulamek lamal sie do nastepnego wiersza. */
 /* Trzy siatki obok siebie; na waskim ekranie zawijaja sie zamiast wystawac. */
-.tabele { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: flex-start;
+.tabele { display: flex; flex-wrap: wrap; gap: 1.4rem; align-items: flex-start;
           margin: 0.6rem 0; }
-table.komp { font-size: 0.75rem; table-layout: fixed; }
-table.komp col { width: 2.1em; }
-table.komp col.brzeg { width: 3.6em; }
-table.komp td, table.komp th { padding: 0.15rem 0.1rem; text-align: center; white-space: nowrap; }
+table.komp { font-size: 0.9rem; table-layout: fixed; }
+table.komp col { width: 2.4em; }
+table.komp col.brzeg { width: 3.9em; }
+table.komp td, table.komp th { padding: 0.3rem 0.2rem; text-align: center; white-space: nowrap; }
 table.komp th { border-color: color-mix(in srgb, var(--rule) 85%, black); }
 table.komp td { color: var(--kolor-sily); }
 
@@ -451,7 +451,7 @@ table.komp th.komp-jency { border-top: 2px solid var(--rule); }
 table.komp th.komp-ruchy { border-left: 2px solid var(--rule); }
 
 /* Rogi nazywaja swoj brzeg strzalka — to podpisy, nie liczby, wiec drobniej i bledziej. */
-table.komp th.rog { color: var(--fg); font-size: 0.62rem; font-weight: 600; opacity: 0.7; }
+table.komp th.rog { color: var(--fg); font-size: 0.68rem; font-weight: 600; opacity: 0.7; }
 /* Nazwa planszy jako plakietka: ciemne tlo obejmuje napis, a nie cala kratke. */
 table.komp th.plansza { background: none; padding: 0.2rem 0.15rem; }
 table.komp th.plansza span { display: inline-block; background: var(--fg); color: var(--bg);

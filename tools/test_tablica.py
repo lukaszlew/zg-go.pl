@@ -75,6 +75,47 @@ class TestZasadyNaStronie(unittest.TestCase):
         self.assertEqual(naglowki, self.zdania, "kolejnosc albo tresc zasad w rozdzialach")
 
 
+class TestStanKanwy(unittest.TestCase):
+    def test_rysowanie_nie_zostawia_przeksztalcen(self) -> None:
+        """Kazde translate/rotate/scale zyje miedzy saveState a restoreState,
+        a po narysowaniu calej strony stany musza sie bilansowac — inaczej
+        jedna strzalka obraca albo przesuwa cala reszte tablicy."""
+        import io
+        from reportlab.pdfgen.canvas import Canvas
+
+        tablica_kyu_pdf.zarejestruj_czcionki()
+        c = Canvas(io.BytesIO(), pagesize=(tablica_kyu_pdf.PAGE_W, tablica_kyu_pdf.PAGE_H))
+        glebokosc = 0
+        oryginalne = {m: getattr(c, m) for m in
+                      ("saveState", "restoreState", "translate", "rotate", "scale")}
+
+        def saveState() -> None:
+            nonlocal glebokosc
+            glebokosc += 1
+            oryginalne["saveState"]()
+
+        def restoreState() -> None:
+            nonlocal glebokosc
+            glebokosc -= 1
+            self.assertGreaterEqual(glebokosc, 0, "restoreState bez saveState")
+            oryginalne["restoreState"]()
+
+        def przeksztalcenie(metoda: str):
+            def wywolanie(*args: float) -> None:
+                self.assertGreater(glebokosc, 0, f"{metoda} poza saveState/restoreState")
+                oryginalne[metoda](*args)
+            return wywolanie
+
+        c.saveState, c.restoreState = saveState, restoreState
+        c.translate = przeksztalcenie("translate")
+        c.rotate = przeksztalcenie("rotate")
+        c.scale = przeksztalcenie("scale")
+
+        tablica_kyu_pdf.rysuj_strone(c, tablica_kyu_pdf.PAGE_H, None,
+                                     tablica_kyu_pdf.WYBRANA[1])
+        self.assertEqual(glebokosc, 0, "saveState bez restoreState")
+
+
 class TestZamekTablicy(unittest.TestCase):
     def test_tablica_w_repo_jest_z_biezacych_zasad(self) -> None:
         """Rozjazd zamka znaczy: ktos zmienil zasady albo uklad i nie zrobil `make`."""

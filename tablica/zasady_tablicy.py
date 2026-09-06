@@ -29,6 +29,7 @@ ZASADY: list[tuple[str, str, int]] = [
     ("gra", "Tabela wyznacza liczbę ruchów startowych Czarnego i jeńców, których dostaje przed grą od Białego.", 2),
     ("gra", "Jeżeli różnicy nie ma w tabeli, losujemy kolory nigiri i zaczyna Czarny.", 2),
     ("gra", "Biały dostaje wtedy od razu 6 jeńców i wygrywa remisy (tak jakby 6,5).", 2),
+    ("magnes", "Pole to pół siły, a od siły 40 w górę — ćwiartka.", 1),
     ("magnes", "Wygrana to pole wyżej (lub w prawo), przegrana — pole niżej, remis — bez zmiany.", 2),
     ("magnes", "Wyraźny wynik to poddanie albo 15 punktów na 9×9, 30 na 13×13, 60 na 19×19.", 2),
     ("magnes", "Wyraźna wygrana to dwa pola w górę, wyraźna przegrana — dwa pola w dół.", 2),

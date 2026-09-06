@@ -1,4 +1,4 @@
 # Odcisk danych, z ktorych powstaje ranking_table-660x950mm.pdf — pilnuje go
 # tools/test_tablica.py. Zmiana zasad albo ukladu bez `make` to czerwony test.
-wersja=06.09.2026i
-odcisk=4b5e9b87eb2cb6fd1ac4a4424f89afac07eee806391797de04b27347a2e89133
+wersja=06.09.2026o
+odcisk=d5f42afce5486c6eb1651dfb9627adcbb186349011c9d7a40190b265639ec1d6

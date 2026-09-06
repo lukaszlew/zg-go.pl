@@ -10,7 +10,7 @@ Siatka 5 kolumn kratek: kolorowy pasek z liczba sily klubowej z lewej
 nie ma), obok biale pole 82 x 30 mm na etykiety magnetyczne 50 x 25 mm;
 cala kratka ma 106 mm. Silniejszy po prawej, dan u gory. Skala do sily 40
 idzie cwiartkami, nizej polowkami. Kazda kolumna sekcji scala sie w jeden
-slupek: wspolny obrys, kreski dzielace segmenty progresji, pasek z lewej
+slupek osobnych kafli rozdzielonych waska szczelina; pasek z lewej
 niesie liczbe segmentu. Progiem jest kazda sila podzielna przez 5 od 25
 w gore — stoi w lewym dolnym rogu sekcji i dostaje ciemny odcien barwy;
 w skali poczatkujacych progow nie ma. Sekcje odroznia wylacznie kolor
@@ -307,37 +307,76 @@ PALETY: list[tuple[str, list[Color]]] = [
 WYBRANA = PALETY[0]                     # paleta wydruku: luk A, top przedluzony
 
 
+SZCZELINA = 1 * mm                      # przerwa miedzy osobnymi kaflami slupka
+
+
+def wysokosc_slupka(segmentow: int, wys_segmentu: float) -> float:
+    """Wysokosc slupka: osobne kafle plus szczeliny miedzy nimi."""
+    return segmentow * wys_segmentu + (segmentow - 1) * SZCZELINA
+
+
+def rysuj_strzalke(c: Canvas, x: float, dol: float, wys_seg: float,
+                   kierunek: str, kolor: Color) -> None:
+    """Strzalka na srodku krawedzi bialego pola kafla.
+
+    Pokazuje, gdzie na tablicy lezy sasiednie pole skali — awans na krawedzi
+    gornej albo prawej, spadek na dolnej albo lewej — i nosi barwe sekcji
+    tego sasiada, wiec na styku sekcji zapowiada jej kolor. Grot na cala
+    szerokosc, trzonek krotki: strzalka lezy plasko przy krawedzi."""
+    WZDLUZ, W_GLAB, WCIECIE = 7.2 * mm, 4.8 * mm, 0.9 * mm   # proporcje 3:2
+    GROT, TRZONEK = 2.9 * mm, 2.9 * mm   # glebokosc grotu i szerokosc trzonka
+    cx = x + PAS_LICZBY + (POLE_SZER - PAS_LICZBY) / 2
+    cy = dol + wys_seg / 2
+    czubek, kat = {
+        "gora": ((cx, dol + wys_seg - WCIECIE), 0),
+        "prawo": ((x + POLE_SZER - WCIECIE, cy), -90),
+        "dol": ((cx, dol + WCIECIE), 180),
+        "lewo": ((x + PAS_LICZBY + WCIECIE, cy), 90),
+    }[kierunek]
+    c.saveState()
+    c.translate(*czubek)
+    c.rotate(kat)
+    p = c.beginPath()
+    p.moveTo(0, 0)
+    p.lineTo(-WZDLUZ / 2, -GROT)
+    p.lineTo(-TRZONEK / 2, -GROT)
+    p.lineTo(-TRZONEK / 2, -W_GLAB)
+    p.lineTo(TRZONEK / 2, -W_GLAB)
+    p.lineTo(TRZONEK / 2, -GROT)
+    p.lineTo(WZDLUZ / 2, -GROT)
+    p.close()
+    c.setFillColor(kolor)
+    c.drawPath(p, stroke=0, fill=1)
+    c.restoreState()
+
+
 def rysuj_slupek(c: Canvas, x: float, y: float,
                  segmenty: list[tuple[str, Color, Color, Color | None, float, bool]],
                  wys_segmentu: float) -> None:
     """Slupek sekcji: segmenty (liczba, barwa, kolor liczby, plakietka, stopien
-    pisma, czy prog) od gory, wspolny obrys i kreski dzielace.
+    pisma, czy prog) od gory — kazdy jako osobny kafel z wlasnym obrysem,
+    rozdzielone minimalna szczelina.
 
-    Pasek segmentu idzie pelna barwa, biale pole jej lekkim odcieniem; liczby
-    calkowite dostaja biala plakietke. Progi (piatki) wyroznia biale halo
-    wokol plakietki.
+    Pasek kafla idzie pelna barwa, biale pole jej lekkim odcieniem; progi
+    (piatki) dostaja biala plakietke z halo.
     """
-    wys = len(segmenty) * wys_segmentu
-    c.saveState()
-    c.clipPath(zaokraglony(c, x, y, POLE_SZER, wys, PROMIEN), stroke=0, fill=0)
-    for nr, (_, barwa, _, _, _, _) in enumerate(segmenty):
-        dol = y + wys - (nr + 1) * wys_segmentu
+    for nr, (liczba, barwa, kolor_liczby, plakietka, fs, prog_) in enumerate(segmenty):
+        dol = y + (len(segmenty) - 1 - nr) * (wys_segmentu + SZCZELINA)
+        c.saveState()
+        c.clipPath(zaokraglony(c, x, dol, POLE_SZER, wys_segmentu, PROMIEN), stroke=0, fill=0)
         c.setFillColor(mieszaj(CARD, barwa, TINT_POLA))
         c.rect(x + PAS_LICZBY, dol, POLE_SZER - PAS_LICZBY, wys_segmentu, stroke=0, fill=1)
         c.setFillColor(barwa)
         c.rect(x, dol, PAS_LICZBY, wys_segmentu, stroke=0, fill=1)
-    c.restoreState()
-    # Obrysy i kreski w ciemnej wersji barwy sekcji — tej samej, ktora pisze
-    # polowki; slupek trzyma sie jednej rodziny koloru.
-    c.setStrokeColor(mieszaj(segmenty[0][1], INK, 0.55))
-    c.setLineWidth(KRESKA)
-    c.line(x + PAS_LICZBY, y, x + PAS_LICZBY, y + wys)
-    for nr in range(1, len(segmenty)):
-        c.line(x, y + wys - nr * wys_segmentu, x + POLE_SZER, y + wys - nr * wys_segmentu)
-    c.drawPath(zaokraglony(c, x, y, POLE_SZER, wys, PROMIEN), stroke=1, fill=0)
-    for nr, (liczba, barwa, kolor_liczby, plakietka, fs, prog_) in enumerate(segmenty):
+        c.restoreState()
+        # Obrys i kreska paska w ciemnej wersji barwy sekcji — tej samej,
+        # ktora pisze liczby; kafel trzyma sie jednej rodziny koloru.
+        c.setStrokeColor(mieszaj(barwa, INK, 0.55))
+        c.setLineWidth(KRESKA)
+        c.line(x + PAS_LICZBY, dol, x + PAS_LICZBY, dol + wys_segmentu)
+        c.drawPath(zaokraglony(c, x, dol, POLE_SZER, wys_segmentu, PROMIEN), stroke=1, fill=0)
         srodek_x = x + PAS_LICZBY / 2
-        srodek_y = y + wys - nr * wys_segmentu - wys_segmentu / 2
+        srodek_y = dol + wys_segmentu / 2
         if plakietka is not None:
             szer = c.stringWidth(liczba, FONT_BOLD, fs) + 5 * mm
             wys_p = 0.72 * fs + 5 * mm
@@ -601,7 +640,7 @@ def margines_gorny() -> float:
     przez sie, bo tresc plynie od gory.
     """
     sekcje = sekcje_tablicy()
-    pola = sum(len(grupa) * wys for grupa, wys in sekcje)
+    pola = sum(wysokosc_slupka(len(grupa), wys) for grupa, wys in sekcje)
     assert max(wys * WYR_SKALA for _, wys in map(wymiary_siatki, PLANSZE)) <= DOLNY_PAS_H, \
         "tabela wyrownania wyzsza niz dolny pas"
     siatka_h = pola + (len(sekcje) - 1) * ODSTEP_GRUP
@@ -622,23 +661,42 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
     y = page_h - margines_gorny() - NAGLOWEK_H - SEKCJA
     for nr, (grupa, wys_segmentu) in enumerate(sekcje):
         barwa = kolory[nr]
-        y -= (ODSTEP_GRUP if nr > 0 else 0) + len(grupa) * wys_segmentu
+        y -= (ODSTEP_GRUP if nr > 0 else 0) + wysokosc_slupka(len(grupa), wys_segmentu)
         for kolumna in range(KOLUMNY):
             segmenty = []
             for wiersz in grupa:
                 kyu = wiersz[kolumna]
-                # Wszystkie liczby w ciemnej wersji barwy sekcji — na
-                # plakietkach (calkowite, progi z halo) i wprost na pasku
-                # (polowki i powtorki par).
+                # Wszystkie liczby w ciemnej wersji barwy sekcji, wprost na
+                # pasku; biala plakietke (z halo) dostaja wylacznie progi.
                 ciemna = mieszaj(barwa, INK, 0.55)
-                if kyu == int(kyu):
-                    segmenty.append((liczba_skali(kyu), barwa, ciemna, CARD,
-                                     LICZBA_FS, prog(kyu)))
-                else:
-                    segmenty.append((liczba_skali(kyu), barwa, ciemna, None,
-                                     LICZBA_FS, False))
+                segmenty.append((liczba_skali(kyu), barwa, ciemna,
+                                 CARD if prog(kyu) else None, LICZBA_FS, prog(kyu)))
             x = MARGINES_BOK + kolumna * (POLE_SZER + ODSTEP_POZIOM)
             rysuj_slupek(c, x, y, segmenty, wys_segmentu)
+            # Strzalki sasiadow: skala biegnie w gore kolumny, ze szczytu
+            # w prawo na dol sasiedniego slupka, a ze szczytu ostatniej kolumny
+            # do sekcji wyzej — spadek lustrzanie. Skrajne pola bez strzalki.
+            for idx in range(len(grupa)):
+                dol_seg = y + (len(grupa) - 1 - idx) * (wys_segmentu + SZCZELINA)
+                if idx > 0:
+                    awans = ("gora", barwa)
+                elif kolumna < KOLUMNY - 1:
+                    awans = ("prawo", barwa)
+                elif nr > 0:
+                    awans = ("gora", kolory[nr - 1])
+                else:
+                    awans = None
+                if idx < len(grupa) - 1:
+                    spadek = ("dol", barwa)
+                elif kolumna > 0:
+                    spadek = ("lewo", barwa)
+                elif nr < len(sekcje) - 1:
+                    spadek = ("dol", kolory[nr + 1])
+                else:
+                    spadek = None
+                for strzalka in (awans, spadek):
+                    if strzalka is not None:
+                        rysuj_strzalke(c, x, dol_seg, wys_segmentu, *strzalka)
 
     rysuj_dol(c, y - SEKCJA, kolory)
     if podpis is not None:
@@ -647,7 +705,7 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
         c.drawString(MARGINES_BOK, 4 * mm, podpis)
 
 
-WERSJA = "06.09.2026i"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
+WERSJA = "06.09.2026o"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
 ZAMEK = Path(__file__).resolve().parent / "tablica.lock"
 
 

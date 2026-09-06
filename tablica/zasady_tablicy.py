@@ -37,7 +37,7 @@ ZASADY: list[tuple[str, str, int]] = [
     ("gosc", "Gość wiesza magnes na zerze.", 1),
     ("gosc", "Po 2-3 przegranych gość zostaje klubowiczem.", 1),
     ("gosc", "Po grze gościa z klubowiczem magnes przesuwa tylko gość.", 2),
-    ("gosc", "Silny klubowicz może przewiesić każdy magnes na pole prawdziwej siły gracza — to szybka korekta.", 2),
+    ("gosc", "Silny klubowicz może przewiesić każdy magnes na pole prawdziwej siły gracza — to szybka korekta.", 3),
 ]
 
 assert [k for k, _, _ in ZASADY] == sorted(
@@ -45,7 +45,7 @@ assert [k for k, _, _ in ZASADY] == sorted(
 ), "zasady musza byc pogrupowane w kolejnosci KOLUMNY — tak ida kolumny pasa"
 assert len({z for _, z, _ in ZASADY}) == len(ZASADY), "zdania zasad musza byc unikalne"
 assert {k for k, _, _ in ZASADY} == set(KOLUMNY), "kazda kolumna musi miec przynajmniej jedna zasade"
-assert all(linie in (1, 2) for _, _, linie in ZASADY), "zasada zajmuje jedna albo dwie linie"
+assert all(linie in (1, 2, 3) for _, _, linie in ZASADY), "zasada zajmuje od jednej do trzech linii"
 
 
 def zasady_kolumny(kolumna: str) -> list[tuple[str, int]]:

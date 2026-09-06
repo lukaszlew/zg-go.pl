@@ -178,7 +178,7 @@ ZLOTO_ADRESU = HexColor("#886030")
 # Dolny pas to jeden rzad kafli na pelnej szerokosci strony (wyjezdza na
 # marginesy siatki slupkow): trzy kolumny zasad i trzy tabele wyrownania
 # obok siebie — najwyzsza z kolumn wyznacza jego wysokosc.
-DOLNY_MARGINES = 14 * mm
+DOLNY_MARGINES = 14 * mm             # minimalny; reszta luzu tez idzie w marginesy
 DOLNY_PAS_H = 66 * mm
 ODSTEP_KOLUMN_ZASAD = 10 * mm
 ODSTEP_ZASADY_TABELE = 14 * mm
@@ -558,16 +558,17 @@ def rysuj_dol(c: Canvas, gora_y: float, kolory: list[Color]) -> None:
     pelna szerokosc siatki i wysokosc najwyzszego kafla (tabeli 19x19).
     """
     wymiary = [tuple(w * WYR_SKALA for w in wymiary_siatki(p)) for p in PLANSZE]
-    # Przerwy waza sie osobno: kolumny zasad i granice zasady/tabele maja
-    # oddech na sztywno, a reszta luzu rozchodzi sie miedzy tabele.
-    dolny_w = PAGE_W - 2 * DOLNY_MARGINES
+    # Wszystkie przerwy pasa sa stale, a caly wolny luz rozchodzi sie po rowno
+    # na oba marginesy — tresc pasa stoi zwarta na srodku strony.
+    LUZ_TABEL = 8 * mm
     kolumny_w = {tytul: szerokosc_kolumny(tytul) for tytul in zasady_tablicy.KOLUMNY}
-    luz_tabel = (dolny_w - sum(kolumny_w.values())
-                 - (len(kolumny_w) - 1) * ODSTEP_KOLUMN_ZASAD
-                 - ODSTEP_ZASADY_TABELE
-                 - sum(szer for szer, _ in wymiary)) / (len(wymiary) - 1)
-    assert luz_tabel >= 5 * mm, f"tabele bez przerw: {luz_tabel / mm:.1f} mm"
-    x = DOLNY_MARGINES
+    tresc_w = (sum(kolumny_w.values()) + (len(kolumny_w) - 1) * ODSTEP_KOLUMN_ZASAD
+               + ODSTEP_ZASADY_TABELE + sum(szer for szer, _ in wymiary)
+               + (len(wymiary) - 1) * LUZ_TABEL)
+    margines_pasa = (PAGE_W - tresc_w) / 2
+    assert margines_pasa >= DOLNY_MARGINES, \
+        f"pas szerszy niz strona: margines {margines_pasa / mm:.1f} mm"
+    x = margines_pasa
     for tytul in zasady_tablicy.KOLUMNY:
         rysuj_kolumne_zasad(c, x, gora_y - 1 * mm, tytul, kolumny_w[tytul])
         x += kolumny_w[tytul] + ODSTEP_KOLUMN_ZASAD
@@ -577,14 +578,14 @@ def rysuj_dol(c: Canvas, gora_y: float, kolory: list[Color]) -> None:
     assert razem_kafli <= szer9, f"kafelki szersze niz tabela 9x9: {razem_kafli / mm:.0f} mm"
     kafle_dol = gora_y - wys9 - 5 * mm - KAFEL_H
     assert kafle_dol >= gora_y - DOLNY_PAS_H, "kafelki wychodza pod dolny pas"
-    rysuj_przelicznik(c, PAGE_W - DOLNY_MARGINES, kafle_dol, kolory)
+    rysuj_przelicznik(c, PAGE_W - margines_pasa, kafle_dol, kolory)
     for ((szer, wys), plansza), barwa in zip(zip(wymiary, PLANSZE), TABELE_BARWY):
         c.saveState()
         c.translate(x, gora_y)
         c.scale(WYR_SKALA, WYR_SKALA)
         rysuj_tabele_stopni(c, 0, 0, plansza, barwa)
         c.restoreState()
-        x += szer + luz_tabel
+        x += szer + LUZ_TABEL
 
 
 def sekcje_tablicy() -> list[tuple[list[list[float]], float]]:
@@ -646,7 +647,7 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
         c.drawString(MARGINES_BOK, 4 * mm, podpis)
 
 
-WERSJA = "06.09.2026g"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
+WERSJA = "06.09.2026i"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
 ZAMEK = Path(__file__).resolve().parent / "tablica.lock"
 
 

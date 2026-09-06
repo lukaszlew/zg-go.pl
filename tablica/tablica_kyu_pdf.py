@@ -27,6 +27,8 @@ wszystkich plansz stoja na samym dole, pod zasadami, rozlozone na szerokosc —
 musza byc na tablicy, bo z nich odczytuje sie wyrownanie przy stoliku.
 """
 
+import hashlib
+import json
 import re
 import sys
 from colorsys import hls_to_rgb
@@ -74,13 +76,35 @@ def zarejestruj_czcionki() -> None:
     pdfmetrics.registerFont(TTFont(FONT_SERIF_BOLD, str(dejavu / "DejaVuSerif-Bold.ttf")))
 
 
+# Oddech wokol tresci w komorkach tabel wyrownania (jednostki karty gracza).
+PAD_KOMORKI = 1.0 * mm
+PAD_BRZEGU = 1.2 * mm
+
+
+def metryki_tabeli(plansza: str) -> tuple[float, float, float, float]:
+    """(kratka_w, brzeg_w, szerokosc, wysokosc) jednej siatki wyrownania
+    w jednostkach karty gracza. Szerokosc komorki liczy sie z najszerszej
+    wartosci tej tabeli plus oddech — kazda tabela jest tak waska, jak
+    pozwala jej tresc; dolne ograniczenie pilnuje, zeby plakietka nazwy
+    planszy nie wystawala poza kolumny wartosci."""
+    pola = siatka(plansza)
+    jency = sorted({j for j, _ in pola})
+    ruchy = sorted({r for _, r in pola})
+    naj = max(pdfmetrics.stringWidth(karta_pdf._kratka_sily(w, ",5"), FONT, 5.4)
+              for w in pola.values())
+    naj = max(naj, max(pdfmetrics.stringWidth(str(j), FONT_BOLD, 5.4) for j in jency))
+    plakietka_w = pdfmetrics.stringWidth(plansza, FONT_BOLD, 5.6) + 3 * mm
+    kratka_w = max(naj + PAD_KOMORKI, (plakietka_w + 1 * mm) / len(jency))
+    brzeg_w = max(pdfmetrics.stringWidth(podpis, FONT, 4.4)
+                  for podpis in ("↓ ruchy", "← jeńcy")) + PAD_BRZEGU
+    return (kratka_w, brzeg_w,
+            len(jency) * kratka_w + brzeg_w,
+            (len(ruchy) + 2) * karta_pdf.WIERSZ_H)
+
+
 def wymiary_siatki(plansza: str) -> tuple[float, float]:
     """(szerokosc, wysokosc) jednej siatki wyrownania w jednostkach karty gracza."""
-    pola = siatka(plansza)
-    jency = len({j for j, _ in pola})
-    ruchy = len({r for _, r in pola})
-    return (jency * karta_pdf.KRATKA_W + karta_pdf.BRZEG_W,
-            (ruchy + 2) * karta_pdf.WIERSZ_H)
+    return metryki_tabeli(plansza)[2:]
 
 
 def zaokraglony(c: Canvas, x: float, y: float, w: float, h: float, r: float) -> PDFPathObject:
@@ -151,17 +175,18 @@ ADRES_FS = 37
 # Ciemne zloto adresu (hsl 33/48%/36%): ciemniejsza wersja cieplego poczatku
 # gradientu tablicy, spokojnie gra z kremowym tlem.
 ZLOTO_ADRESU = HexColor("#886030")
-# Dolny pas to jeden rzad kafli: trzy kolumny zasad i trzy tabele wyrownania
-# obok siebie — najwyzszy kafel (tabela 19x19) wyznacza jego wysokosc.
-DOLNY_PAS_H = 61 * mm
-ZASADY_KOL_W = 108 * mm
+# Dolny pas to jeden rzad kafli na pelnej szerokosci strony (wyjezdza na
+# marginesy siatki slupkow): trzy kolumny zasad i trzy tabele wyrownania
+# obok siebie — najwyzsza z kolumn wyznacza jego wysokosc.
+DOLNY_MARGINES = 14 * mm
+DOLNY_PAS_H = 66 * mm
 ODSTEP_KOLUMN_ZASAD = 10 * mm
 ODSTEP_ZASADY_TABELE = 14 * mm
-KAFEL_W = 52 * mm                       # przelicznik sil na stopnie pod zasadami
-KAFEL_H = 18 * mm
-KAFEL_PAS = 20 * mm
-KAFEL_GAP = 8 * mm
-KAFEL_FS = 13
+KAFEL_W = 34 * mm                       # przelicznik sil na stopnie pod tabela 9x9
+KAFEL_H = 11 * mm
+KAFEL_PAS = 12 * mm
+KAFEL_GAP = 6 * mm
+KAFEL_FS = 11
 
 # Punkty zaczepienia skali do oficjalnych stopni; numer wskazuje sekcje,
 # ktorej barwa maluje kafelek.
@@ -374,30 +399,49 @@ def _polam(zasada: str, szerokosc: float) -> list[list[str]]:
     return linie
 
 
-def rysuj_kolumne_zasad(c: Canvas, x: float, gora_y: float, tytul: str) -> None:
+def szerokosc_kolumny(tytul: str) -> float:
+    """Najwezsza szerokosc kolumny, przy ktorej kazda zasada miesci sie
+    w swojej zadeklarowanej liczbie linii, a naglowek w jednej."""
+    kol_w = pdfmetrics.stringWidth(zasady_tablicy.NAGLOWKI[tytul], FONT_BOLD, ZASADY_TYTUL_FS)
+    for zasada, limit in zasady_tablicy.zasady_kolumny(tytul):
+        dol = max(pdfmetrics.stringWidth(slowo, FONT, ZASADY_FS) for slowo in zasada.split())
+        gora = pdfmetrics.stringWidth(zasada, FONT, ZASADY_FS) + 10 * mm
+        while gora - dol > 0.1 * mm:
+            srodek = (dol + gora) / 2
+            if len(_polam(zasada, srodek)) <= limit:
+                gora = srodek
+            else:
+                dol = srodek
+        kol_w = max(kol_w, gora + 4 * mm)   # wciecie punktu przed tekstem
+    return kol_w + 0.5 * mm                 # zapas na blad wyszukiwania
+
+
+def rysuj_kolumne_zasad(c: Canvas, x: float, gora_y: float, tytul: str,
+                        kol_w: float) -> None:
     """Jedna kolumna zasad dolnego pasa: naglowek, linia i wyjustowane punkty.
 
     Kazda linia poza ostatnia w punkcie jest justowana do prawej krawedzi
-    kolumny (luz rozchodzi sie po spacjach); zdania sa tak dobrane, zeby
-    punkt konczyl sie w dwoch liniach — pilnuje tego assert.
+    kolumny (luz rozchodzi sie po spacjach); zdanie ma sie zmiescic w liczbie
+    linii zadeklarowanej w zasady_tablicy — pilnuje tego assert.
     """
     c.setFillColor(INK)
     c.setFont(FONT_BOLD, ZASADY_TYTUL_FS)
     c.drawString(x, gora_y, zasady_tablicy.NAGLOWKI[tytul])
     c.setStrokeColor(RULE)
     c.setLineWidth(0.8 * mm)
-    c.line(x, gora_y - 2 * mm, x + ZASADY_KOL_W, gora_y - 2 * mm)
+    c.line(x, gora_y - 2 * mm, x + kol_w, gora_y - 2 * mm)
     y = gora_y - 7.5 * mm
     spacja = pdfmetrics.stringWidth(" ", FONT, ZASADY_FS)
-    szerokosc = ZASADY_KOL_W - 4 * mm
-    for zasada in zasady_tablicy.w_kolumnie(tytul):
+    szerokosc = kol_w - 4 * mm
+    for zasada, limit in zasady_tablicy.zasady_kolumny(tytul):
         c.setFillColor(MUTED)
         c.setFont(FONT_BOLD, ZASADY_FS)
         c.drawString(x, y, "•")
         c.setFillColor(INK)
         c.setFont(FONT, ZASADY_FS)
         linie = _polam(zasada, szerokosc)
-        assert len(linie) <= 2, f"zasada lamie sie na {len(linie)} linie: {zasada[:40]}..."
+        assert len(linie) <= limit, \
+            f"zasada lamie sie na {len(linie)} linie (limit {limit}): {zasada[:40]}..."
         for nr, linia in enumerate(linie):
             slow_w = [pdfmetrics.stringWidth(slowo, FONT, ZASADY_FS) for slowo in linia]
             ostatnia = nr == len(linie) - 1
@@ -412,12 +456,12 @@ def rysuj_kolumne_zasad(c: Canvas, x: float, gora_y: float, tytul: str) -> None:
     assert y >= gora_y - DOLNY_PAS_H, f"kolumna zasad '{tytul}' nie miesci sie w pasie"
 
 
-def rysuj_przelicznik(c: Canvas, lewa: float, prawa: float, dol_y: float,
+def rysuj_przelicznik(c: Canvas, prawa: float, dol_y: float,
                       kolory: list[Color]) -> None:
     """Rzad mini-kafelkow "sila ≈ stopien" w barwach swoich sekcji,
-    wysrodkowany miedzy lewa a prawa."""
+    dosuniety do prawej krawedzi — konczy sie pod tabela 9x9."""
     razem = len(PRZELICZNIK) * KAFEL_W + (len(PRZELICZNIK) - 1) * KAFEL_GAP
-    x = lewa + (prawa - lewa - razem) / 2
+    x = prawa - razem
     for sila, stopien, nr_sekcji in PRZELICZNIK:
         barwa = kolory[nr_sekcji]
         c.setFillColor(CARD)
@@ -441,10 +485,10 @@ def rysuj_przelicznik(c: Canvas, lewa: float, prawa: float, dol_y: float,
         c.setFillColor(barwa)
         c.setFont(FONT_BOLD, KAFEL_FS)
         c.drawCentredString(x + KAFEL_PAS / 2, dol_y + KAFEL_H / 2 - 0.36 * KAFEL_FS, sila)
-        c.setFillColor(INK)
-        c.setFont(FONT, 12)
+        c.setFillColor(barwa)
+        c.setFont(FONT_BOLD, KAFEL_FS)
         c.drawCentredString(x + KAFEL_PAS + (KAFEL_W - KAFEL_PAS) / 2,
-                            dol_y + KAFEL_H / 2 - 0.36 * 12, stopien)
+                            dol_y + KAFEL_H / 2 - 0.36 * KAFEL_FS, stopien)
         x += KAFEL_W + KAFEL_GAP
 
 
@@ -456,9 +500,8 @@ def rysuj_tabele_stopni(c: Canvas, x: float, gora: float, plansza: str,
     pola = siatka(plansza)
     jency = sorted({j for j, _ in pola})
     ruchy = sorted({r for _, r in pola})
-    KRATKA_W, BRZEG_W, WIERSZ_H = karta_pdf.KRATKA_W, karta_pdf.BRZEG_W, karta_pdf.WIERSZ_H
-    szer = len(jency) * KRATKA_W + BRZEG_W
-    wys = (len(ruchy) + 2) * WIERSZ_H
+    KRATKA_W, BRZEG_W, szer, wys = metryki_tabeli(plansza)
+    WIERSZ_H = karta_pdf.WIERSZ_H
     ciemna = mieszaj(barwa, INK, 0.55)
 
     c.setFillColor(mieszaj(CARD, barwa, 0.22))
@@ -517,17 +560,24 @@ def rysuj_dol(c: Canvas, gora_y: float, kolory: list[Color]) -> None:
     wymiary = [tuple(w * WYR_SKALA for w in wymiary_siatki(p)) for p in PLANSZE]
     # Przerwy waza sie osobno: kolumny zasad i granice zasady/tabele maja
     # oddech na sztywno, a reszta luzu rozchodzi sie miedzy tabele.
-    luz_tabel = (SIATKA_W - len(zasady_tablicy.KOLUMNY) * ZASADY_KOL_W
-                 - ODSTEP_KOLUMN_ZASAD - ODSTEP_ZASADY_TABELE
+    dolny_w = PAGE_W - 2 * DOLNY_MARGINES
+    kolumny_w = {tytul: szerokosc_kolumny(tytul) for tytul in zasady_tablicy.KOLUMNY}
+    luz_tabel = (dolny_w - sum(kolumny_w.values())
+                 - (len(kolumny_w) - 1) * ODSTEP_KOLUMN_ZASAD
+                 - ODSTEP_ZASADY_TABELE
                  - sum(szer for szer, _ in wymiary)) / (len(wymiary) - 1)
     assert luz_tabel >= 5 * mm, f"tabele bez przerw: {luz_tabel / mm:.1f} mm"
-    x = MARGINES_BOK
+    x = DOLNY_MARGINES
     for tytul in zasady_tablicy.KOLUMNY:
-        rysuj_kolumne_zasad(c, x, gora_y - 1 * mm, tytul)
-        x += ZASADY_KOL_W + ODSTEP_KOLUMN_ZASAD
+        rysuj_kolumne_zasad(c, x, gora_y - 1 * mm, tytul, kolumny_w[tytul])
+        x += kolumny_w[tytul] + ODSTEP_KOLUMN_ZASAD
     x += ODSTEP_ZASADY_TABELE - ODSTEP_KOLUMN_ZASAD
-    rysuj_przelicznik(c, MARGINES_BOK, x - ODSTEP_ZASADY_TABELE,
-                      gora_y - DOLNY_PAS_H - 2 * mm, kolory)
+    szer9, wys9 = wymiary[-1]
+    razem_kafli = len(PRZELICZNIK) * KAFEL_W + (len(PRZELICZNIK) - 1) * KAFEL_GAP
+    assert razem_kafli <= szer9, f"kafelki szersze niz tabela 9x9: {razem_kafli / mm:.0f} mm"
+    kafle_dol = gora_y - wys9 - 5 * mm - KAFEL_H
+    assert kafle_dol >= gora_y - DOLNY_PAS_H, "kafelki wychodza pod dolny pas"
+    rysuj_przelicznik(c, PAGE_W - DOLNY_MARGINES, kafle_dol, kolory)
     for ((szer, wys), plansza), barwa in zip(zip(wymiary, PLANSZE), TABELE_BARWY):
         c.saveState()
         c.translate(x, gora_y)
@@ -596,10 +646,62 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
         c.drawString(MARGINES_BOK, 4 * mm, podpis)
 
 
+WERSJA = "06.09.2026g"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
+ZAMEK = Path(__file__).resolve().parent / "tablica.lock"
+
+
+def odcisk() -> str:
+    """Odcisk danych, ktore decyduja o tresci wydrukowanej tablicy.
+
+    Sa tu zasady, kolumny pasa, skala slupkow, przelicznik stopni i siatki
+    wyrownania — wszystko, czego zmiana uniewaznia wiszacy wydruk. Wymiary
+    czysto kosmetyczne swiadomie zostaja poza odciskiem."""
+    dane = {
+        "zasady": [[k, z, linie] for k, z, linie in zasady_tablicy.ZASADY],
+        "kolumny": list(zasady_tablicy.KOLUMNY),
+        "naglowki": dict(zasady_tablicy.NAGLOWKI),
+        "grupy": [[wiersze, podwojne] for wiersze, podwojne in GRUPY],
+        "przelicznik": [list(k) for k in PRZELICZNIK],
+        "siatki": {p: {f"{j}/{r}": d for (j, r), d in sorted(siatka(p).items())} for p in PLANSZE},
+    }
+    kanoniczne = json.dumps(dane, ensure_ascii=False, sort_keys=True)
+    return hashlib.sha256(kanoniczne.encode()).hexdigest()
+
+
+def czytaj_zamek() -> dict[str, str]:
+    """Zawartosc tablica.lock jako slownik; pusty, gdy pliku jeszcze nie ma."""
+    if not ZAMEK.is_file():
+        return {}
+    return dict(
+        linia.split("=", 1)
+        for linia in ZAMEK.read_text().splitlines()
+        if linia and not linia.startswith("#")
+    )
+
+
+def zapisz_zamek() -> None:
+    """Zapisuje odcisk i wersje tablicy; pilnuje, by zmiana tresci podbila WERSJA.
+
+    Bez tego wydruk w repo moze byc o dwie zmiany zasad z tylu i nikt tego
+    nie zauwazy — plik jest binarny, wiec diff nic nie mowi."""
+    poprzedni = czytaj_zamek()
+    biezacy = odcisk()
+    assert not (poprzedni and poprzedni["odcisk"] != biezacy and poprzedni["wersja"] == WERSJA), (
+        f"zasady albo uklad tablicy sie zmienily, a WERSJA dalej brzmi {WERSJA} — "
+        "podbij ja w tablica/tablica_kyu_pdf.py, zeby dalo sie odroznic wydruki"
+    )
+    ZAMEK.write_text(
+        "# Odcisk danych, z ktorych powstaje ranking_table-660x950mm.pdf — pilnuje go\n"
+        "# tools/test_tablica.py. Zmiana zasad albo ukladu bez `make` to czerwony test.\n"
+        f"wersja={WERSJA}\n"
+        f"odcisk={biezacy}\n"
+    )
+
+
 def generuj(sciezka: Path, palety: list[tuple[str, list[Color]]], podpisy: bool) -> None:
+    zarejestruj_czcionki()              # metryki tabel mierza pismo, wiec czcionki ida pierwsze
     margines_gorny()                    # asserty ukladu pionowego przed rysowaniem
     page_h = PAGE_H
-    zarejestruj_czcionki()
     c = Canvas(str(sciezka), pagesize=(PAGE_W, page_h))
     c.setTitle("Tablica stopni — Semedori")
     for nr, (nazwa, kolory) in enumerate(palety, start=1):
@@ -616,3 +718,4 @@ if __name__ == "__main__":
         generuj(REPO / "tablica" / "ranking_table-660x950mm-palety.pdf", PALETY, podpisy=True)
     else:
         generuj(REPO / "tablica" / "ranking_table-660x950mm.pdf", [WYBRANA], podpisy=False)
+        zapisz_zamek()

@@ -37,13 +37,12 @@ from .tabela import KATALOG_PAKIETU
 PLIK = KATALOG_PAKIETU / "tabela-zg.html"
 
 SKOK = 0.5              # o tyle rosnie roznica w kolejnym wierszu
-# Polowka pisana pionowo: 1 nad 2, kreska miedzy. Wezsza od "½" po przekatnej,
-# bo zajmuje szerokosc jednej cyfry zamiast poltorej, i czytelniejsza w malym
-# piśmie. Skladana recznie, bo zaden znak Unicode tego nie daje.
-POLOWKA = '<span class="pol"><span>1</span><span>2</span></span>'
-# Pusta polowka zajmuje tyle samo miejsca, co pelna. Bez niej cyfra w kratce bez
-# ulamka przesuwalaby sie w prawo i kolumna bylaby poszarpana.
-BEZ_POLOWKI = '<span class="pol"></span>'
+# Polowka po przecinku, tak jak na tablicy stopni — jeden zapis liczb w calym
+# klubie. Span o stalej szerokosci trzyma kolumny rowno.
+POLOWKA = '<span class="dz">,5</span>'
+# Pusta koncowka zajmuje tyle samo miejsca, co pelna. Bez niej cyfra w kratce bez
+# koncowki przesuwalaby sie w prawo i kolumna bylaby poszarpana.
+BEZ_POLOWKI = '<span class="dz"></span>'
 
 # Podpisy brzegow. Strzalka stoi przed slowem i pokazuje, w ktora strone patrzec:
 # to ona, a nie opis nad tabelami, tlumaczy uklad.
@@ -100,22 +99,16 @@ STYL = """\
   th.plansza span { display: inline-block; background: #3a3a3a; color: #fff;
                     font-size: 0.8rem; letter-spacing: 0.06em; border-radius: 2px;
                     padding: 0.05rem 0.55rem; }
-  /* Ulamek pionowy: obie cyfry jedna pod druga, kreska z koloru tekstu. */
-  /* Ulamek jest wyzszy niz cyfra obok, wiec rownanie do linii pisma wypycha go
-     w gore — stad wyrownanie do srodka, zeby stal na tej samej wysokosci co "1". */
-  /* Stala szerokosc, takze gdy pusta: kratka bez ulamka ma trzymac cyfre w tym
-     samym miejscu, co kratka z ulamkiem. */
+  /* Stala szerokosc, takze gdy pusta: kratka bez koncowki ,5 ma trzymac cyfre
+     w tym samym miejscu, co kratka z koncowka. */
   span.ca { display: inline-block; width: 1.15em; text-align: right; }
-  span.pol { display: inline-block; width: 0.85em; font-size: 0.5em;
-             line-height: 1.06; vertical-align: middle; text-align: center; }
-  span.pol span { display: block; padding: 0 0.1em; }
-  span.pol span + span { border-top: 1px solid currentColor; }"""
+  span.dz { display: inline-block; width: 1.05em; text-align: left; }"""
 
 
 def _kratka_sily(roznica: float) -> str:
-    """Polowka jednym znakiem: 3, 3½, 41½ — o caly znak wezej niz "3,5".
+    """Polowka po przecinku: 3, 3,5, 41,5.
 
-    Przy polowce bez calosci zostaje samo ½: zero z przodu nic nie wnosi, a
+    Przy polowce bez calosci zostaje samo ,5: zero z przodu nic nie wnosi, a
     kolumna musialaby byc pod nie szersza.
     """
     calosc = int(roznica)

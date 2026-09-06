@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Zasady na stronie i na karcie musza byc dokladnie tymi z zasady.py.
+"""Zasady na stronie kartowej i na karcie musza byc dokladnie tymi z zasady.py.
+
+Karta gracza i jej zasady zyja na archiwalnej stronie ranking-karta; strone
+ranking pilnuje tools/test_tablica.py.
 
 Uruchomienie:  python3 -m unittest discover -s tools
 Odpala sie tez jako pre-commit hook (tools/githooks/pre-commit).
@@ -15,7 +18,7 @@ from pathlib import Path
 import karta_pdf
 import zasady
 
-STRONA = Path(__file__).resolve().parent.parent / "ranking.html"
+STRONA = Path(__file__).resolve().parent.parent / "ranking-karta.html"
 
 # Podsekcje "Rozwiniecia zasad", w kolejnosci ze strony; kazda zasada stoi w nich jako
 # <strong> na poczatku akapitu. Kolejnosc musi byc ta sama, co w zasady.KOLUMNY —

@@ -500,7 +500,7 @@ class Drabinka(unittest.TestCase):
 
 
 class Polowki(unittest.TestCase):
-    """Polowka to jeden znak, bo od niej zalezy szerokosc calej kolumny."""
+    """Polowka pisze sie po przecinku (,5) — tym samym zapisem, co tablica stopni."""
 
     def test_kratka_pisze_sie_najkrocej_jak_sie_da(self):
         pol = tabela_html.POLOWKA
@@ -509,12 +509,11 @@ class Polowki(unittest.TestCase):
         self.assertEqual(tabela_html._kratka_sily(3.5), "3" + pol)
         self.assertEqual(tabela_html._kratka_sily(41.5), "41" + pol)
 
-    def test_polowka_jest_pionowa_i_waska_jak_cyfra(self):
-        """1 nad 2 z kreska — dlatego kolumna moze byc waska na jedna liczbe."""
-        self.assertIn("<span>1</span><span>2</span>", tabela_html.POLOWKA)
-        self.assertIn("border-top", tabela_html.STYL, "kreska ulamka")
-        self.assertIn("span.pol span { display: block", tabela_html.STYL, "cyfry jedna pod druga")
-        self.assertNotIn("½", tabela_html.jako_html(), "ukosnej polowki juz nie ma")
+    def test_polowka_stoi_po_przecinku(self):
+        """Koncowka ,5 we wlasnym spanie o stalej szerokosci trzyma kolumny rowno."""
+        self.assertIn(",5", tabela_html.POLOWKA)
+        self.assertIn("span.dz { display: inline-block", tabela_html.STYL, "stala szerokosc koncowki")
+        self.assertNotIn("½", tabela_html.jako_html(), "ukosnej polowki nie ma")
 
     def test_zadna_roznica_nie_zajmuje_wiecej_niz_trzy_miejsca(self):
         """Na tym stoi szerokosc kratki — dluzsza liczba rozepchnelaby cala siatke."""
@@ -526,8 +525,8 @@ class Polowki(unittest.TestCase):
                 )
                 self.assertLessEqual(najdluzsza, 3)
 
-    def test_przecinek_zniknal_z_tabeli(self):
-        self.assertNotIn(",", tabela_html.jako_html().split("<body>")[1])
+    def test_przecinek_stoi_w_kratkach(self):
+        self.assertIn(',5</span>', tabela_html.jako_html().split("<body>")[1])
 
 
 class BezPierwszegoRuchu(unittest.TestCase):
@@ -572,7 +571,7 @@ class NaStronie(unittest.TestCase):
         """Markup przynosi wlasne klasy; bez regul w style.css tabela sie rozsypie."""
         arkusz = (pathlib.Path(tabela_html.KATALOG_PAKIETU).parents[1] / "style.css")
         tresc = arkusz.read_text(encoding="utf-8")
-        for klasa in ("th.rog", "th.plansza", "span.pol", "col.brzeg"):
+        for klasa in ("th.rog", "th.plansza", "span.dz", "col.brzeg"):
             with self.subTest(klasa=klasa):
                 self.assertIn(klasa, tresc)
 
@@ -602,5 +601,5 @@ class SiatkiNaKarcie(unittest.TestCase):
         import karta_pdf
         for roznica_sily in (0.5, 3.0, 12.5):
             with self.subTest(roznica_sily=roznica_sily):
-                ze_strony = tabela_html._kratka_sily(roznica_sily).replace(tabela_html.POLOWKA, "½")
-                self.assertEqual(karta_pdf._kratka_sily(roznica_sily, "½"), ze_strony)
+                ze_strony = tabela_html._kratka_sily(roznica_sily).replace(tabela_html.POLOWKA, ",5")
+                self.assertEqual(karta_pdf._kratka_sily(roznica_sily, ",5"), ze_strony)

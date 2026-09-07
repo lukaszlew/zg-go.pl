@@ -11,8 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # test_zasady importuje karta_pdf, a ten ciagnie reportlab. Reszta stoi na
-      # bibliotece standardowej i na wbudowanym runnerze Node.
+      # test_zasady importuje karta_pdf, a ten ciagnie reportlab; testy kart
+      # i kadrow wycinkow renderuja PDF-y popplerem (pdftocairo/pdftoppm).
+      # Reszta stoi na bibliotece standardowej i na wbudowanym runnerze Node.
+      - run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends poppler-utils
       - run: pip install --quiet reportlab
       # Przez `make test`, nie wprost — CI ma odpalac dokladnie to samo, co hook
       # i co czlowiek u siebie.

@@ -47,6 +47,8 @@
            zgadzac co do slowa — pilnuje tego tools/test_tablica.py (pre-commit).
            Zmiana zasady: najpierw zasady_tablicy.py, potem tu i `make tablica-pdf`. -->
 
+      <div class="wstep">
+      <div class="wstep-tekst">
       <p>Ranking Semedori przypisuje każdemu graczowi jedną liczbę — jego <span class="sila">siłę</span>, czyli miarę tego, jak dobrze aktualnie gra.
       Ranking wisi w klubie na tablicy: każdy gracz to magnes ze swoim nazwiskiem, a liczba przy nim to jego <span class="sila">siła</span>.
       Używanie rankingu do wszystkich gier klubowych ma dwie zalety:</p>
@@ -67,6 +69,7 @@
            niego czytelnik nie wie, ze pod nimi jest jeszcze pol strony. Dlatego
            tez wymienia sam blok zasad jako pierwsza pozycje: spis oddaje cala
            strone, a nie tylko to, co za zasadami. -->
+      </div>
       <nav class="spis">
         <p class="spis-label">Na tej stronie</p>
         <ul class="links">
@@ -81,6 +84,7 @@
               <li><a href="#rozmiar-planszy">Rozmiar planszy</a></li>
             </ul>
           </li>
+          <li><a href="#tablica">Wdrożenie u siebie</a></li>
           <li><a href="#o-rankingu">O tym rankingu</a>
             <ul>
               <li><a href="#dlaczego">Dlaczego motywuje</a></li>
@@ -92,6 +96,8 @@
           </li>
         </ul>
       </nav>
+      </div>
+
 
       <section id="zasady">
         <h2>Zasady</h2>
@@ -109,7 +115,7 @@
           </a>
           <a class="wycinek-tablicy" href="tablica/ranking_table-660x950mm.pdf">
             <img src="tablica/wycinek-tablica.svg" loading="lazy"
-                 alt="Wycinek tablicy siły: słupki sił 30-39,5 ze strzałkami do sąsiednich pól">
+                 alt="Wycinek tablicy siły: słupki sił 25-34,5 ze strzałkami do sąsiednich pól">
           </a>
         </div>
       </section>
@@ -118,15 +124,15 @@
       <h2>Przykładowa gra</h2>
       <div class="przyklad">
         <p><strong>Przed grą.</strong>
-        Bianka (<span class="sila">siła 39,5</span>) gra z Czarkiem (<span class="sila">siła 30</span>) na 9×9.
+        Bianka (<span class="sila">siła 34,5</span>) gra z Czarkiem (<span class="sila">siła 25</span>) na 9×9.
         Silniejsza Bianka gra Białymi, Czarek zaczyna Czarnymi.
-        <span class="sila">Różnica siły</span>: <span class="sila">39,5 − 30 = 9,5</span>.
+        <span class="sila">Różnica siły</span>: <span class="sila">34,5 − 25 = 9,5</span>.
         Z <a href="#tabele-wyrownania">tabeli 9×9</a>: startowe ruchy: 2 — Czarek zaczyna i zamiast jednego ruchu gra od razu dwa, zanim Bianka odpowie — oraz jeńcy: 0, bo przy tej różnicy całe wyrównanie mieści się w ruchach.</p>
         <p><strong>Po grze.</strong>
         Czarek wygrywa o 21 punktów — to wyraźny wynik, bo na 9×9 próg to 15.
-        Czarek idzie o dwie strzałki w górę: <span class="sila">30 → 32</span>, bo na jego piętrze skali strzałka to cała jedynka.
-        Bianka schodzi o dwie strzałki w dół: <span class="sila">39,5 → 38,5</span>, bo na jej piętrze strzałka to połówka.</p>
-        <p><strong>A gdyby to była pierwsza przegrana Bianki w tym tygodniu</strong> — jej magnes zostałby na <span class="sila">39,5</span>; Czarek i tak idzie o swoje dwie strzałki w górę.</p>
+        Czarek idzie o dwie strzałki w górę: <span class="sila">25 → 27</span>, bo na jego piętrze skali strzałka to cała jedynka.
+        Bianka schodzi o dwie strzałki w dół: <span class="sila">34,5 → 33,5</span>, bo na jej piętrze strzałka to połówka.</p>
+        <p><strong>A gdyby to była pierwsza przegrana Bianki w tym tygodniu</strong> — jej magnes zostałby na <span class="sila">34,5</span>; Czarek i tak idzie o swoje dwie strzałki w górę.</p>
       </div>
       </section>
 
@@ -135,41 +141,39 @@
 
         <section id="wyrownanie">
           <h3>Gra i wyrównanie</h3>
-          <p>Słabszy dostaje od silniejszego wyrównanie — startowe ruchy i dodatkowych jeńców — tak, żeby obie strony miały równe szanse.</p>
 
-          <p class="zasada" id="zasada-1"><strong><span class="sila">Różnica siły</span> to liczba silniejszego minus liczba słabszego; silniejszy gra Białymi.</strong>
-          Liczby stoją na paskach tablicy: <span class="sila">siła</span> gracza to liczba na pasku przy jego magnesie.
+          <p class="zasada" id="zasada-1"><strong>Gracz to magnes ze swoim nickiem i rozmiarem planszy, a liczba przy nim to jego <span class="sila">siła</span> — miara tego, jak dobrze aktualnie gra.</strong></p>
+
+          <p class="zasada" id="zasada-2"><strong><span class="sila">Różnica siły</span> to liczba silniejszego minus liczba słabszego; silniejszy gra Białymi.</strong>
+          Liczby stoją na paskach przy magnesach.
           Kolorów w grze z wyrównaniem się nie losuje.</p>
 
-          <p class="zasada" id="zasada-2"><strong>Tabela wyznacza liczbę ruchów startowych Czarnego i jeńców, których dostaje przed grą od Białego.</strong>
-          Kratka z waszą różnicą stoi w wierszu, który mówi, iloma ruchami zaczyna Czarny, i w kolumnie, która mówi, ilu dostaje dodatkowych jeńców.
-          Każda plansza ma własną tabelę, bo <span class="sila">różnica 1</span> jest na niej warta inaczej: 2 punkty na 9×9, 5 na 13×13, 13 na 19×19.
-          Jeńcy leżą obok planszy do końca gry i nikt ich po drodze nie rusza — wchodzą dopiero do liczenia, po punkcie za sztukę.</p>
+          <p class="zasada" id="zasada-3"><strong>Tabela wyznacza liczbę ruchów startowych Czarnego i jeńców, których dostaje przed grą od Białego.</strong>
+          Kratka z waszą różnicą: wiersz to ruchy, kolumna to jeńcy.
+          Jeńcy leżą obok planszy do końca gry i wchodzą dopiero do liczenia, po punkcie za sztukę.
+          Każda plansza ma własną tabelę.
+          Za ostatnim wierszem tabela się przedłuża: kolejny dodatkowy ruch Czarnego przybywa co <span class="sila">6,5</span> różnicy na 9×9, co <span class="sila">2,5</span> na 13×13 i co <span class="sila">1</span> na 19×19.</p>
 
-          <p class="zasada-cd">Poza ostatnim wierszem tabela się nie kończy, tylko przedłuża: odejmujcie tyle, ile dzieli w niej sąsiednie wiersze — <span class="sila">6,5</span> na 9×9, <span class="sila">2,5</span> na 13×13, <span class="sila">1</span> na 19×19 — aż wynik w niej wyląduje; potem doczytajcie ruchy i jeńców, a do ruchów dodajcie tyle, ile razy odejmowaliście.
-          To ta sama arytmetyka, co w tabeli: każdy następny wiersz daje Czarnemu jeden ruch więcej.</p>
-
-          <p class="zasada" id="zasada-3"><strong>Jeżeli różnicy nie ma w tabeli, losujemy kolory nigiri i zaczyna Czarny; Biały dostaje od razu 6 jeńców i wygrywa remisy (tak jakby 6,5).</strong>
-          Różnicy nie ma w tabeli, kiedy jest mniejsza niż jej pierwsza kratka — nie ma jeszcze czego dawać i gra jest równa.
-          Nigiri: jeden gracz bierze w dłoń garść białych kamieni, drugi kładzie jeden czarny (zgaduje: nieparzysta) albo dwa czarne (parzysta); jeśli zgadł, gra Czarnymi.
-          Sześć jeńców to cena pierwszego ruchu Czarnego — znajome komi; połówki nie ma czym odłożyć, więc rozstrzyga sam remis.</p>
+          <p class="zasada" id="zasada-4"><strong>Jeśli różnica jest mniejsza niż najmniejsza w tabeli, losujemy kolory nigiri i zaczyna Czarny; Biały dostaje od razu 6 jeńców i wygrywa remisy (tak jakby 6,5).</strong>
+          Nigiri: jeden bierze garść białych kamieni, drugi kładzie jeden czarny (zgaduje: nieparzysta) albo dwa (parzysta); trafiony gra Czarnymi.
+          6 jeńców plus remisy dla Białego to znajome komi 6,5 — połówki nie ma czym odłożyć.</p>
         </section>
 
         <section id="magnes">
           <h3>Magnes</h3>
-          <p>Po grze każdy przesuwa swój magnes sam — od razu, przy tablicy.</p>
 
-          <p class="zasada" id="zasada-4"><strong>Wygrana to strzałka w górę (lub w prawo), przegrana — strzałka w dół (lub w lewo), remis — bez zmiany.</strong>
-          Strzałki stoją na każdym polu i prowadzą do sąsiadów na skali — wystarczy iść za grotem; zygzak znaczy, że sąsiad wisi w innym słupku, a barwa strzałki zapowiada barwę celu.
-          Ile strzałka jest warta, widać na samej tablicy — po liczbach sąsiednich pól: skala gęstnieje ku górze, od dwójek u początkujących, przez jedynki i połówki, po ćwiartki przy danach — jak w oficjalnych stopniach; <span class="sila">siła</span> zostaje jednostką rachunku — różnicy i wyrównania.
-          Remis trafia się tylko w grze z wyrównaniem, bo w grze równej wyklucza go <a href="#zasada-3">połówka komi</a>.</p>
+          <p class="zasada" id="zasada-5"><strong>Wygrana to strzałka w górę (lub w prawo), przegrana — strzałka w dół (lub w lewo), remis — bez zmiany.</strong>
+          Strzałki na każdym polu prowadzą do sąsiadów na skali; zygzak znaczy, że sąsiad wisi w innym słupku, a barwa strzałki to barwa celu.
+          Remis trafia się tylko w grze z wyrównaniem — w równej wyklucza go <a href="#zasada-4">połówka komi</a>.
+          Zero nie ma strzałki w dół — poniżej zera się nie spada.</p>
 
-          <p class="zasada" id="zasada-5"><strong>Wyraźny wynik to poddanie albo dużo punktów: 15 na 9×9, 30 na 13×13, 60 na 19×19.</strong>
-          Próg rośnie z planszą, bo punkt na większej planszy jest tańszy: wygrana o tyle to przewaga, której nie tłumaczy już ani szczęśliwa końcówka, ani niedoszacowane wyrównanie.
-          Poddanie liczy się tak samo, bo kto się poddaje, ten zwykle przegrywa wyraźnie.</p>
+          <p class="zasada" id="zasada-6"><strong>Wyraźny wynik to poddanie albo dużo punktów: 15 na 9×9, 30 na 13×13, 60 na 19×19.</strong>
+          Wygrana dokładnie o próg już jest wyraźna.
+          Progi rosną z planszą, bo punkt na większej planszy jest tańszy.</p>
 
-          <p class="zasada" id="zasada-6"><strong>Wyraźna wygrana/przegrana to 2 strzałki w górę/dół.</strong>
-          Symetrycznie w obie strony: wyraźny wynik znaczy, że <span class="sila">różnica siły</span> była sporo za mała, więc obaj gracze poprawiają ją podwójnym krokiem.</p>
+          <p class="zasada" id="zasada-7"><strong>Wyraźna wygrana/przegrana to 2 strzałki w górę/dół.</strong>
+          W obie strony symetrycznie — <span class="sila">różnica siły</span> była sporo za mała, więc poprawiają ją oboje.
+          Dwie strzałki, nie dwa punkty <span class="sila">siły</span>.</p>
 
           <table class="sila typy">
             <tr><th>Wynik gry</th><th>Magnes</th></tr>
@@ -180,56 +184,67 @@
             <tr><td>wyraźna przegrana</td><td>dwie strzałki w dół</td></tr>
           </table>
 
-          <p class="zasada" id="zasada-7"><strong>Pierwsza przegrana w tygodniu nie zsuwa magnesu.</strong>
-          Odwaga nic nie kosztuje: pierwszą grę tygodnia można zagrać z każdym, bo najgorsze, co się może stać, to magnes, który stoi w miejscu.
-          Nikt tego nie zapisuje — wystarczy pamięć jednego tygodnia i zaufanie.</p>
+          <p class="zasada" id="zasada-8"><strong>Pierwsza przegrana w tygodniu nie zsuwa magnesu.</strong>
+          Także wyraźna; zwycięzca dostaje swoje jak zwykle.
+          Liczy się tydzień, nie wieczór; nikt tego nie zapisuje — wystarczy pamięć i zaufanie.
+          Liczą się tylko przegrane, które ruszałyby magnes: przegrana silniejszego w <a href="#zasada-9">grze szkoleniowej</a> nie zużywa darmowej pierwszej.</p>
 
-          <p class="zasada" id="zasada-8"><strong>Gra szkoleniowa — od 4 ruchów startowych na 9×9, 6 na 13×13, 8 na 19×19 — silniejszy nie przesuwa w niej magnesu.</strong>
-          Przy tak dużym wyrównaniu gra mówi więcej o nauce niż o sile: silniejszy uczy, a nie zbiera.
-          Próg widać wprost w tabeli wyrównania — liczą się ruchy startowe z waszego wiersza, nie sama <span class="sila">różnica siły</span>.
-          To samo rozwiązanie stosuje <a href="https://senseis.xmp.net/?Winchester" target="_blank" rel="noopener">drabinka klubu Winchester</a>: różnica ponad 9 kamieni nie rusza tam silniejszego.</p>
+          <p class="zasada" id="zasada-9"><strong>Gra szkoleniowa — od 4 ruchów startowych na 9×9, 6 na 13×13, 8 na 19×19 — silniejszy nie przesuwa w niej magnesu.</strong>
+          Próg czytacie z tabeli wyrównania: liczą się ruchy startowe z waszego wiersza, nie sama <span class="sila">różnica siły</span>.
+          Słabszy przesuwa magnes jak zwykle.</p>
         </section>
 
         <section id="gosc">
           <h3>Gość</h3>
-          <p>Nowy w klubie nie potrzebuje niczego poza magnesem ze swoim nazwiskiem.</p>
 
-          <p class="zasada" id="zasada-9"><strong>Gość wiesza magnes na zerze.</strong>
-          Zero to dół tablicy: nic nie trzeba zgadywać, o nic pytać, a każda wygrana od pierwszego wieczoru przesuwa magnes w górę.
-          Kto zna swój poziom w kyu albo dan, nie musi się wspinać od dna — silny klubowicz może go od razu przewiesić <a href="#korekta">szybką korektą</a> na pole z przelicznika: jeden stopień to <span class="sila">1</span>, <span class="sila">0</span> wypada na 50 kyu, 1 dan na <span class="sila">50</span>, a w górę skala nie ma końca.</p>
+          <p class="zasada" id="zasada-10"><strong>Gość wiesza magnes na zerze.</strong>
+          Zero to dół tablicy — nic nie trzeba zgadywać, a pierwsze wygrane szybko niosą w górę.</p>
+
+          <p class="zasada" id="zasada-11"><strong>Gość znający swoje kyu/dan może powiesić magnes z przelicznika — 5 strzałek niżej.</strong>
+          Przelicznik wisi na tablicy (i w tabelce niżej): stopień to <span class="sila">1</span> <span class="sila">siły</span>, <span class="sila">0</span> wypada na 50 kyu, 1 dan na <span class="sila">50</span>.
+          Pięć strzałek zapasu, bo deklaracje bywają optymistyczne, a wspinać się przyjemniej, niż zsuwać; grubszy błąd prostuje <a href="#korekta">szybka korekta</a>.</p>
 
           <table class="sila poziomy zasada-cd">
             <tr><th>Poziom</th><td>50 kyu</td><td>40 kyu</td><td>30 kyu</td><td>20 kyu</td><td>10 kyu</td><td>1 dan</td></tr>
             <tr><th>Siła</th><td>0</td><td>10</td><td>20</td><td>30</td><td>40</td><td>50</td></tr>
           </table>
 
-          <p class="zasada" id="zasada-10"><strong>Po grze gościa z klubowiczem magnes przesuwa tylko gość.</strong>
-          Pole gościa jeszcze nic nie mówi, więc i gra z nim nic nie mówi o klubowiczu: wyrównanie liczyło się z liczby, która dopiero się ustala.
-          Dwóch gości gra zwyczajnie — obaj są gośćmi, więc obaj przesuwają.</p>
+          <p class="zasada" id="zasada-12"><strong>Po grze gościa z klubowiczem magnes przesuwa tylko gość.</strong>
+          Pole gościa jeszcze nic nie mówi, więc taka gra nic nie mówi o klubowiczu.
+          Dwóch gości gra zwyczajnie — obaj przesuwają.</p>
 
-          <p class="zasada" id="zasada-11"><strong>Po 2-3 przegranych gość zostaje klubowiczem.</strong>
-          Dopóki gość tylko wygrywa, jego liczba jest wciąż za niska i wspinaczka trwa; pierwsze przegrane znaczą, że doszedł tam, gdzie naprawdę stoi.
-          Dlatego 2-3, nie jedna — pojedyncza przegrana zdarza się i w połowie drogi.</p>
+          <p class="zasada" id="zasada-13"><strong>Po 2-3 przegranych gość zostaje klubowiczem.</strong>
+          Przegrane znaczą, że doszedł tam, gdzie naprawdę stoi; jedna to za mało, bo zdarza się i w połowie drogi.
+          Przegrane w grze dwóch gości liczą się tak samo.</p>
         </section>
 
         <section id="korekta">
           <h3>Szybka korekta</h3>
-          <p>Ranking nadąża za graczem po jednej grze na raz, a to czasem za wolno — bywa, że magnes wisi na <span class="sila">sile</span>, która już nic o graczu nie mówi.</p>
 
-          <p class="zasada" id="zasada-12"><strong>Silny klubowicz może przewiesić każdy magnes na pole prawdziwej <span class="sila">siły</span> gracza — to szybka korekta.</strong>
-          To jedyny ruch magnesu, który bierze się z decyzji, a nie z gry — dlatego nie robi go sam zainteresowany.
-          Poprosić może każdy i w każdej chwili: po serii wygranych, po serii porażek, po dłuższej przerwie — zwykle kończy się to szybkim awansem w górę, rzadziej cofnięciem w dół.
-          Od szybkiej korekty zaczyna też <a href="#gosc">gość</a>, który zna swój stopień kyu.</p>
+          <p class="zasada" id="zasada-14"><strong>Silny klubowicz może wspólnie z właścicielem przewiesić magnes na pole jego prawdziwej <span class="sila">siły</span> — to szybka korekta.</strong>
+          Poprosić może każdy; typowe okazje: seria wygranych, seria porażek, powrót po dłuższej przerwie.</p>
         </section>
 
         <section id="rozmiar-planszy">
           <h3>Rozmiar planszy</h3>
-          <p><span class="sila">Siła</span> jest jedna, wspólna dla wszystkich plansz — gry na 9×9, 13×13 i 19×19 przesuwają ten sam magnes.
-          Planszy nie widać na tablicy; widać ją w dwóch miejscach rachunku: w tabeli wyrównania i w progu wyraźnego wyniku, bo <span class="sila">różnica 1</span> jest warta 2 punkty na 9×9, 5 na 13×13 i 13 na 19×19.</p>
-          <p>Jedna wspólna liczba jest uproszczeniem: mała plansza nagradza co innego niż duża i kolejność graczy potrafi się między rozmiarami przestawić.
-          W klubie to uproszczenie wystarcza — a komu magnes odjechał od poziomu na ulubionej planszy, tego prostuje <a href="#korekta">szybka korekta</a>.</p>
+          <p>Magnes pokazuje <span class="sila">siłę</span> na rozmiarze, na którym gracz gra regularnie — w klubie to głównie 13×13.
+          W okazjonalnej grze na innym rozmiarze wyrównanie liczycie z <span class="sila">siły</span> magnesu jako przybliżenia, ale magnesu po tej grze nie ruszacie.
+          Kto regularnie gra na dwóch rozmiarach, wiesza dwa magnesy — z dopiskiem rozmiaru na etykiecie.
+          Plansza decyduje też o tabeli wyrównania i o progach: wyraźnego wyniku i gry szkoleniowej.</p>
         </section>
 
+      </section>
+
+      <section id="tablica">
+        <h2>Wdrożenie u siebie</h2>
+        <p class="karta-link"><a href="tablica/ranking_table-660x950mm.pdf">Tablica siły (PDF)</a> — słupki <span class="sila">siły</span> z tabelami wyrównania i zasadami, do wydruku na tablicę magnetyczną (660 × 950 mm).</p>
+        <p>Montaż: wydruk najlepiej na folii — może być samoprzylepna — i na tablicę magnetyczną, przyklejony albo przytrzymany magnesami.
+        Gracze to <a href="https://www.amazon.pl/dp/B0H1HCM5BC" target="_blank" rel="noopener">etykiety magnetyczne 50 × 25 mm</a> z nickiem napisanym permanentnym markerem; etykieta wisi na polu aktualnej <span class="sila">siły</span> gracza.
+        Część pól jest podwójna — mieści dwie etykiety.
+        Komu potrzebna większa tablica, niech poprosi na <a href="/#miedzy-spotkaniami">Discordzie</a>.</p>
+        <p>W nagłówku wydruk ma naszą nazwę, ale to jedyne, co jest w nim lokalne: odezwijcie się na <a href="/#miedzy-spotkaniami">naszym Discordzie</a>, a przygotujemy tę samą tablicę z nagłówkiem waszego klubu.
+        Tam też odpowiemy na pytania — a jak wdrożycie, koniecznie dajcie znać.</p>
+        <p class="karta-link"><a href="ranking-karta">Ranking na kartach gracza</a> — archiwalna strona rankingu prowadzonego na papierowych kartach, z kalibracją i typami gry.</p>
       </section>
 
       <section id="o-rankingu">
@@ -255,7 +270,7 @@
         W klubie, w którym przy jednym stoliku siada 20 kyu z 2 danem, to jest warunek tego, żeby obaj chcieli przyjść znowu.</p>
         <p><strong>Przegrana niesie informację, a nie wstyd.</strong>
         Przy wyrównaniu „przegrałem o 3” znaczy „byłem blisko” — to konkretny feedback, a nie zero-jedynkowa porażka.
-        A ponieważ jedna gra to strzałka albo dwie — a <a href="#zasada-7">pierwsza przegrana tygodnia</a> nawet zero — zły dzień nic nie kosztuje: nie ma czego bronić i nie ma powodu unikać silniejszych.</p>
+        A ponieważ jedna gra to strzałka albo dwie — a <a href="#zasada-8">pierwsza przegrana tygodnia</a> nawet zero — zły dzień nic nie kosztuje: nie ma czego bronić i nie ma powodu unikać silniejszych.</p>
         <p><strong>Do gry równej wchodzi się wcześniej, niż się rywala naprawdę dogoni.</strong>
         Wystarczy zbliżyć się na mniej niż komi — na 9×9 poniżej różnicy <span class="sila">3</span>, na większych planszach jeszcze bliżej.
         Ten próg jest widocznym kamieniem milowym: rywal, którego słabszy gracz od miesięcy próbuje złapać, siada z nim wreszcie do gry bez wyrównania.
@@ -315,12 +330,12 @@
         <h3 id="wady">Wady i ograniczenia</h3>
         <p><strong>Gość wspina się od zera, a zero bywa daleko.</strong>
         Dorosły, który umie już grać, potrzebowałby tygodni, żeby po strzałce na grę dojść do swojego poziomu — i po drodze wygrywałby gry, które nikomu nic nie dają.
-        Dlatego obok wspinaczki stoi skrót: <a href="#korekta">szybka korekta</a> na pole z przelicznika kyu, od pierwszego wieczoru.
+        Dlatego obok wspinaczki stoi skrót: <a href="#zasada-11">wejście z przelicznika kyu</a>, 5 strzałek niżej, od pierwszego wieczoru.
         Zupełnie początkujący skrótu nie potrzebuje — jego poziom naprawdę jest blisko zera i pierwsze wygrane niosą go szczerze.</p>
         <p id="inflacja"><strong>Siła w klubie powoli rośnie.</strong>
         To po części cena tego, że <a href="#dlaczego-tak">siłę da się zbierać</a>.
-        Darmowa <a href="#zasada-7">pierwsza przegrana tygodnia</a> dokłada klubowi po strzałce za każdy tydzień z choć jedną przegraną: zwycięzca idzie w górę, a przegrany nie schodzi.
-        Gry jednostronne — <a href="#zasada-8">szkoleniowe</a> i <a href="#gosc">z gościem</a> — przesuwają tylko jedną stronę, więc też nie bilansują się do zera.
+        Darmowa <a href="#zasada-8">pierwsza przegrana tygodnia</a> dokłada klubowi po strzałce za każdy tydzień z choć jedną przegraną: zwycięzca idzie w górę, a przegrany nie schodzi.
+        Gry jednostronne — <a href="#zasada-9">szkoleniowe</a> i <a href="#gosc">z gościem</a> — przesuwają tylko jedną stronę, więc też nie bilansują się do zera.
         Wewnątrz jednego wieczoru nic to nie psuje, bo wyrównanie bierze się z różnicy dwóch liczb z tej samej tablicy — ale liczby z różnych lat przestają znaczyć to samo, a kto gra rzadko, ten z czasem zostaje pod rozdmuchaną resztą i dostaje większe wyrównanie, niż powinien.
         Staramy się trzymać naszą skalę przy oficjalnych stopniach — od tego jest przelicznik na tablicy — ale nie liczymy, że dryfu nie będzie.
         Lekarstwo jest proste: co jakiś czas przewiesić wszystkim magnesy o <span class="sila">5</span> albo <span class="sila">10</span> w dół. Istotne są wyłącznie różnice, a te zostają bez zmian — nie rusza się przez to ani jedno wyrównanie.
@@ -336,17 +351,9 @@
         Wygląda dobrze, ale jest na tyle świeży, że nie chcemy go tu opisywać połowicznie — opisany w pół drogi zostałby zastosowany w pół drogi.
         Stanie na tej stronie, kiedy go u siebie sprawdzimy; kto planuje grać z innym klubem wcześniej, niech zaczepi nas na <a href="/#miedzy-spotkaniami">Discordzie</a>.</p>
 
-        <p><strong>Wdrażajcie u siebie — <a href="tablica/ranking_table-660x950mm.pdf">tablica do druku</a> jest gotowa.</strong>
-        W nagłówku ma naszą nazwę, ale to jedyne, co jest w niej lokalne: odezwijcie się na <a href="/#miedzy-spotkaniami">naszym Discordzie</a>, a przygotujemy tę samą tablicę z nagłówkiem waszego klubu.
-        Tam też odpowiemy na pytania — a jak wdrożycie, koniecznie dajcie znać.</p>
-
         <h3 id="zmiany">Zmiany</h3>
         <p>Zasady zmieniają się rzadko, ale kiedy się zmieniają, zostaje po tym ślad — żeby dało się sprawdzić, czym różni się dzisiejsza tablica od tej sprzed roku.</p>
-        <p class="karta-link"><a href="zmiany">Zmiany w rankingu — ostatnia 6 września</a></p>
-
-        <h3 id="tablica">Tablica</h3>
-        <p class="karta-link"><a href="tablica/ranking_table-660x950mm.pdf">Tablica siły (PDF)</a> — słupki <span class="sila">siły</span> z tabelami wyrównania i zasadami, do wydruku na tablicę magnetyczną (660 × 950 mm); każdy gracz wisi na niej na magnesie ze swoim nazwiskiem, przy swojej <span class="sila">sile</span>.</p>
-        <p class="karta-link"><a href="ranking-karta">Ranking na kartach gracza</a> — archiwalna strona rankingu prowadzonego na papierowych kartach, z kalibracją i typami gry.</p>
+        <p class="karta-link"><a href="zmiany">Zmiany w rankingu — ostatnia 7 września</a></p>
       </section>
 
     </main>

@@ -130,7 +130,7 @@ def _cwiartki(okragle: list[float], przesuniecia: tuple[float, ...]) -> list[lis
 
 
 PELNA = (0.75, 0.5, 0.25, 0.0)          # cztery wiersze cwiartek
-BEZ_CWIARTKI = (0.75, 0.5, 0.0)         # sekcja 40-44: bez wiersza ,25
+BEZ_CWIARTKI = (0.75, 0.5, 0.0)         # sekcje 40-44 i 45-49: bez wiersza ,25
 
 
 # Sekcje wierszy wartosci (kyu; na paskach stoi sila = 50 - kyu): piatka stopni
@@ -138,10 +138,10 @@ BEZ_CWIARTKI = (0.75, 0.5, 0.0)         # sekcja 40-44: bez wiersza ,25
 # (wiersze, czy pola podwojne). Skala konczy sie na 54,75 sily.
 GRUPY: list[tuple[list[list[float]], bool]] = [
     (_cwiartki([0.0, -1.0, -2.0, -3.0, -4.0], PELNA), False),
-    (_cwiartki([5.0, 4.0, 3.0, 2.0, 1.0], PELNA), False),
+    (_cwiartki([5.0, 4.0, 3.0, 2.0, 1.0], BEZ_CWIARTKI), False),
     (_cwiartki([10.0, 9.0, 8.0, 7.0, 6.0], BEZ_CWIARTKI), False),
     ([[14.5, 13.5, 12.5, 11.5, 10.5], [15.0, 14.0, 13.0, 12.0, 11.0]], False),
-    ([[20.0, 19.0, 18.0, 17.0, 16.0]], True),
+    ([[19.5, 18.5, 17.5, 16.5, 15.5], [20.0, 19.0, 18.0, 17.0, 16.0]], False),
     ([[25.0, 24.0, 23.0, 22.0, 21.0]], True),
     ([[30.0, 29.0, 28.0, 27.0, 26.0]], True),
     # Skala poczatkujacych: dwa osobne wiersze co 2, w dol az do zera.
@@ -165,6 +165,8 @@ PAGE_W = 660 * mm
 PAGE_H = 950 * mm
 MARGINES = 9 * mm                       # baza; reszte doklada margines_gorny()
 ODSTEP_GRUP = 7 * mm
+ODSTEP_PARY = 3 * mm                    # zwarta przerwa wewnatrz pary sekcji o wspolnej barwie
+PARA_Z_POPRZEDNIA = (6, 8)              # 20-24 sklejone z 25-29, pas 0-8 z pasem 10-18
 SEKCJA = 8 * mm
 NAGLOWEK_H = 50 * mm                    # jeden pas: logo, nazwa, podtytul, adres
 LOGO = 38 * mm
@@ -295,7 +297,9 @@ def _top_przedluzony(h_od: float, h_do: float) -> Color:
 # recznie — szersze przeskoki w zieleniach i miedzy turkusem a fioletem,
 # ciasniejsze na cieplym poczatku; koniec dochodzi do granicy fioletu (300),
 # bo dalej zaczyna sie roz, ktorego na skali nie chcemy.
-ODCIENIE = (30, 58, 92, 135, 172, 202, 234, 267, 300)
+# Pary sekcji dziela odcien: 25-29 z 20-24 i oba pasy poczatkujacych —
+# na tablicy tworza wspolne, zwarte bloki skali.
+ODCIENIE = (30, 58, 92, 135, 172, 218, 218, 284, 284)
 
 PALETY: list[tuple[str, list[Color]]] = [
     ("luk ciagly, kroki wyrownane optycznie",
@@ -313,6 +317,11 @@ SZCZELINA = 1 * mm                      # przerwa miedzy osobnymi kaflami slupka
 def wysokosc_slupka(segmentow: int, wys_segmentu: float) -> float:
     """Wysokosc slupka: osobne kafle plus szczeliny miedzy nimi."""
     return segmentow * wys_segmentu + (segmentow - 1) * SZCZELINA
+
+
+def odstep_przed(nr: int) -> float:
+    """Przerwa nad sekcja nr: zwykla, chyba ze sekcja tworzy pare z poprzednia."""
+    return ODSTEP_PARY if nr in PARA_Z_POPRZEDNIA else ODSTEP_GRUP
 
 
 def rysuj_strzalke(c: Canvas, x: float, dol: float, wys_seg: float,
@@ -667,13 +676,14 @@ def margines_gorny() -> float:
     """
     sekcje = sekcje_tablicy()
     pola = sum(wysokosc_slupka(len(grupa), wys) for grupa, wys in sekcje)
+    odstepy = sum(odstep_przed(nr) for nr in range(1, len(sekcje)))
     assert max(wys * WYR_SKALA for _, wys in map(wymiary_siatki, PLANSZE)) <= DOLNY_PAS_H, \
         "tabela wyrownania wyzsza niz dolny pas"
-    siatka_h = pola + (len(sekcje) - 1) * ODSTEP_GRUP
+    siatka_h = pola + odstepy
     reszta = (PAGE_H - 2 * MARGINES
               - (NAGLOWEK_H + SEKCJA + siatka_h + SEKCJA + DOLNY_PAS_H))
     assert reszta >= 0, f"tresc wyzsza niz strona o {-reszta / mm:.0f} mm"
-    return MARGINES + reszta / 3
+    return 0.54 * (MARGINES + reszta / 3)
 
 
 def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
@@ -687,7 +697,7 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
     y = page_h - margines_gorny() - NAGLOWEK_H - SEKCJA
     for nr, (grupa, wys_segmentu) in enumerate(sekcje):
         barwa = kolory[nr]
-        y -= (ODSTEP_GRUP if nr > 0 else 0) + wysokosc_slupka(len(grupa), wys_segmentu)
+        y -= (odstep_przed(nr) if nr > 0 else 0) + wysokosc_slupka(len(grupa), wys_segmentu)
         for kolumna in range(KOLUMNY):
             segmenty = []
             for wiersz in grupa:
@@ -735,7 +745,7 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
         c.drawString(MARGINES_BOK, 4 * mm, podpis)
 
 
-WERSJA = "07.09.2026d"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
+WERSJA = "07.09.2026m"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
 ZAMEK = Path(__file__).resolve().parent / "tablica.lock"
 
 

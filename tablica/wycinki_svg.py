@@ -49,9 +49,10 @@ def kadry() -> dict[str, tuple[float, float, float, float]]:
         return (x0, t.PAGE_H - y_gora, x1 - x0, y_gora - y_dol)
 
     return {
-        # slupki srodka skali: pietro jedynek i polowek, sasiedzi widoczni czesciowo
+        # slupki srodka skali: pietro polowek (30-34) i jedynek (25-29),
+        # sasiedzi widoczni czesciowo — tu mieszka przykladowa gra ze strony
         "tablica": kadr(t.MARGINES_BOK - 3 * mm, t.PAGE_W - t.MARGINES_BOK + 3 * mm,
-                        granice[3][0] + 14 * mm, granice[4][1] - 14 * mm),
+                        granice[4][0] + 14 * mm, granice[5][1] - 14 * mm),
         "zasady": kadr(margines_pasa - 6 * mm, koniec_kolumn + 5 * mm,
                        gora_dolu + 5 * mm, gora_dolu - wys_kolumny - 4 * mm),
         "tabele": kadr(start_tabel - 2 * mm, t.PAGE_W - margines_pasa + 3 * mm,

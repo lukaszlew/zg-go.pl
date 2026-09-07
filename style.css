@@ -712,3 +712,9 @@ table.kalk-karta ::placeholder { color: var(--muted); opacity: 1; }
   overflow: hidden;
 }
 .wycinek-tablicy img { display: block; width: 100%; height: auto; }
+
+/* Na szerokim ekranie wstep artykulu idzie w dwoch kolumnach:
+   tekst po lewej, spis tresci po prawej. */
+@media (min-width: 880px) {
+  .wstep { display: grid; grid-template-columns: 1fr 15rem; gap: 0 2rem; align-items: start; }
+}

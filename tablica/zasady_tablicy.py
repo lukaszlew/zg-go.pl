@@ -25,18 +25,20 @@ NAGLOWKI: dict[str, str] = {
 
 # (kolumna, zdanie, najwyzsza dozwolona liczba linii na wydruku)
 ZASADY: list[tuple[str, str, int]] = [
+    ("gra", "Gracz to magnes ze swoim nickiem i rozmiarem planszy, a liczba przy nim to jego siła — miara tego, jak dobrze aktualnie gra.", 3),
     ("gra", "Różnica siły to liczba silniejszego minus liczba słabszego; silniejszy gra Białymi.", 2),
     ("gra", "Tabela wyznacza liczbę ruchów startowych Czarnego i jeńców, których dostaje przed grą od Białego.", 2),
-    ("gra", "Jeżeli różnicy nie ma w tabeli, losujemy kolory nigiri i zaczyna Czarny; Biały dostaje od razu 6 jeńców i wygrywa remisy (tak jakby 6,5).", 3),
+    ("gra", "Jeśli różnica jest mniejsza niż najmniejsza w tabeli, losujemy kolory nigiri i zaczyna Czarny; Biały dostaje od razu 6 jeńców i wygrywa remisy (tak jakby 6,5).", 3),
     ("magnes", "Wygrana to strzałka w górę (lub w prawo), przegrana — strzałka w dół (lub w lewo), remis — bez zmiany.", 2),
     ("magnes", "Wyraźny wynik to poddanie albo dużo punktów: 15 na 9×9, 30 na 13×13, 60 na 19×19.", 2),
     ("magnes", "Wyraźna wygrana/przegrana to 2 strzałki w górę/dół.", 1),
     ("magnes", "Pierwsza przegrana w tygodniu nie zsuwa magnesu.", 1),
     ("magnes", "Gra szkoleniowa — od 4 ruchów startowych na 9×9, 6 na 13×13, 8 na 19×19 — silniejszy nie przesuwa w niej magnesu.", 2),
     ("gosc", "Gość wiesza magnes na zerze.", 1),
+    ("gosc", "Gość znający swoje kyu/dan może powiesić magnes z przelicznika — 5 strzałek niżej.", 2),
     ("gosc", "Po grze gościa z klubowiczem magnes przesuwa tylko gość.", 2),
     ("gosc", "Po 2-3 przegranych gość zostaje klubowiczem.", 1),
-    ("gosc", "Silny klubowicz może przewiesić każdy magnes na pole prawdziwej siły gracza — to szybka korekta.", 3),
+    ("gosc", "Silny klubowicz może wspólnie z właścicielem przewiesić magnes na pole jego prawdziwej siły — to szybka korekta.", 3),
 ]
 
 assert [k for k, _, _ in ZASADY] == sorted(

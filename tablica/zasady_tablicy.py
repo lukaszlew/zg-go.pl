@@ -20,7 +20,7 @@ KOLUMNY: tuple[str, ...] = ("gra", "magnes", "gosc")
 NAGLOWKI: dict[str, str] = {
     "gra": "GRA",
     "magnes": "MAGNES (własny, zaraz po grze)",
-    "gosc": "GOŚĆ",
+    "gosc": "GOŚĆ (nowy gracz)",
 }
 
 # (kolumna, zdanie, najwyzsza dozwolona liczba linii na wydruku)
@@ -37,7 +37,7 @@ ZASADY: list[tuple[str, str, int]] = [
     ("gosc", "Gość wiesza magnes na zerze.", 1),
     ("gosc", "Gość znający swoje kyu/dan może powiesić magnes z przelicznika — 5 strzałek niżej.", 2),
     ("gosc", "Po grze gościa z klubowiczem magnes przesuwa tylko gość.", 2),
-    ("gosc", "Po 2-3 przegranych gość zostaje klubowiczem.", 1),
+    ("gosc", "Po 2-3 przegranych i 2-3 wygranych gość zostaje klubowiczem.", 2),
     ("gosc", "Silny klubowicz może wspólnie z właścicielem przewiesić magnes na pole jego prawdziwej siły — to szybka korekta.", 3),
 ]
 

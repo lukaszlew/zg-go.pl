@@ -761,7 +761,7 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
         c.drawString(MARGINES_BOK, 4 * mm, podpis)
 
 
-WERSJA = "07.09.2026n"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
+WERSJA = "07.09.2026o"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
 ZAMEK = Path(__file__).resolve().parent / "tablica.lock"
 
 

@@ -24,7 +24,11 @@ karta-klub-przyklad.pdf: tools/karta_klub.py tools/karta_pdf.py tools/zasady.py 
 
 WYCINKI = tablica/wycinek-zasady.svg tablica/wycinek-tabele.svg tablica/wycinek-tablica.svg
 
-tablica-pdf: tablica/ranking_table-660x950mm.pdf tablica/tablica.svg $(WYCINKI) wersje  ## przegeneruj tablice siły
+tablica-pdf: tablica/ranking_table-660x950mm.pdf tablica/tablica.svg $(WYCINKI) og-tablica.png wersje  ## przegeneruj tablice siły
+
+# obrazek podgladu linku (og:image) dla strony ranking, ze srodka tablicy
+og-tablica.png: tablica/ranking_table-660x950mm.pdf tools/og_tablica.py
+	python3 tools/og_tablica.py
 
 # podglad tablicy na stronie ranking: ten sam wydruk jako SVG (glify ida w sciezki)
 tablica/tablica.svg: tablica/ranking_table-660x950mm.pdf

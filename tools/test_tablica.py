@@ -157,5 +157,26 @@ class TestKadryWycinkow(unittest.TestCase):
                 self.assertTrue(farba(0, szer, 1, pas), f"{nazwa}: kadr bez tresci pod gora")
 
 
+class TestObrazekPodgladu(unittest.TestCase):
+    def test_og_tablica_jest_swiezy(self) -> None:
+        """og-tablica.png (podglad linku) powstaje z biezacej tablicy.
+
+        Regeneracja do pliku tymczasowego musi byc bajt w bajt rowna plikowi
+        w repo — caly potok (poppler, skala, zapis PNG) jest deterministyczny,
+        wiec roznica znaczy, ze ktos zmienil tablice bez `make`."""
+        import tempfile
+        from pathlib import Path
+
+        import og_tablica
+
+        w_repo = KORZEN / "og-tablica.png"
+        self.assertTrue(w_repo.is_file(), "brak og-tablica.png — uruchom `make`")
+        with tempfile.TemporaryDirectory() as katalog:
+            swiezy = Path(katalog) / "og.png"
+            og_tablica.generuj(swiezy)
+            self.assertEqual(swiezy.read_bytes(), w_repo.read_bytes(),
+                             "og-tablica.png nieswiezy — uruchom `make`")
+
+
 if __name__ == "__main__":
     unittest.main()

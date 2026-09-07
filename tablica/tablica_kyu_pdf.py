@@ -165,8 +165,11 @@ PAGE_W = 660 * mm
 PAGE_H = 950 * mm
 MARGINES = 9 * mm                       # baza; reszte doklada margines_gorny()
 ODSTEP_GRUP = 7 * mm
-ODSTEP_PARY = 3 * mm                    # zwarta przerwa wewnatrz pary sekcji o wspolnej barwie
-PARA_Z_POPRZEDNIA = (6, 8)              # 20-24 sklejone z 25-29, pas 0-8 z pasem 10-18
+ODSTEP_PARY = 3 * mm                    # zwarta przerwa miedzy sklejonymi sekcjami
+# Sekcje sklejone z poprzednia: caly gorny pas skali (dany i wysokie sily,
+# 30-54) idzie zwarta kolumna, a nizej pary o wspolnej barwie —
+# 20-24 z 25-29 i pas 0-8 z pasem 10-18.
+SKLEJONE_Z_POPRZEDNIA = (1, 2, 3, 4, 6, 8)
 SEKCJA = 8 * mm
 NAGLOWEK_H = 50 * mm                    # jeden pas: logo, nazwa, podtytul, adres
 LOGO = 38 * mm
@@ -320,8 +323,8 @@ def wysokosc_slupka(segmentow: int, wys_segmentu: float) -> float:
 
 
 def odstep_przed(nr: int) -> float:
-    """Przerwa nad sekcja nr: zwykla, chyba ze sekcja tworzy pare z poprzednia."""
-    return ODSTEP_PARY if nr in PARA_Z_POPRZEDNIA else ODSTEP_GRUP
+    """Przerwa nad sekcja nr: zwykla albo zwarta dla sekcji sklejonych."""
+    return ODSTEP_PARY if nr in SKLEJONE_Z_POPRZEDNIA else ODSTEP_GRUP
 
 
 def rysuj_strzalke(c: Canvas, x: float, dol: float, wys_seg: float,
@@ -686,6 +689,19 @@ def margines_gorny() -> float:
     return 0.54 * (MARGINES + reszta / 3)
 
 
+def granice_sekcji() -> list[tuple[float, float]]:
+    """(gora, dol) kazdego slupka sekcji w ukladzie strony (y od dolu).
+
+    Jedyne zrodlo pionowej geometrii siatki — korzysta z niego rysowanie
+    strony i kadry wycinkow SVG (tablica/wycinki_svg.py)."""
+    y = PAGE_H - margines_gorny() - NAGLOWEK_H - SEKCJA
+    granice = []
+    for nr, (grupa, wys) in enumerate(sekcje_tablicy()):
+        y -= (odstep_przed(nr) if nr > 0 else 0) + wysokosc_slupka(len(grupa), wys)
+        granice.append((y + wysokosc_slupka(len(grupa), wys), y))
+    return granice
+
+
 def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
                  kolory: list[Color]) -> None:
     sekcje = sekcje_tablicy()
@@ -694,10 +710,10 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
     c.rect(0, 0, PAGE_W, page_h, stroke=0, fill=1)
     rysuj_naglowek_kyu(c, page_h - margines_gorny())
 
-    y = page_h - margines_gorny() - NAGLOWEK_H - SEKCJA
+    granice = granice_sekcji()
     for nr, (grupa, wys_segmentu) in enumerate(sekcje):
         barwa = kolory[nr]
-        y -= (odstep_przed(nr) if nr > 0 else 0) + wysokosc_slupka(len(grupa), wys_segmentu)
+        y = granice[nr][1]
         for kolumna in range(KOLUMNY):
             segmenty = []
             for wiersz in grupa:
@@ -738,14 +754,14 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
                     if strzalka is not None:
                         rysuj_strzalke(c, x, dol_seg, wys_segmentu, *strzalka)
 
-    rysuj_dol(c, y - SEKCJA, kolory)
+    rysuj_dol(c, granice[-1][1] - SEKCJA, kolory)
     if podpis is not None:
         c.setFillColor(MUTED)
         c.setFont(FONT, PODPIS_FS)
         c.drawString(MARGINES_BOK, 4 * mm, podpis)
 
 
-WERSJA = "07.09.2026m"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
+WERSJA = "07.09.2026n"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
 ZAMEK = Path(__file__).resolve().parent / "tablica.lock"
 
 

@@ -2,7 +2,12 @@
 # zmianach w tools/. `make help` wypisuje cele.
 # Wymaga: python3 + reportlab i Pillow, pdftocairo (poppler-utils), fonty DejaVu.
 
-all: karta.pdf karta-klub-przyklad.pdf karta-wycinek-czarek.svg wyrownanie  ## przegeneruj karty, karty przykladowe i tabele wyrownania
+all: karta.pdf karta-klub-przyklad.pdf karta-wycinek-czarek.svg wyrownanie wersje  ## przegeneruj karty, karty przykladowe i tabele wyrownania
+
+# linki do zasobow dostaja ?v=<odcisk pliku> — swiezy deploy nie sklada sie
+# w przegladarce ze stara kopia stylu ani skryptu z cache
+wersje:  ## odswiez ?v= przy zasobach w HTML
+	python3 tools/wersjonuj.py
 
 help:  ## wypisz dostepne cele
 	@awk -F':.*##' '/^[a-z-]+:.*##/ { printf "  make %-11s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -19,7 +24,7 @@ karta-klub-przyklad.pdf: tools/karta_klub.py tools/karta_pdf.py tools/zasady.py 
 
 WYCINKI = tablica/wycinek-zasady.svg tablica/wycinek-tabele.svg tablica/wycinek-tablica.svg
 
-tablica-pdf: tablica/ranking_table-660x950mm.pdf tablica/tablica.svg $(WYCINKI)  ## przegeneruj tablice siły
+tablica-pdf: tablica/ranking_table-660x950mm.pdf tablica/tablica.svg $(WYCINKI) wersje  ## przegeneruj tablice siły
 
 # podglad tablicy na stronie ranking: ten sam wydruk jako SVG (glify ida w sciezki)
 tablica/tablica.svg: tablica/ranking_table-660x950mm.pdf

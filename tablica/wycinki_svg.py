@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """Trzy wycinki tablicy sily jako osobne pliki SVG dla strony ranking.
 
-Uruchomienie: python3 tablica/wycinki_svg.py   (po wygenerowaniu tablica.svg)
+Uruchomienie: python3 tablica/wycinki_svg.py   (robi to tez `make`)
 
-Kazdy wycinek to pelna tresc tablica.svg z podmienionym viewBoxem — kadry
-licza sie z geometrii generatora (tablica_kyu_pdf), wiec kazda zmiana ukladu
-tablicy przesuwa je automatycznie i zaden kadr nie przycina tresci.
+Kadry licza sie z geometrii generatora (tablica_kyu_pdf), wiec kazda zmiana
+ukladu tablicy przesuwa je automatycznie. Kazdy wycinek powstaje z kopii
+PDF-a z CropBoxem ustawionym przez ghostscript (pdftocairo -svg nie umie
+ciac sam) — prostokat kadru interpretuje wiec silnik PDF, nie zalozenia
+o plotnie SVG.
 """
 
-import re
 import sys
 from pathlib import Path
 
@@ -23,13 +24,7 @@ from reportlab.lib.units import mm
 def kadry() -> dict[str, tuple[float, float, float, float]]:
     """{nazwa: (x, y od gory strony, szerokosc, wysokosc)} w punktach PDF."""
     t.zarejestruj_czcionki()
-    sekcje = t.sekcje_tablicy()
-    y = t.PAGE_H - t.margines_gorny() - t.NAGLOWEK_H - t.SEKCJA
-    granice = []
-    for nr, (grupa, wys) in enumerate(sekcje):
-        y -= (t.ODSTEP_GRUP if nr > 0 else 0) + t.wysokosc_slupka(len(grupa), wys)
-        granice.append((y + t.wysokosc_slupka(len(grupa), wys), y))
-
+    granice = t.granice_sekcji()
     gora_dolu = granice[-1][1] - t.SEKCJA
     kol_w = {k: t.szerokosc_kolumny(k) for k in zasady_tablicy.KOLUMNY}
     wymiary = [tuple(w * t.WYR_SKALA for w in t.wymiary_siatki(p)) for p in t.PLANSZE]
@@ -61,15 +56,24 @@ def kadry() -> dict[str, tuple[float, float, float, float]]:
 
 
 def main() -> None:
-    pelny = (REPO / "tablica" / "tablica.svg").read_text()
+    import subprocess
+    import tempfile
+
+    pdf = REPO / "tablica" / "ranking_table-660x950mm.pdf"
+    wysokosc = t.PAGE_H
     for nazwa, (x, y, w, h) in kadry().items():
-        naglowek = f'width="{w:.3f}" height="{h:.3f}" viewBox="{x:.3f} {y:.3f} {w:.3f} {h:.3f}"'
-        tresc, n = re.subn(r'width="[\d.]+" height="[\d.]+" viewBox="[^"]+"', naglowek, pelny, count=1)
-        assert n == 1, "naglowek svg nie pasuje do wzorca"
         cel = REPO / "tablica" / f"wycinek-{nazwa}.svg"
-        cel.write_text(tresc)
+        # CropBox w ukladzie PDF (y od dolu); kadry() daja y od gory strony.
+        llx, lly, urx, ury = x, wysokosc - y - h, x + w, wysokosc - y
+        with tempfile.NamedTemporaryFile(suffix=".pdf") as tmp:
+            subprocess.run(
+                ["gs", "-q", "-o", tmp.name, "-sDEVICE=pdfwrite",
+                 "-c", f"[/CropBox [{llx:.2f} {lly:.2f} {urx:.2f} {ury:.2f}] /PAGES pdfmark",
+                 "-f", str(pdf)],
+                check=True)
+            subprocess.run(["pdftocairo", "-svg", tmp.name, str(cel)], check=True)
         mm_ = 72 / 25.4
-        print(f"{cel.relative_to(REPO)}: {w/mm_:.0f} x {h/mm_:.0f} mm")
+        print(f"{cel.relative_to(REPO)}: {w / mm_:.0f} x {h / mm_:.0f} mm")
 
 
 if __name__ == "__main__":

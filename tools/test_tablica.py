@@ -110,5 +110,52 @@ class TestZamekTablicy(unittest.TestCase):
         self.assertEqual(zamek["wersja"], tablica_kyu_pdf.WERSJA)
 
 
+class TestKadryWycinkow(unittest.TestCase):
+    """Kadry wycinkow SVG nie ucinaja tresci wydruku.
+
+    Test renderuje prostokat kadru wprost z PDF (ten sam silnik poppler,
+    ktory tnie wycinki przez CropBox) i sprawdza piksele: przy krawedziach
+    ma byc czyste tlo (margines istnieje), a tuz pod gornym marginesem —
+    farba (naglowki sa w kadrze). Lapie rozjazd geometrii kadrow z ukladem
+    tablicy, zanim trafi na strone.
+    """
+
+    @staticmethod
+    def _piksele(x: float, y: float, w: float, h: float) -> tuple[int, int, bytes]:
+        import subprocess
+        SKALA = 40 / 72                 # punkty PDF -> piksele przy 40 dpi
+        wynik = subprocess.run(
+            ["pdftoppm", "-r", "40",
+             "-x", str(round(x * SKALA)), "-y", str(round(y * SKALA)),
+             "-W", str(round(w * SKALA)), "-H", str(round(h * SKALA)),
+             str(tablica_kyu_pdf.REPO / "tablica" / "ranking_table-660x950mm.pdf")],
+            capture_output=True, check=True).stdout
+        naglowek, dane = wynik.split(b"255\n", 1)
+        wymiary = naglowek.split(b"\n")[1]
+        szer, wys = map(int, wymiary.split())
+        return szer, wys, dane
+
+    def test_kadry_maja_margines_i_tresc(self) -> None:
+        import wycinki_svg
+        for nazwa, (x, y, w, h) in wycinki_svg.kadry().items():
+            if nazwa == "tablica":
+                continue        # ten kadr celowo ucina czesciowo sasiednie slupki
+            with self.subTest(kadr=nazwa):
+                szer, wys, dane = self._piksele(x, y, w, h)
+                tlo = dane[0:3]
+
+                def farba(x0: int, x1: int, y0: int, y1: int) -> bool:
+                    return any(
+                        max(abs(dane[3 * (yy * szer + xx) + k] - tlo[k]) for k in range(3)) > 40
+                        for yy in range(y0, y1) for xx in range(x0, x1))
+
+                self.assertFalse(farba(0, szer, 0, 1), f"{nazwa}: tresc przycieta u gory")
+                self.assertFalse(farba(0, szer, wys - 1, wys), f"{nazwa}: tresc przycieta u dolu")
+                self.assertFalse(farba(0, 1, 0, wys), f"{nazwa}: tresc przycieta z lewej")
+                self.assertFalse(farba(szer - 1, szer, 0, wys), f"{nazwa}: tresc przycieta z prawej")
+                pas = round(10 / 25.4 * 40)     # 10 mm ponizej gornej krawedzi
+                self.assertTrue(farba(0, szer, 1, pas), f"{nazwa}: kadr bez tresci pod gora")
+
+
 if __name__ == "__main__":
     unittest.main()

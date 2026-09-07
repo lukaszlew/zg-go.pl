@@ -14,6 +14,8 @@ import re
 import unittest
 from pathlib import Path
 
+import wersjonuj
+
 KORZEN = Path(__file__).resolve().parent.parent
 
 # Podstrony serwisu. alphago.html jest szkicem: nie linkuje jej nic, ma noindex
@@ -43,7 +45,7 @@ def plik_zasobu(sciezka: str) -> Path:
     "/" -> strona glowna) — dokladnie tak rozwiazuje adresy GitHub Pages,
     a za podglad lokalny robi to samo tools/podglad.py.
     """
-    goly = sciezka.split("#")[0].lstrip("/")
+    goly = sciezka.split("#")[0].split("?")[0].lstrip("/")
     if not goly:
         return KORZEN / "index.html"
     cel = KORZEN / goly
@@ -171,6 +173,19 @@ class TestPowtorzoneBloki(unittest.TestCase):
         w CSS, wiec identyczny znacznik na identycznym miejscu w strukturze
         znaczy: logo nie przeskakuje przy przechodzeniu miedzy stronami."""
         self.porownaj(r'<header class="hero-band">\s*<span class="hero-logo"[^>]*></span>', STRONY)
+
+    def test_zasoby_wersjonowane_aktualnym_odciskiem(self) -> None:
+        """Kazde odwolanie do wersjonowanego zasobu niesie ?v= z odciskiem
+        biezacej zawartosci pliku — inaczej przegladarka moze zlozyc nowy
+        HTML ze stara kopia z cache. Odswieza `make` (tools/wersjonuj.py)."""
+        for strona in STRONY:
+            html = tresc(strona)
+            for zasob in wersjonuj.ZASOBY:
+                wzor = rf'(?:src|href)="{re.escape(zasob)}(?:\?v=([0-9a-f]+))?"'
+                for numer, m in enumerate(re.finditer(wzor, html)):
+                    self.assertEqual(
+                        m.group(1), wersjonuj.odcisk(zasob),
+                        f"{strona}: {zasob} bez aktualnego ?v= — uruchom `make`")
 
     def test_menu_prowadzi_do_tych_samych_stron(self) -> None:
         """Porownujemy cele, nie znaczniki: klasa `active` z natury sie rozni."""

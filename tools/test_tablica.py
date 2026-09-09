@@ -49,6 +49,17 @@ class TestZasadyNaStronie(unittest.TestCase):
         cls.html = STRONA.read_text()
         cls.zdania = [z for _, z, _ in zasady_tablicy.ZASADY]
 
+    def test_blok_zasad_ma_dokladnie_te_zasady(self) -> None:
+        """Blok "Zasady": naglowki kolumn z wydruku, pod kazdym zdania jego
+        kolumny w kolejnosci, kazde jako link do swojego rozwiniecia."""
+        blok = sekcja(self.html, "zasady")
+        naglowki = [tekst(m) for m in self.re.findall(r"<h3>(.*?)</h3>", blok, self.re.S)]
+        self.assertEqual(naglowki, [zasady_tablicy.NAGLOWKI[k] for k in zasady_tablicy.KOLUMNY])
+        punkty = self.re.findall(r'<li><a href="#zasada-(\d+)">(.*?)</a></li>', blok, self.re.S)
+        self.assertEqual([tekst(z) for _, z in punkty], self.zdania, "zdania w bloku Zasady")
+        self.assertEqual([int(n) for n, _ in punkty], list(range(1, len(self.zdania) + 1)),
+                         "kazda zasada linkuje do swojego rozwiniecia, po kolei")
+
     def test_rozdzialy_maja_dokladnie_te_zasady(self) -> None:
         naglowki = [
             tekst(m)

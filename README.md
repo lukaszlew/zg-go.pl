@@ -51,6 +51,11 @@ Poza zasadami i logiką kalendarza testy pilnują samych stron: czy każdy lokal
 istnieje, czy każda kotwica ma cel, czy stopka, analityka, fonty i menu są wszędzie
 takie same i czy zaproszenie na Discorda stoi dokładnie w jednym miejscu.
 
+`tools/test_szerokosc.py` ładuje każdą stronę w headless Chrome przy 320 i 200 px
+i sprawdza, że nic nie wystaje poza ekran — wymaga `google-chrome` albo `chromium`
+w `PATH` (na runnerze GitHuba jest). Elementy, którym naprawdę trzeba więcej miejsca
+(tabele, wycinki tablicy), przewijają się w poziomie we własnym pudełku.
+
 ## Rzeczy, które zaskakują
 
 - **`alphago.html` to szkic.** Nie linkuje go nic, ma `noindex` i własną, czwartą

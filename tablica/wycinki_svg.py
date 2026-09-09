@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Trzy wycinki tablicy sily jako osobne pliki SVG dla strony ranking.
+"""Wycinki tablicy sily jako osobne pliki SVG dla strony ranking: slupki
+srodka skali i kazda tabela wyrownania osobno.
 
 Uruchomienie: python3 tablica/wycinki_svg.py   (robi to tez `make`)
 
@@ -32,27 +33,26 @@ def kadry() -> dict[str, tuple[float, float, float, float]]:
                + sum(sz for sz, _ in wymiary) + 2 * 8 * mm)
     margines_pasa = (t.PAGE_W - tresc_w) / 2
     koniec_kolumn = margines_pasa + sum(kol_w.values()) + 2 * t.ODSTEP_KOLUMN_ZASAD
-    wys_kolumny = max(
-        7.5 * mm + sum(linie for _, linie in zasady_tablicy.zasady_kolumny(k)) * t.ZASADY_LINIA_H
-        + len(zasady_tablicy.zasady_kolumny(k)) * 1.2 * mm
-        for k in zasady_tablicy.KOLUMNY)
-    start_tabel = koniec_kolumn + t.ODSTEP_ZASADY_TABELE - t.ODSTEP_KOLUMN_ZASAD
-    kafle_dol = gora_dolu - wymiary[-1][1] - 5 * mm - t.KAFEL_H
+    start_tabel = koniec_kolumn + t.ODSTEP_ZASADY_TABELE
 
     def kadr(x0: float, x1: float, y_gora: float, y_dol: float) -> tuple[float, float, float, float]:
         assert x0 < x1 and y_dol < y_gora, "pusty kadr"
         return (x0, t.PAGE_H - y_gora, x1 - x0, y_gora - y_dol)
 
-    return {
+    kadry_ = {
         # slupki srodka skali: pietro polowek (30-34) i jedynek (25-29),
         # sasiedzi widoczni czesciowo — tu mieszka przykladowa gra ze strony
         "tablica": kadr(t.MARGINES_BOK - 3 * mm, t.PAGE_W - t.MARGINES_BOK + 3 * mm,
                         granice[4][0] + 14 * mm, granice[5][1] - 14 * mm),
-        "zasady": kadr(margines_pasa - 6 * mm, koniec_kolumn + 5 * mm,
-                       gora_dolu + 5 * mm, gora_dolu - wys_kolumny - 4 * mm),
-        "tabele": kadr(start_tabel - 2 * mm, t.PAGE_W - margines_pasa + 3 * mm,
-                       gora_dolu + 2 * mm, kafle_dol - 3 * mm),
     }
+    # Kazda tabela wyrownania osobno, bez kafelkow przelicznika pod 9x9:
+    # na telefonie tabela idzie w naturalnej wielkosci i przewija sie w poziomie.
+    x = start_tabel
+    for (szer, wys), plansza in zip(wymiary, t.PLANSZE):
+        kadry_[f"tabela-{plansza}"] = kadr(x - 2 * mm, x + szer + 2 * mm,
+                                           gora_dolu + 2 * mm, gora_dolu - wys - 2 * mm)
+        x += szer + 8 * mm
+    return kadry_
 
 
 def main() -> None:
@@ -67,7 +67,10 @@ def main() -> None:
         llx, lly, urx, ury = x, wysokosc - y - h, x + w, wysokosc - y
         with tempfile.NamedTemporaryFile(suffix=".pdf") as tmp:
             subprocess.run(
-                ["gs", "-q", "-o", tmp.name, "-sDEVICE=pdfwrite",
+                # AutoRotatePages: pdfwrite obraca strone wedlug dominujacego
+                # kierunku pisma, a pionowe napisy paskow robia z tablicy
+                # "strone pozioma" — wycinek wychodzilby obrocony o 90 stopni.
+                ["gs", "-q", "-o", tmp.name, "-sDEVICE=pdfwrite", "-dAutoRotatePages=/None",
                  "-c", f"[/CropBox [{llx:.2f} {lly:.2f} {urx:.2f} {ury:.2f}] /PAGES pdfmark",
                  "-f", str(pdf)],
                 check=True)

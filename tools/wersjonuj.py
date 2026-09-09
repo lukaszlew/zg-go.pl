@@ -25,9 +25,10 @@ ZASOBY: tuple[str, ...] = (
     "analityka.js",
     "spotkania.js",
     "wyrownanie.js",
-    "tablica/wycinek-zasady.svg",
-    "tablica/wycinek-tabele.svg",
     "tablica/wycinek-tablica.svg",
+    "tablica/wycinek-tabela-19x19.svg",
+    "tablica/wycinek-tabela-13x13.svg",
+    "tablica/wycinek-tabela-9x9.svg",
 )
 
 

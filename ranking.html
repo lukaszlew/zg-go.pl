@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=f859e22a">
+  <link rel="stylesheet" href="style.css?v=e923f7c7">
 </head>
 <body>
   <div class="page">
@@ -100,21 +100,57 @@
 
       <section id="zasady">
         <h2>Zasady</h2>
-        <p>To jest całość — dokładnie tak wisi na <a href="tablica/ranking_table-660x950mm.pdf">tablicy</a>.
-        Szczegóły i uzasadnienia każdej zasady stoją niżej, w <a href="#rozwiniecie">rozwinięciu</a>.</p>
+        <p>To jest całość — dokładnie te zdania, w tych kolumnach, wiszą na <a href="tablica/ranking_table-660x950mm.pdf">tablicy</a>.
+        Każdą zasadę można kliknąć — niżej jest <a href="#rozwiniecie">rozwinięta</a>, ze szczegółami i uzasadnieniem.</p>
+
+        <div class="zasady-kolumny">
+        <div class="zasady-blok">
+          <h3><a href="#wyrownanie">GRA</a></h3>
+          <ul class="zasady">
+            <li><a href="#zasada-1">Gracz to magnes ze swoim nickiem i rozmiarem planszy, a liczba pod nim to jego <span class="sila">siła</span> — miara tego, jak dobrze aktualnie gra.</a></li>
+            <li><a href="#zasada-2"><span class="sila">Różnica siły</span> to liczba silniejszego minus liczba słabszego; silniejszy gra Białymi.</a></li>
+            <li><a href="#zasada-3">Tabela wyznacza liczbę ruchów startowych Czarnego i jeńców, których dostaje przed grą od Białego.</a></li>
+            <li><a href="#zasada-4">Jeśli różnica jest mniejsza niż najmniejsza w tabeli, losujemy kolory nigiri i zaczyna Czarny; Biały dostaje od razu 6 jeńców i wygrywa remisy (tak jakby 6,5).</a></li>
+          </ul>
+        </div>
+        <div class="zasady-blok">
+          <h3><a href="#magnes">MAGNES (własny, zaraz po grze)</a></h3>
+          <ul class="zasady">
+            <li><a href="#zasada-5">Wygrana to strzałka w górę (lub w prawo), przegrana — w dół (lub w lewo), remis — bez zmiany.</a></li>
+            <li><a href="#zasada-6">Poddanie albo różnica od 15 punktów na 9×9, 30 na 13×13, 60 na 19×19 to wynik wyraźny: dwie strzałki, i u wygranego, i u przegranego.</a></li>
+            <li><a href="#zasada-7">Po każdej wygranej magnes idzie też o pasek w prawo, dalej od lewej krawędzi — najpierw WYGRANA, potem SERIA; przegrana dosuwa go w lewo do krawędzi.</a></li>
+            <li><a href="#zasada-8">Pierwsza przegrana w tygodniu i każda przegrana z graczem na SERII (jego trzecia wygrana z rzędu) nie zsuwają magnesu w dół — tylko dosuwają go do lewej krawędzi.</a></li>
+          </ul>
+        </div>
+        <div class="zasady-blok">
+          <h3><a href="#nowy">NOWY GRACZ</a></h3>
+          <ul class="zasady">
+            <li><a href="#zasada-9">Kto nigdy nie grał w Go, wiesza magnes na zerze, od razu na SERII.</a></li>
+            <li><a href="#zasada-10">Kto już grał i wie, z kim na tablicy gra mniej więcej równo, wiesza magnes 6 strzałek niżej od tego gracza — też na SERII.</a></li>
+          </ul>
+        </div>
+        </div>
+
+        <p id="tabele-wyrownania">Tabele wyrównania z tablicy, każda plansza osobno — szeroka tabela 9×9 przewija się w poziomie:</p>
+        <div class="wycinki tabele">
+          <a class="wycinek-tablicy wycinek-przewijany" href="tablica/ranking_table-660x950mm.pdf">
+            <img src="tablica/wycinek-tabela-19x19.svg?v=6fb019ff" loading="lazy"
+                 alt="Wycinek tablicy siły: tabela wyrównania 19×19">
+          </a>
+          <a class="wycinek-tablicy wycinek-przewijany" href="tablica/ranking_table-660x950mm.pdf">
+            <img src="tablica/wycinek-tabela-13x13.svg?v=14e3e5c2" loading="lazy"
+                 alt="Wycinek tablicy siły: tabela wyrównania 13×13">
+          </a>
+          <a class="wycinek-tablicy wycinek-przewijany" href="tablica/ranking_table-660x950mm.pdf">
+            <img src="tablica/wycinek-tabela-9x9.svg?v=3ae96b58" loading="lazy"
+                 alt="Wycinek tablicy siły: tabela wyrównania 9×9">
+          </a>
+        </div>
 
         <div class="wycinki">
           <a class="wycinek-tablicy" href="tablica/ranking_table-660x950mm.pdf">
-            <img src="tablica/wycinek-zasady.svg?v=587187ea" loading="lazy"
-                 alt="Wycinek tablicy siły: pas zasad w kolumnach Gra, Magnes i Nowy gracz">
-          </a>
-          <a class="wycinek-tablicy" id="tabele-wyrownania" href="tablica/ranking_table-660x950mm.pdf">
-            <img src="tablica/wycinek-tabele.svg?v=1d6313fd" loading="lazy"
-                 alt="Wycinek tablicy siły: tabele wyrównania i kafelki przelicznika kyu/dan">
-          </a>
-          <a class="wycinek-tablicy" href="tablica/ranking_table-660x950mm.pdf">
-            <img src="tablica/wycinek-tablica.svg?v=19effeb1" loading="lazy"
-                 alt="Wycinek tablicy siły: słupki sił 25-34,5 z paskami WYGRANA i SERIA oraz strzałkami do sąsiednich pól">
+            <img src="tablica/wycinek-tablica.svg?v=e206e51f" loading="lazy"
+                 alt="Wycinek tablicy siły: słupki sił 25-34,5 z paskami WYGRANA, SERIA i PRZEGRANA oraz strzałkami do sąsiednich pól">
           </a>
         </div>
       </section>

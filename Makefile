@@ -22,7 +22,7 @@ karta.pdf: tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf img/lo
 karta-klub-przyklad.pdf: tools/karta_klub.py tools/karta_pdf.py tools/zasady.py tools/fonts/Caveat-Bold.ttf
 	python3 tools/karta_klub.py
 
-WYCINKI = tablica/wycinek-zasady.svg tablica/wycinek-tabele.svg tablica/wycinek-tablica.svg
+WYCINKI = tablica/wycinek-tablica.svg tablica/wycinek-tabela-19x19.svg tablica/wycinek-tabela-13x13.svg tablica/wycinek-tabela-9x9.svg
 
 tablica-pdf: tablica/ranking_table-660x950mm.pdf tablica/tablica.svg $(WYCINKI) og-tablica.png wersje  ## przegeneruj tablice siły
 
@@ -34,7 +34,7 @@ og-tablica.png: tablica/ranking_table-660x950mm.pdf tools/og_tablica.py
 tablica/tablica.svg: tablica/ranking_table-660x950mm.pdf
 	pdftocairo -svg $< $@
 
-# trzy wycinki dla strony ranking: pelny SVG z kadrem liczonym z geometrii generatora
+# wycinki dla strony ranking (slupki i kazda tabela osobno): kadry liczone z geometrii generatora
 $(WYCINKI) &: tablica/tablica.svg tablica/wycinki_svg.py tablica/tablica_kyu_pdf.py tablica/zasady_tablicy.py
 	python3 tablica/wycinki_svg.py
 

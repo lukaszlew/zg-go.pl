@@ -36,6 +36,13 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
+/* Nic nie ma prawa rozepchnac strony poza ekran: dlugie slowa i adresy lamia
+   sie w razie potrzeby, obrazy nie przekraczaja swojej kolumny. Elementy, ktore
+   naprawde potrzebuja wiecej miejsca (tabele, wycinki), przewijaja sie w poziomie
+   we wlasnym pudelku — patrz reguly przy nich. Pilnuje tego tools/test_szerokosc.py. */
+body { overflow-wrap: anywhere; }
+img { max-width: 100%; height: auto; }
+
 .page {
   width: min(var(--page-w), 92%);
   margin: 0 auto;
@@ -146,7 +153,8 @@ p a { text-decoration: underline; text-underline-offset: 2px; }
 }
 
 @media (max-width: 820px) {
-  .hero-band { grid-template-columns: 1fr; }
+  .hero-band { grid-template-columns: minmax(0, 1fr); }
+  .hb-menu a { white-space: normal; }
   /* Wszystko w jednej kolumnie i w kolejnosci zrodla — bez tego menu, ktore na
      szerokim ekranie rozciaga sie na dwa wiersze, naszloby na nazwe. Odstepy
      robia marginesy, bo row-gap rozepchnalby takze pare nazwa/podpis. */
@@ -388,6 +396,11 @@ span.sila { color: var(--kolor-sily); }
 table.sila td + td { color: var(--kolor-sily); }
 
 table.sila { border-collapse: collapse; margin: 0.6rem 0; }
+/* Na waskim ekranie tabela zostaje pudelkiem o szerokosci tresci, nie szerszym
+   niz kolumna, i przewija sie w poziomie — zamiast rozpychac strone. */
+@media (max-width: 820px) {
+  table { display: block; width: max-content; max-width: 100%; overflow-x: auto; }
+}
 /* Podpis tabeli mowi, jak ja czytac — nagłowki stoja tu i u gory, i na dole,
    wiec sam uklad tego nie tlumaczy. Czytnik ekranu bierze go jako pierwszy. */
 table.sila caption {
@@ -409,6 +422,17 @@ table.sila th { background: var(--rule); font-weight: 600; }
    byc od niego specyficzniejsze, stad obie klasy w selektorze. */
 table.sila.poziomy td { color: var(--fg); text-align: center; padding: 0.25rem 0.7rem; }
 table.sila.poziomy tr:last-child td { color: var(--kolor-sily); font-weight: 600; }
+/* Na waskim ekranie siedem kolumn nie miesci sie w kolumnie tekstu i rozpycha
+   strone, wiec tabela staje pionowo: kazdy wiersz zostaje kolumna (Poziom |
+   Siła), komorki ida jedna pod druga; ujemne marginesy sklejaja ramki tak,
+   jak robil to border-collapse. */
+@media (max-width: 820px) {
+  table.sila.poziomy { display: flex; }
+  table.sila.poziomy tbody { display: contents; }
+  table.sila.poziomy tr { display: flex; flex-direction: column; }
+  table.sila.poziomy th, table.sila.poziomy td { margin-top: -1px; }
+  table.sila.poziomy tr + tr th, table.sila.poziomy tr + tr td { margin-left: -1px; }
+}
 
 /* Przelicznik starych liczb na zmiany.html: sam uklad, bez zieleni — zielen
    znaczy sile, a w tej tabeli po lewej stronie strzalki stoja jeszcze stare PS. */
@@ -704,7 +728,7 @@ table.kalk-karta ::placeholder { color: var(--muted); opacity: 1; }
 /* Wycinki tablicy siły na stronie ranking: osobne pliki SVG z kadrem
    liczonym przez tablica/wycinki_svg.py z geometrii generatora — zmiana
    ukladu tablicy przesuwa kadry automatycznie. Klik prowadzi do PDF-u. */
-.wycinki { display: grid; gap: 0.7rem; margin: 0.9rem 0; }
+.wycinki { display: grid; gap: 0.7rem; margin: 0.9rem 0; grid-template-columns: minmax(0, 1fr); }
 .wycinek-tablicy {
   display: block;
   border: 1px solid var(--rule);
@@ -712,6 +736,18 @@ table.kalk-karta ::placeholder { color: var(--muted); opacity: 1; }
   overflow: hidden;
 }
 .wycinek-tablicy img { display: block; width: 100%; height: auto; }
+/* Tabele wyrownania: naturalna wielkosc wydruku (cyfry ~4 mm), zeby dalo sie
+   je czytac na telefonie; obok siebie, ile sie zmiesci, reszta nizej.
+   Szersza od ekranu tabela przewija sie w poziomie wewnatrz swojej ramki
+   zamiast kurczyc sie do nieczytelnosci. */
+.wycinki.tabele { display: flex; flex-wrap: wrap; align-items: flex-start; }
+.wycinek-przewijany { max-width: 100%; overflow-x: auto; }
+.wycinek-przewijany img { width: auto; max-width: none; }
+
+/* Blok "Zasady" na stronie ranking: kolumny jak na wydruku tablicy, na waskim
+   ekranie jedna pod druga. */
+.zasady-kolumny { display: grid; gap: 0 2rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 880px) { .zasady-kolumny { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
 /* Na szerokim ekranie wstep artykulu idzie w dwoch kolumnach:
    tekst po lewej, spis tresci po prawej. */

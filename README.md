@@ -7,19 +7,24 @@ publikuje na GitHub Pages. `make help` wypisuje wszystkie polecenia.
 
 Poniżej tylko to, czego nie widać z samego kodu.
 
-## Zasady gry mają jedno źródło prawdy
+## Zasady rankingu mają jedno źródło prawdy
 
-**`tools/zasady.py`**. Te same zdania, co do słowa, stoją w trzech miejscach: w bloku
-„Zasady" na `ranking.html`, jako pogrubione nagłówki w rozdziałach Wyrównanie / Wynik /
-Zmiana St, oraz na ściądze na dole karty gracza.
+**`tablica/zasady_tablicy.py`**. Te same zdania, co do słowa, stoją w dwóch miejscach:
+jako pogrubione nagłówki w rozdziałach Gra i wyrównanie / Magnes / Nowy gracz na
+`ranking.html` oraz w pasie zasad na dole wydruku tablicy siły. Ten sam plik nazywa
+paski pola (WYGRANA, SERIA, PRZEGRANA), więc tablica nie pokazuje niczego, czego
+zasady nie tłumaczą.
 
-Ściąga to dokładnie zasady — nic więcej i nic mniej. Co jest za drobne na zasadę, idzie
-do szczegółów pod nią na stronie i na kartę nie trafia.
+Zasady mówią wyłącznie o tym, co widać przy tablicy. Co jest za drobne na zasadę, idzie
+do szczegółów pod nią na stronie i na tablicę nie trafia.
 
-Kolejność przy zmianie zasady: `tools/zasady.py` → `ranking.html` → `make`.
-`karta.lock` trzyma odcisk zasad i układu karty, a `make` odmówi jego zapisu, gdy treść
-się zmieniła, a `WERSJA` w `tools/karta_pdf.py` została ta sama — dwa pokolenia
-wydrukowanych kart muszą dać się odróżnić.
+Kolejność przy zmianie zasady: `tablica/zasady_tablicy.py` → `ranking.html` →
+`make tablica-pdf`. `tablica/tablica.lock` trzyma odcisk zasad i układu tablicy, a `make`
+odmówi jego zapisu, gdy treść się zmieniła, a `WERSJA` w `tablica/tablica_kyu_pdf.py`
+została ta sama — dwa pokolenia wydruków muszą dać się odróżnić.
+
+Archiwalny ranking na kartach gracza (`ranking-karta.html`, `karta.pdf`) ma własne
+źródło: `tools/zasady.py`, pilnowane tak samo przez `karta.lock`.
 
 ## Terminy spotkań idą z Kalendarza Google
 

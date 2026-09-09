@@ -22,7 +22,7 @@ STRONA = KORZEN / "ranking.html"
 # Podsekcje "Rozwiniecia zasad" na stronie ranking, w kolejnosci ze strony;
 # kazda zasada stoi w nich jako <strong> na poczatku akapitu. Kolejnosc musi
 # odpowiadac zasady_tablicy.ZASADY — to ona mowi, ktora zasada jest ktora.
-ROZDZIALY_ZASAD = ("wyrownanie", "magnes", "gosc", "korekta")
+ROZDZIALY_ZASAD = ("wyrownanie", "magnes", "nowy")
 
 
 def tekst(html: str) -> str:

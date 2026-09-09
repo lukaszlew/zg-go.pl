@@ -5,21 +5,28 @@ Uruchomienie: python3 tablica/tablica_kyu_pdf.py   (zapisuje tablica/ranking_tab
 w wybranej palecie); z opcja --palety pisze ranking_table-660x950mm-palety.pdf — strona na
 kazda palete z PALETY, z podpisami, do porownywania kolorow.
 
-Siatka 5 kolumn kratek: kolorowy pasek z liczba sily klubowej z lewej
-(sila = 50 - kyu: 1 dan = 50, 50 kyu = 0; samych nazw kyu/dan na tablicy
-nie ma), obok biale pole 82 x 30 mm na etykiety magnetyczne 50 x 25 mm;
-cala kratka ma 106 mm. Silniejszy po prawej, dan u gory. Skala do sily 40
-idzie cwiartkami, nizej polowkami. Kazda kolumna sekcji scala sie w jeden
-slupek osobnych kafli rozdzielonych waska szczelina; pasek z lewej
-niesie liczbe segmentu. Progiem jest kazda sila podzielna przez 5 od 25
-w gore — stoi w lewym dolnym rogu sekcji i dostaje ciemny odcien barwy;
-w skali poczatkujacych progow nie ma. Sekcje odroznia wylacznie kolor
-i odstep — zadnych ramek wokol sekcji.
+Siatka 5 kolumn pol na etykiety magnetyczne 80 x 30 mm; pole ma 111 x 32 mm,
+a sila klubowa (sila = 50 - kyu: 1 dan = 50, 50 kyu = 0; samych nazw kyu/dan
+na tablicy nie ma) stoi duza, blada czcionka na srodku pola, w tle — wiszaca
+etykieta ja zakrywa, czyta sie ja z pustego pola albo po podniesieniu
+magnesu. Silniejszy po prawej, dan u gory. Skala do sily 40 idzie
+cwiartkami, nizej polowkami. Kazda kolumna sekcji scala sie w jeden slupek
+osobnych kafli rozdzielonych waska szczelina. Progiem jest kazda sila
+podzielna przez 5 od 25 w gore — stoi w lewym dolnym rogu sekcji i dostaje
+ramke; w skali poczatkujacych progow nie ma. Sekcje odroznia
+wylacznie kolor i odstep — zadnych ramek wokol sekcji.
 
-Struktura kolorow: sekcja ma wlasna barwe paskow, biale pola nosza jej
-lekki odcien, a liczby calkowite (najnizsza komorka kolumny) dostaja mala
-biala plakietke z liczba w barwie sekcji — negatyw barwnego paska. Progi
-w pierwszej kolumnie (25-50) maja te sama plakietke, tylko z wieksza czcionka.
+Pole jest symetryczne: przy lewej krawedzi dwa pionowe paski serii (napisy
+z zasady_tablicy.PASKI), przy prawej ich lustro — PRZEGRANA i pusty. Magnes
+dosuniety do lewej krawedzi zakrywa oba lewe paski i odslania PRZEGRANA, po
+wygranej odsuwa sie o szerokosc paska i odslania kolejny napis z lewej —
+trzy pozycje magnesu to cala pamiec tablicy o wygranych z rzedu. W polu
+centralnym miedzy paskami stoja obie strzalki i liczba. Pole podwojne to dwa
+sloty rozdzielone jasna kreska, kazdy z wlasnymi paskami; liczba jest jedna.
+
+Struktura kolorow: sekcja ma wlasna barwe; pole nosi jej lekki odcien,
+paski SERIA / PRZEGRANA mocniejszy (napis negatywem), liczba w tle
+nasycona i ciemniejsza, prog w ramce w tej barwie.
 
 Naglowek to jeden pas: logo z nazwa i podtytulem po lewej, adres zg-go.pl
 dosuniety do prawej, gorne krawedzie pisma wyrownane. Tabele wyrownania
@@ -149,13 +156,39 @@ GRUPY: list[tuple[list[list[float]], bool]] = [
     ([[50.0, 48.0, 46.0, 44.0, 42.0]], True),
 ]
 
-PAS_LICZBY = 24 * mm                    # kolorowy pasek z liczba, z lewej kratki
-POLE_BIALE = 83 * mm                    # samo biale pole na etykiety
-POLE_SZER = PAS_LICZBY + POLE_BIALE     # cala kratka
+ETYKIETA_W, ETYKIETA_H = 80 * mm, 30 * mm   # etykieta magnetyczna gracza
+# Paski serii przy lewej krawedzi pola: magnes przy krawedzi zakrywa oba,
+# kazda wygrana odsuwa go o PASEK_W. Pierwszy pasek ma tlo pola, drugi (SERIA)
+# tlo w barwie sekcji — odsloniety, widac go z drugiego konca sali.
+PASEK_W = 14 * mm
+PASEK_FS = 10
+# Pole jest symetryczne: WYGRANA, SERIA, pole centralne, PRZEGRANA, pusty.
+# Strefa etykiety zaczyna sie przy lewej krawedzi i na SERII konczy sie
+# dokladnie na prawej.
+PASKI_W = len(zasady_tablicy.PASKI) * PASEK_W   # oba paski serii razem
+CENTRUM_W = ETYKIETA_W - PASKI_W        # pole centralne: strzalki i liczba
+POLE_SZER = 2 * PASKI_W + CENTRUM_W
 POLE_WYS = 32 * mm                      # wymog: dokladnie 32
 POLE_WYS_2 = 63 * mm                    # dwa pola minus wspolna kreska; miesci dwie etykiety
-LICZBA_FS = 20
-TINT_POLA = 0.12                        # domieszka barwy sekcji w bialych polach
+# Paski po prawej stronie strefy etykiety: PRZEGRANA i pusty — lustro lewych.
+PASKI_PRAWE = (zasady_tablicy.PASEK_PRZEGRANEJ, "")
+# Liczba sily w tle pola: wyblakla, na srodku pola centralnego miedzy
+# strefami strzalek, tak duza, jak pozwala najszersza liczba skali
+# (rozmiar_liczby); prog w ramce.
+LICZBA_FS_MAX = 64
+LUZ_LICZBY = 2 * mm                     # oddech liczby od strzalek
+STRZALKA_W = 10 * mm                    # strefa strzalki przy kazdym brzegu pola centralnego
+# Strzalki stoja przyklejone do liczby: ODSTEP_STRZALKI od krawedzi najszerszej
+# liczby skali do srodka strzalki, w kazdym polu tak samo.
+ODSTEP_STRZALKI = 5.5 * mm
+TINT_POLA = 0.12                        # domieszka barwy sekcji w polach
+TINT_PASKA = 0.85                       # tlo paskow SERIA / PRZEGRANA (napis negatywem)
+LICZBA_S, LICZBA_L = 0.55, 0.48         # liczby: odcien sekcji, ale nasycony i ciemniejszy od pasteli
+RAMKA_PROGU = 3 * mm                    # oddech ramki wokol liczby progu
+# Tla paskow od krawedzi do srodka (prawe lustrzanie): skrajny jak pole
+# z napisem w odcieniu TINT_PASKA, wewnetrzny (SERIA / PRZEGRANA) negatywem.
+TINT_PASKOW = (TINT_POLA, TINT_PASKA)
+KRESKA_SLOTU = 0.35                     # domieszka ciemnej barwy w kresce miedzy slotami
 ODSTEP_POZIOM = 5 * mm
 
 # Wydruk: 660 mm szerokosci (weziej niz tablica, marginesy boczne przyciete)
@@ -184,7 +217,7 @@ ZLOTO_ADRESU = HexColor("#886030")
 # marginesy siatki slupkow): trzy kolumny zasad i trzy tabele wyrownania
 # obok siebie — najwyzsza z kolumn wyznacza jego wysokosc.
 DOLNY_MARGINES = 14 * mm             # minimalny; reszta luzu tez idzie w marginesy
-DOLNY_PAS_H = 66 * mm
+DOLNY_PAS_H = 68 * mm
 ODSTEP_KOLUMN_ZASAD = 10 * mm
 ODSTEP_ZASADY_TABELE = 14 * mm
 KAFEL_W = 34 * mm                       # przelicznik sil na stopnie pod tabela 9x9
@@ -216,8 +249,8 @@ KOLUMNY = 5
 SIATKA_W = KOLUMNY * POLE_SZER + (KOLUMNY - 1) * ODSTEP_POZIOM
 MARGINES_BOK = (PAGE_W - SIATKA_W) / 2
 
-assert POLE_BIALE > 50 * mm + 4 * mm, "etykieta 50 mm nie wchodzi w pole"
-assert POLE_WYS > 25 * mm + 4 * mm, "etykieta 25 mm nie wchodzi w pole na wysokosc"
+assert POLE_WYS_2 / 2 > ETYKIETA_H + 1 * mm, "etykieta nie wchodzi w slot pola podwojnego"
+assert POLE_WYS > ETYKIETA_H + 1 * mm, "etykieta nie wchodzi w pole na wysokosc"
 assert MARGINES_BOK > 0, f"siatka szersza niz tablica: {SIATKA_W / mm:.0f} mm"
 
 
@@ -238,6 +271,13 @@ def mieszaj(a: Color, b: Color, t: float) -> Color:
     return Color(a.red + (b.red - a.red) * t,
                  a.green + (b.green - a.green) * t,
                  a.blue + (b.blue - a.blue) * t)
+
+
+def nasycona(kolor: Color, s: float, l: float) -> Color:
+    """Ten sam odcien kola barw, inne nasycenie i jasnosc."""
+    from colorsys import rgb_to_hls
+    h, _, _ = rgb_to_hls(kolor.red, kolor.green, kolor.blue)
+    return Color(*hls_to_rgb(h, l, s))
 
 
 def jasny(kolor: Color) -> bool:
@@ -327,45 +367,71 @@ def odstep_przed(nr: int) -> float:
     return ODSTEP_PARY if nr in SKLEJONE_Z_POPRZEDNIA else ODSTEP_GRUP
 
 
+def sciezka_zaokraglona(c: Canvas, punkty: list[tuple[float, float]], r: float) -> PDFPathObject:
+    """Lamana przez punkty z kazdym zalamaniem zaokraglonym lukiem o promieniu r
+    (cwiartka okregu jako krzywa Beziera). Odcinki musza byc osiowe, a kazdy
+    przy zalamaniu miec co najmniej r, zeby luki sie nie nakladaly."""
+    K = 0.5523                            # krzywa Beziera najblizsza cwiartce okregu
+    p = c.beginPath()
+    p.moveTo(*punkty[0])
+    for (ax, ay), (bx, by), (cx_, cy_) in zip(punkty, punkty[1:], punkty[2:]):
+        assert (ax == bx) != (ay == by) and (bx == cx_) != (by == cy_), "odcinki musza byc osiowe"
+        assert abs(bx - ax) + abs(by - ay) >= r and abs(cx_ - bx) + abs(cy_ - by) >= r, \
+            "odcinek za krotki na zaokraglenie"
+        ux, uy = (bx - ax) / (abs(bx - ax) + abs(by - ay)), (by - ay) / (abs(bx - ax) + abs(by - ay))
+        vx, vy = (cx_ - bx) / (abs(cx_ - bx) + abs(cy_ - by)), (cy_ - by) / (abs(cx_ - bx) + abs(cy_ - by))
+        p1 = (bx - ux * r, by - uy * r)
+        p2 = (bx + vx * r, by + vy * r)
+        p.lineTo(*p1)
+        p.curveTo(p1[0] + ux * r * K, p1[1] + uy * r * K, p2[0] - vx * r * K, p2[1] - vy * r * K, *p2)
+    p.lineTo(*punkty[-1])
+    return p
+
+
 def rysuj_strzalke(c: Canvas, x: float, dol: float, wys_seg: float,
                    kierunek: str, kolor: Color) -> None:
-    """Strzalka na krawedzi bialego pola kafla, w barwie pola docelowego.
+    """Strzalka pola kafla, w wyblaklej barwie pola docelowego.
 
-    Wszystkie strzalki maja ten sam plaski grot prostopadly do krawedzi
-    i te sama kreske. Sasiad na tym samym pietrze skali dostaje prosta
-    strzalke ("gora"/"dol"/"prawo"/"lewo"). Skoki rysuja zygzak o zrodle
-    na srodku pola: krotki was od srodka, bieg wzdluz krawedzi w strone
-    celu, krotki odcinek ku krawedzi i grot. Kierunki: "prawo-dol"
-    i "lewo-gora" na wejscie w slupek wielosegmentowy, "gora-lewo"
-    i "dol-prawo" na styk sekcji."""
-    GRUB, KROTKI = 1.0 * mm, 1.5 * mm
-    RUN_PION, RUN_POZIOM = 10 * mm, 30 * mm   # bieg wzdluz boku / wzdluz gory-dolu
-    HEAD_W, HEAD_G = 3.6 * mm, 1.6 * mm   # wspolny grot: szeroki i plaski
-    WCIECIE, NAKLADKA = 0.9 * mm, 0.2 * mm
-    cx = x + PAS_LICZBY + (POLE_SZER - PAS_LICZBY) / 2
+    Miejsce jest zawsze to samo: wygrana po prawej stronie liczby, przegrana
+    po lewej (srodki_strzalek), kazda strzalka wysrodkowana na swoim punkcie
+    w polowie wysokosci pola. O celu mowi ksztalt: prosta w gore/dol albo
+    w prawo/lewo (dlugosci SEG) dla sasiada na tym samym pietrze skali; hak —
+    polowka SEG bez grotu, zalamanie, SEG, zalamanie, odcinek z grotem
+    (co najmniej SEG, a zawsze tyle, zeby miedzy spodem grotu a odcinkiem
+    rownoleglym do niego zostala PRZERWA_GROTU kreski) — o zalamaniach zaokraglonych
+    promieniem PROMIEN_HAKA dla skoku: "prawo-dol" i "lewo-gora" na wejscie
+    w slupek wielosegmentowy, "gora-lewo" i "dol-prawo" na styk sekcji.
+    Wszystkie maja ten sam plaski grot i te sama kreske."""
+    # Haki sa o polowe mniejsze od bazowych wymiarow, proste o dziesiata czesc;
+    # grot i kreska sa jedne dla wszystkich.
+    SKALA = 0.5 if "-" in kierunek else 0.9
+    GRUB = 1.4 * mm
+    SEG, PROMIEN_HAKA = 6 * mm * SKALA, 2 * mm * SKALA
+    A = SEG / 2                           # polowka: odcinek startowy haka (bez grotu)
+    HEAD_W, HEAD_G = 5.4 * mm, 2.52 * mm  # wspolny grot: szeroki i plaski
+    PRZERWA_GROTU = 1.2 * mm              # kreska miedzy spodem grotu a odcinkiem rownoleglym do niego
+    KONCOWY = max(SEG, HEAD_G + PRZERWA_GROTU)   # ostatni odcinek haka, z grotem
+    KONIEC = HEAD_G / 2                   # kreska konczy sie w polowie grotu — grot ja zakrywa
+    BLADOSC = 0.6                         # domieszka barwy celu na bieli — strzalka nie krzyczy
+    kolor = mieszaj(CARD, kolor, BLADOSC)
+    xs, xw = srodki_strzalek(x)           # srodek strzalki przegranej / wygranej
     cy = dol + wys_seg / 2
-    yg, yd = dol + wys_seg - WCIECIE, dol + WCIECIE
-    xp, xl = x + POLE_SZER - WCIECIE, x + PAS_LICZBY + WCIECIE
-    y_gora, y_dol = yg - HEAD_G - KROTKI, yd + HEAD_G + KROTKI   # biegi przy krawedziach
-    x_prawo, x_lewo = xp - HEAD_G - KROTKI, xl + HEAD_G + KROTKI
+    yg, yd = cy + A, cy - A               # zasieg prostych: SEG wokol srodka
+    hg, hd = cy + (A + KONCOWY) / 2, cy - (A + KONCOWY) / 2   # zasieg hakow pionowych
+    hp, hl = xw - (KONCOWY + A) / 2, xs + (KONCOWY + A) / 2   # poczatki hakow poziomych
     trasy: dict[str, tuple[list[tuple[float, float]], tuple[float, float], tuple[int, int]]] = {
-        # Proste siegaja tak samo gleboko jak zygzaki, tylko bez zygzaka.
-        "gora": ([(cx, y_gora - KROTKI), (cx, yg - HEAD_G + NAKLADKA)],
-                 (cx, yg), (0, 1)),
-        "dol": ([(cx, y_dol + KROTKI), (cx, yd + HEAD_G - NAKLADKA)],
-                (cx, yd), (0, -1)),
-        "prawo": ([(x_prawo - KROTKI, cy), (xp - HEAD_G + NAKLADKA, cy)],
-                  (xp, cy), (1, 0)),
-        "lewo": ([(x_lewo + KROTKI, cy), (xl + HEAD_G - NAKLADKA, cy)],
-                 (xl, cy), (-1, 0)),
-        "gora-lewo": ([(cx, y_gora - KROTKI), (cx, y_gora), (cx - RUN_POZIOM, y_gora),
-                       (cx - RUN_POZIOM, yg - HEAD_G + NAKLADKA)], (cx - RUN_POZIOM, yg), (0, 1)),
-        "dol-prawo": ([(cx, y_dol + KROTKI), (cx, y_dol), (cx + RUN_POZIOM, y_dol),
-                       (cx + RUN_POZIOM, yd + HEAD_G - NAKLADKA)], (cx + RUN_POZIOM, yd), (0, -1)),
-        "prawo-dol": ([(x_prawo - KROTKI, cy), (x_prawo, cy), (x_prawo, cy - RUN_PION),
-                       (xp - HEAD_G + NAKLADKA, cy - RUN_PION)], (xp, cy - RUN_PION), (1, 0)),
-        "lewo-gora": ([(x_lewo + KROTKI, cy), (x_lewo, cy), (x_lewo, cy + RUN_PION),
-                       (xl + HEAD_G - NAKLADKA, cy + RUN_PION)], (xl, cy + RUN_PION), (-1, 0)),
+        "gora": ([(xw, yd), (xw, yg - KONIEC)], (xw, yg), (0, 1)),
+        "dol": ([(xs, yg), (xs, yd + KONIEC)], (xs, yd), (0, -1)),
+        "prawo": ([(xw - A, cy), (xw + A - KONIEC, cy)], (xw + A, cy), (1, 0)),
+        "lewo": ([(xs + A, cy), (xs - A + KONIEC, cy)], (xs - A, cy), (-1, 0)),
+        "gora-lewo": ([(xw + A, hd), (xw + A, hd + A), (xw - A, hd + A), (xw - A, hg - KONIEC)],
+                      (xw - A, hg), (0, 1)),
+        "dol-prawo": ([(xs - A, hg), (xs - A, hg - A), (xs + A, hg - A), (xs + A, hd + KONIEC)],
+                      (xs + A, hd), (0, -1)),
+        "prawo-dol": ([(hp, yg), (hp + A, yg), (hp + A, yd), (hp + A + KONCOWY - KONIEC, yd)],
+                      (hp + A + KONCOWY, yd), (1, 0)),
+        "lewo-gora": ([(hl, yd), (hl - A, yd), (hl - A, yg), (hl - A - KONCOWY + KONIEC, yg)],
+                      (hl - A - KONCOWY, yg), (-1, 0)),
     }
     punkty, (tx, ty), (dx, dy) = trasy[kierunek]
     c.saveState()
@@ -373,11 +439,7 @@ def rysuj_strzalke(c: Canvas, x: float, dol: float, wys_seg: float,
     c.setLineWidth(GRUB)
     c.setLineCap(1)
     c.setLineJoin(1)
-    p = c.beginPath()
-    p.moveTo(*punkty[0])
-    for punkt in punkty[1:]:
-        p.lineTo(*punkt)
-    c.drawPath(p, stroke=1, fill=0)
+    c.drawPath(sciezka_zaokraglona(c, punkty, PROMIEN_HAKA), stroke=1, fill=0)
     bx, by = tx - dx * HEAD_G, ty - dy * HEAD_G   # srodek podstawy grotu
     g = c.beginPath()
     g.moveTo(tx, ty)
@@ -389,47 +451,106 @@ def rysuj_strzalke(c: Canvas, x: float, dol: float, wys_seg: float,
     c.restoreState()
 
 
-def rysuj_slupek(c: Canvas, x: float, y: float,
-                 segmenty: list[tuple[str, Color, Color, Color | None, float, bool]],
-                 wys_segmentu: float) -> None:
-    """Slupek sekcji: segmenty (liczba, barwa, kolor liczby, plakietka, stopien
-    pisma, czy prog) od gory — kazdy jako osobny kafel z wlasnym obrysem,
-    rozdzielone minimalna szczelina.
+def rysuj_paski(c: Canvas, x: float, dol: float, wys: float, barwa: Color) -> None:
+    """Paski pola: w kazdym slocie pionowe napisy — WYGRANA i SERIA przy lewej
+    krawedzi, PRZEGRANA i pusty lustrzanie przy prawej — rozdzielone cienkimi
+    kreskami w miejscach, gdzie staje krawedz magnesu. Skrajne paski maja tlo
+    pola i napis w odcieniu liczb, wewnetrzne (SERIA, PRZEGRANA) — negatyw. Pole podwojne to dwa
+    sloty rozdzielone jasna kreska na cala szerokosc pola — kazda etykieta ma
+    wlasne paski."""
+    assert wys in (POLE_WYS, POLE_WYS_2), f"nieznana wysokosc pola: {wys / mm:.1f} mm"
+    ciemna = mieszaj(barwa, INK, 0.55)
+    sloty = 2 if wys == POLE_WYS_2 else 1
+    slot_h = wys / sloty
+    lewe = [(x + nr * PASEK_W, napis, tint)
+            for nr, (napis, tint) in enumerate(zip(zasady_tablicy.PASKI, TINT_PASKOW))]
+    prawe = [(x + ETYKIETA_W + nr * PASEK_W, napis, tint)
+             for nr, (napis, tint) in enumerate(zip(PASKI_PRAWE, reversed(TINT_PASKOW)))]
+    negatyw = {TINT_POLA: TINT_PASKA, TINT_PASKA: TINT_POLA}   # napis odwrotnie do tla
+    c.setLineWidth(KRESKA / 2)
+    c.setStrokeColor(mieszaj(CARD, ciemna, KRESKA_SLOTU))
+    for slot in range(sloty):
+        y0 = dol + slot * slot_h
+        for px, napis, tint in lewe + prawe:
+            c.setFillColor(mieszaj(CARD, barwa, tint))
+            c.rect(px, y0, PASEK_W, slot_h, stroke=0, fill=1)
+            c.line(px, y0, px, y0 + slot_h)
+            c.line(px + PASEK_W, y0, px + PASEK_W, y0 + slot_h)
+            c.saveState()
+            c.translate(px + PASEK_W / 2, y0 + slot_h / 2)
+            c.rotate(90)
+            c.setFillColor(mieszaj(CARD, barwa, negatyw[tint]))
+            c.setFont(FONT_BOLD, PASEK_FS)
+            c.drawCentredString(0, -0.36 * PASEK_FS, napis)
+            c.restoreState()
+    for slot in range(1, sloty):
+        c.line(x, dol + slot * slot_h, x + POLE_SZER, dol + slot * slot_h)
 
-    Pasek kafla idzie pelna barwa, biale pole jej lekkim odcieniem; progi
-    (piatki) dostaja biala plakietke z halo.
+
+def rozmiar_liczby() -> float:
+    """Najwiekszy stopien pisma (do LICZBA_FS_MAX), przy ktorym najszersza
+    liczba skali miesci sie w polu centralnym miedzy strefami strzalek,
+    z luzem po obu stronach."""
+    miejsce = CENTRUM_W - 2 * STRZALKA_W - 2 * LUZ_LICZBY
+    return min(LICZBA_FS_MAX, LICZBA_FS_MAX * miejsce / najszersza_liczba(LICZBA_FS_MAX))
+
+
+def najszersza_liczba(fs: float) -> float:
+    """Szerokosc najszerszej liczby skali w stopniu pisma fs."""
+    return max(pdfmetrics.stringWidth(liczba_skali(kyu), FONT_BOLD, fs)
+               for grupa, _ in GRUPY for wiersz in grupa for kyu in wiersz)
+
+
+def srodki_strzalek(x: float) -> tuple[float, float]:
+    """(x strzalki przegranej, x strzalki wygranej) pola o lewej krawedzi x:
+    ODSTEP_STRZALKI od krawedzi najszerszej liczby skali, symetrycznie."""
+    brzeg = (POLE_SZER - najszersza_liczba(rozmiar_liczby())) / 2
+    return x + brzeg - ODSTEP_STRZALKI, x + POLE_SZER - brzeg + ODSTEP_STRZALKI
+
+
+def rysuj_liczba(c: Canvas, x: float, dol: float, wys: float, liczba: str,
+                 barwa: Color, prog_: bool) -> None:
+    """Liczba sily w tle: na srodku pola, w odcieniu sekcji nasyconym
+    i ciemniejszym — jedna na pole, w podwojnym kreska slotow biegnie przez nia.
+    Prog dostaje zaokraglona ramke w tej samej barwie."""
+    fs = rozmiar_liczby()
+    kolor = nasycona(barwa, LICZBA_S, LICZBA_L)
+    cx = x + POLE_SZER / 2
+    cy = dol + wys / 2
+    szer, wys_l = c.stringWidth(liczba, FONT_BOLD, fs), 0.72 * fs
+    c.setFont(FONT_BOLD, fs)
+    c.setFillColor(kolor)
+    c.drawCentredString(cx, cy - wys_l / 2, liczba)
+    if prog_:
+        c.setStrokeColor(kolor)
+        c.setLineWidth(4 * KRESKA)
+        c.roundRect(cx - szer / 2 - RAMKA_PROGU, cy - wys_l / 2 - RAMKA_PROGU,
+                    szer + 2 * RAMKA_PROGU, wys_l + 2 * RAMKA_PROGU, 2 * mm, stroke=1, fill=0)
+
+
+def rysuj_slupek(c: Canvas, x: float, y: float,
+                 segmenty: list[tuple[str, Color, bool]],
+                 wys_segmentu: float) -> None:
+    """Slupek sekcji: segmenty (liczba, barwa, czy prog) od gory — kazdy jako
+    osobny kafel z wlasnym obrysem, rozdzielone minimalna szczelina.
+
+    Pole idzie lekkim odcieniem barwy, w tle stoi liczba sily (prog w ramce),
+    na to wchodza paski.
     """
-    for nr, (liczba, barwa, kolor_liczby, plakietka, fs, prog_) in enumerate(segmenty):
+    for nr, (liczba, barwa, prog_) in enumerate(segmenty):
         dol = y + (len(segmenty) - 1 - nr) * (wys_segmentu + SZCZELINA)
         c.saveState()
         c.clipPath(zaokraglony(c, x, dol, POLE_SZER, wys_segmentu, PROMIEN), stroke=0, fill=0)
         c.setFillColor(mieszaj(CARD, barwa, TINT_POLA))
-        c.rect(x + PAS_LICZBY, dol, POLE_SZER - PAS_LICZBY, wys_segmentu, stroke=0, fill=1)
-        c.setFillColor(barwa)
-        c.rect(x, dol, PAS_LICZBY, wys_segmentu, stroke=0, fill=1)
+        c.rect(x, dol, POLE_SZER, wys_segmentu, stroke=0, fill=1)
+        rysuj_liczba(c, x, dol, wys_segmentu, liczba, barwa, prog_)
+        rysuj_paski(c, x, dol, wys_segmentu, barwa)
         c.restoreState()
-        # Obrys i kreska paska w ciemnej wersji barwy sekcji — tej samej,
-        # ktora pisze liczby; kafel trzyma sie jednej rodziny koloru.
+        # Obrys w ciemnej wersji barwy sekcji — kafel trzyma sie jednej
+        # rodziny koloru.
         c.setStrokeColor(mieszaj(barwa, INK, 0.55))
         c.setLineWidth(KRESKA)
-        c.line(x + PAS_LICZBY, dol, x + PAS_LICZBY, dol + wys_segmentu)
         c.drawPath(zaokraglony(c, x, dol, POLE_SZER, wys_segmentu, PROMIEN), stroke=1, fill=0)
-        srodek_x = x + PAS_LICZBY / 2
-        srodek_y = dol + wys_segmentu / 2
-        if plakietka is not None:
-            szer = c.stringWidth(liczba, FONT_BOLD, fs) + 5 * mm
-            wys_p = 0.72 * fs + 5 * mm
-            lewa_p, dol_p = srodek_x - szer / 2, srodek_y - wys_p / 2
-            c.setFillColor(plakietka)
-            c.roundRect(lewa_p, dol_p, szer, wys_p, 2 * mm, stroke=0, fill=1)
-            if prog_:                           # biale halo wokol plakietki progu
-                c.setStrokeColor(CARD)
-                c.setLineWidth(2 * KRESKA)
-                c.roundRect(lewa_p - 1 * mm, dol_p - 1 * mm, szer + 2 * mm,
-                            wys_p + 2 * mm, 3 * mm, stroke=1, fill=0)
-        c.setFillColor(kolor_liczby)
-        c.setFont(FONT_BOLD, fs)
-        c.drawCentredString(srodek_x, srodek_y - 0.36 * fs, liczba)
 
 
 def rysuj_naglowek_kyu(c: Canvas, gora_y: float) -> None:
@@ -553,15 +674,15 @@ def rysuj_przelicznik(c: Canvas, prawa: float, dol_y: float,
         c.setLineWidth(KRESKA)
         c.line(x + KAFEL_PAS, dol_y, x + KAFEL_PAS, dol_y + KAFEL_H)
         c.drawPath(zaokraglony(c, x, dol_y, KAFEL_W, KAFEL_H, 2 * mm), stroke=1, fill=0)
-        # sila na bialej plakietce o proporcjach plakietek z glownej siatki:
-        # ciasno wokol liczby, duzo barwy paska dookola
-        # Krój jak w tabelach wyrownania obok — DejaVu bez pogrubienia.
+        # Sila na bialej plakietce, ciasno wokol liczby, duzo barwy paska
+        # dookola; liczba i stopien w barwie liczb z pol, zeby kafelek czytalo
+        # sie tak samo jak tablice. Krój jak w tabelach wyrownania obok.
         szer_p = c.stringWidth(sila, FONT, KAFEL_FS) + 4 * mm
         wys_p = 0.72 * KAFEL_FS + 2.5 * mm
         c.setFillColor(CARD)
         c.roundRect(x + KAFEL_PAS / 2 - szer_p / 2, dol_y + KAFEL_H / 2 - wys_p / 2,
                     szer_p, wys_p, 1.5 * mm, stroke=0, fill=1)
-        c.setFillColor(barwa)
+        c.setFillColor(nasycona(barwa, LICZBA_S, LICZBA_L))   # jak liczby na polach
         c.setFont(FONT, KAFEL_FS)
         c.drawCentredString(x + KAFEL_PAS / 2, dol_y + KAFEL_H / 2 - 0.36 * KAFEL_FS, sila)
         c.drawCentredString(x + KAFEL_PAS + (KAFEL_W - KAFEL_PAS) / 2,
@@ -715,14 +836,8 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
         barwa = kolory[nr]
         y = granice[nr][1]
         for kolumna in range(KOLUMNY):
-            segmenty = []
-            for wiersz in grupa:
-                kyu = wiersz[kolumna]
-                # Wszystkie liczby w ciemnej wersji barwy sekcji, wprost na
-                # pasku; biala plakietke (z halo) dostaja wylacznie progi.
-                ciemna = mieszaj(barwa, INK, 0.55)
-                segmenty.append((liczba_skali(kyu), barwa, ciemna,
-                                 CARD if prog(kyu) else None, LICZBA_FS, prog(kyu)))
+            segmenty = [(liczba_skali(wiersz[kolumna]), barwa, prog(wiersz[kolumna]))
+                        for wiersz in grupa]
             x = MARGINES_BOK + kolumna * (POLE_SZER + ODSTEP_POZIOM)
             rysuj_slupek(c, x, y, segmenty, wys_segmentu)
             # Strzalki sasiadow: skala biegnie w gore kolumny, ze szczytu
@@ -761,20 +876,21 @@ def rysuj_strone(c: Canvas, page_h: float, podpis: str | None,
         c.drawString(MARGINES_BOK, 4 * mm, podpis)
 
 
-WERSJA = "07.09.2026o"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
+WERSJA = "08.09.2026"                  # dopiska wydruku; podbij przy zmianie zasad/ukladu
 ZAMEK = Path(__file__).resolve().parent / "tablica.lock"
 
 
 def odcisk() -> str:
     """Odcisk danych, ktore decyduja o tresci wydrukowanej tablicy.
 
-    Sa tu zasady, kolumny pasa, skala slupkow, przelicznik stopni i siatki
-    wyrownania — wszystko, czego zmiana uniewaznia wiszacy wydruk. Wymiary
+    Sa tu zasady, kolumny pasa, paski serii, skala slupkow, przelicznik stopni
+    i siatki wyrownania — wszystko, czego zmiana uniewaznia wiszacy wydruk. Wymiary
     czysto kosmetyczne swiadomie zostaja poza odciskiem."""
     dane = {
         "zasady": [[k, z, linie] for k, z, linie in zasady_tablicy.ZASADY],
         "kolumny": list(zasady_tablicy.KOLUMNY),
         "naglowki": dict(zasady_tablicy.NAGLOWKI),
+        "paski": list(zasady_tablicy.PASKI) + [zasady_tablicy.PASEK_PRZEGRANEJ],
         "grupy": [[wiersze, podwojne] for wiersze, podwojne in GRUPY],
         "przelicznik": [list(k) for k in PRZELICZNIK],
         "siatki": {p: {f"{j}/{r}": d for (j, r), d in sorted(siatka(p).items())} for p in PLANSZE},

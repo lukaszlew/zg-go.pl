@@ -409,7 +409,7 @@ def rysuj_strzalke(c: Canvas, x: float, dol: float, wys_seg: float,
     SEG, PROMIEN_HAKA = 6 * mm * SKALA, 2 * mm * SKALA
     A = SEG / 2                           # polowka: odcinek startowy haka (bez grotu)
     HEAD_W, HEAD_G = 5.4 * mm, 2.52 * mm  # wspolny grot: szeroki i plaski
-    PRZERWA_GROTU = 1.2 * mm              # kreska miedzy spodem grotu a odcinkiem rownoleglym do niego
+    PRZERWA_GROTU = 1.8 * mm              # kreska miedzy spodem grotu a odcinkiem rownoleglym do niego
     KONCOWY = max(SEG, HEAD_G + PRZERWA_GROTU)   # ostatni odcinek haka, z grotem
     KONIEC = HEAD_G / 2                   # kreska konczy sie w polowie grotu — grot ja zakrywa
     BLADOSC = 0.6                         # domieszka barwy celu na bieli — strzalka nie krzyczy

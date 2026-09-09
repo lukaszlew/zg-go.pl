@@ -188,7 +188,7 @@ RAMKA_PROGU = 3 * mm                    # oddech ramki wokol liczby progu
 # Tla paskow od krawedzi do srodka (prawe lustrzanie): skrajny jak pole
 # z napisem w odcieniu TINT_PASKA, wewnetrzny (SERIA / PRZEGRANA) negatywem.
 TINT_PASKOW = (TINT_POLA, TINT_PASKA)
-KRESKA_SLOTU = 0.35                     # domieszka ciemnej barwy w kresce miedzy slotami
+KRESKA_SLOTU = 0.2                      # domieszka ciemnej barwy w kresce miedzy slotami — pod liczba
 ODSTEP_POZIOM = 5 * mm
 
 # Wydruk: 660 mm szerokosci (weziej niz tablica, marginesy boczne przyciete)
@@ -455,9 +455,8 @@ def rysuj_paski(c: Canvas, x: float, dol: float, wys: float, barwa: Color) -> No
     """Paski pola: w kazdym slocie pionowe napisy — WYGRANA i SERIA przy lewej
     krawedzi, PRZEGRANA i pusty lustrzanie przy prawej — rozdzielone cienkimi
     kreskami w miejscach, gdzie staje krawedz magnesu. Skrajne paski maja tlo
-    pola i napis w odcieniu liczb, wewnetrzne (SERIA, PRZEGRANA) — negatyw. Pole podwojne to dwa
-    sloty rozdzielone jasna kreska na cala szerokosc pola — kazda etykieta ma
-    wlasne paski."""
+    pola i napis w odcieniu liczb, wewnetrzne (SERIA, PRZEGRANA) — negatyw.
+    W polu podwojnym kazdy slot ma wlasne paski."""
     assert wys in (POLE_WYS, POLE_WYS_2), f"nieznana wysokosc pola: {wys / mm:.1f} mm"
     ciemna = mieszaj(barwa, INK, 0.55)
     sloty = 2 if wys == POLE_WYS_2 else 1
@@ -483,8 +482,6 @@ def rysuj_paski(c: Canvas, x: float, dol: float, wys: float, barwa: Color) -> No
             c.setFont(FONT_BOLD, PASEK_FS)
             c.drawCentredString(0, -0.36 * PASEK_FS, napis)
             c.restoreState()
-    for slot in range(1, sloty):
-        c.line(x, dol + slot * slot_h, x + POLE_SZER, dol + slot * slot_h)
 
 
 def rozmiar_liczby() -> float:
@@ -506,6 +503,16 @@ def srodki_strzalek(x: float) -> tuple[float, float]:
     ODSTEP_STRZALKI od krawedzi najszerszej liczby skali, symetrycznie."""
     brzeg = (POLE_SZER - najszersza_liczba(rozmiar_liczby())) / 2
     return x + brzeg - ODSTEP_STRZALKI, x + POLE_SZER - brzeg + ODSTEP_STRZALKI
+
+
+def rysuj_kreske_slotow(c: Canvas, x: float, dol: float, wys: float, barwa: Color) -> None:
+    """Jasna kreska dzielaca pole podwojne na dwa sloty, na cala szerokosc pola —
+    rysowana przed liczba i strzalkami, wiec biegnie pod nimi."""
+    assert wys in (POLE_WYS, POLE_WYS_2), f"nieznana wysokosc pola: {wys / mm:.1f} mm"
+    c.setLineWidth(KRESKA / 2)
+    c.setStrokeColor(mieszaj(CARD, mieszaj(barwa, INK, 0.55), KRESKA_SLOTU))
+    for slot in range(1, 2 if wys == POLE_WYS_2 else 1):
+        c.line(x, dol + slot * wys / 2, x + POLE_SZER, dol + slot * wys / 2)
 
 
 def rysuj_liczba(c: Canvas, x: float, dol: float, wys: float, liczba: str,
@@ -534,8 +541,8 @@ def rysuj_slupek(c: Canvas, x: float, y: float,
     """Slupek sekcji: segmenty (liczba, barwa, czy prog) od gory — kazdy jako
     osobny kafel z wlasnym obrysem, rozdzielone minimalna szczelina.
 
-    Pole idzie lekkim odcieniem barwy, w tle stoi liczba sily (prog w ramce),
-    na to wchodza paski.
+    Pole idzie lekkim odcieniem barwy, na nim kreska slotow (w podwojnym),
+    liczba sily (prog w ramce), na to paski.
     """
     for nr, (liczba, barwa, prog_) in enumerate(segmenty):
         dol = y + (len(segmenty) - 1 - nr) * (wys_segmentu + SZCZELINA)
@@ -543,6 +550,7 @@ def rysuj_slupek(c: Canvas, x: float, y: float,
         c.clipPath(zaokraglony(c, x, dol, POLE_SZER, wys_segmentu, PROMIEN), stroke=0, fill=0)
         c.setFillColor(mieszaj(CARD, barwa, TINT_POLA))
         c.rect(x, dol, POLE_SZER, wys_segmentu, stroke=0, fill=1)
+        rysuj_kreske_slotow(c, x, dol, wys_segmentu, barwa)
         rysuj_liczba(c, x, dol, wys_segmentu, liczba, barwa, prog_)
         rysuj_paski(c, x, dol, wys_segmentu, barwa)
         c.restoreState()
